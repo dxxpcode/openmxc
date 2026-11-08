@@ -12,6 +12,13 @@ struct BrowserToolbar: View {
         HStack(spacing: 16) {
             HStack(spacing: 2) {
                 navButton(
+                    symbol: controller.sidebarIsVisible ? "sidebar.left" : "sidebar.right",
+                    help: "Toggle Tab Rail"
+                ) {
+                    controller.toggleSidebar()
+                }
+
+                navButton(
                     symbol: "chevron.left",
                     help: "Back",
                     enabled: controller.selectedNavigation?.canGoBack ?? false
@@ -142,7 +149,7 @@ struct BrowserToolbar: View {
 /// Quiet monochrome toolbar button: subtle rounded hover fill, press dimming
 /// with a small scale, and a smooth transition. Shared by every toolbar icon so
 /// the chrome reads as one consistent set.
-private struct ToolbarIconStyle: ButtonStyle {
+struct ToolbarIconStyle: ButtonStyle {
     var tint: Color? = nil
 
     @Environment(\.isEnabled) private var isEnabled

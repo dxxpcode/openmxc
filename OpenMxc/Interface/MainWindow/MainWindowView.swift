@@ -5,9 +5,15 @@ struct MainWindowView: View {
     @Binding var showAskPanel: Bool
 
     var body: some View {
-        VStack(spacing: 0) {
-            BrowserToolbar()
-            ContentAreaView()
+        HStack(spacing: 0) {
+            if controller.sidebarIsVisible {
+                TabRailView()
+                    .transition(.move(edge: .leading).combined(with: .opacity))
+            }
+            VStack(spacing: 0) {
+                BrowserToolbar()
+                ContentAreaView()
+            }
         }
         .frame(
             minWidth: BrowserConstants.minimumWindowWidth,
@@ -21,5 +27,6 @@ struct MainWindowView: View {
             }
         }
         .animation(.spring(duration: 0.35, bounce: 0.1), value: showAskPanel)
+        .animation(.easeInOut(duration: 0.2), value: controller.sidebarIsVisible)
     }
 }
