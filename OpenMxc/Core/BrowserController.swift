@@ -4,6 +4,7 @@ import SwiftUI
 @MainActor
 final class BrowserController {
     let tabManager = TabManager()
+    let favorites = FavoritesStore()
 
     var sidebarIsVisible = true
     private(set) var sidebarWidth: CGFloat = BrowserConstants.sidebarDefaultWidth
@@ -45,6 +46,38 @@ final class BrowserController {
     func closeSelectedTab() {
         guard let selectedTab = tabManager.selectedTab else { return }
         tabManager.closeTab(selectedTab)
+    }
+
+    func selectTab(at index: Int) {
+        tabManager.selectTab(at: index)
+    }
+
+    func selectAdjacentTab(_ offset: Int) {
+        tabManager.selectAdjacentTab(offset)
+    }
+
+    var currentPageIsFavorite: Bool {
+        guard let url = tabManager.selectedTab?.navigation.currentURL else { return false }
+        return favorites.favorite(for: url) != nil
+    }
+
+    func toggleFavorite() {
+        guard let tab = tabManager.selectedTab,
+              let url = tab.navigation.currentURL ?? tab.navigation.lastLoadedURL
+        else { return }
+        if let existing = favorites.favorite(for: url) {
+            favorites.remove(existing)
+        } else {
+            favorites.add(title: tab.displayTitle, url: url)
+        }
+    }
+
+    func openFavorite(_ favorite: Favorite) {
+        if let selectedTab = tabManager.selectedTab {
+            selectedTab.navigation.load(favorite.url)
+        } else {
+            tabManager.newTab(url: favorite.url)
+        }
     }
 
     private func applyStressTabsArgumentIfPresent() {

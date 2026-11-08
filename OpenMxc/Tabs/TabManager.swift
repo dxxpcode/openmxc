@@ -79,6 +79,20 @@ final class TabManager {
         newTab()
     }
 
+    func selectTab(at index: Int) {
+        guard tabs.indices.contains(index) else { return }
+        selectedTabID = tabs[index].id
+    }
+
+    func selectAdjacentTab(_ offset: Int) {
+        guard let currentID = selectedTabID,
+              let currentIndex = tabs.firstIndex(where: { $0.id == currentID })
+        else { return }
+        let count = tabs.count
+        let nextIndex = (currentIndex + offset + count) % count
+        selectTab(at: nextIndex)
+    }
+
     func moveTab(_ draggedID: UUID, onto targetID: UUID) {
         guard draggedID != targetID,
               let draggedIndex = tabs.firstIndex(where: { $0.id == draggedID }),

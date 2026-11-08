@@ -39,6 +39,15 @@ struct BrowserToolbar: View {
 
             addressField
 
+            Button {
+                controller.toggleFavorite()
+            } label: {
+                Image(systemName: controller.currentPageIsFavorite ? "star.fill" : "star")
+            }
+            .buttonStyle(.borderless)
+            .help(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
+            .disabled(controller.selectedNavigation?.currentURL == nil)
+
             navButton(symbol: "plus", help: "New Tab") {
                 controller.newTab()
             }
