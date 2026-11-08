@@ -5,9 +5,9 @@ struct MainWindowView: View {
     @Binding var showAskPanel: Bool
 
     var body: some View {
-        VStack(spacing: 0) {
-            BrowserToolbar()
+        ZStack(alignment: .top) {
             ContentAreaView()
+            BrowserToolbar()
         }
         .frame(
             minWidth: BrowserConstants.minimumWindowWidth,

@@ -28,7 +28,7 @@ struct SearchField: View {
         }
         .padding(.horizontal, 14)
         .frame(height: height)
-        .background(fieldColor, in: Capsule())
+        .background { fieldBackground }
         .overlay {
             Capsule()
                 .strokeBorder(borderColor, lineWidth: isFocused ? 1.2 : 0.5)
@@ -40,8 +40,12 @@ struct SearchField: View {
         .animation(.easeInOut(duration: 0.15), value: isFocused)
     }
 
-    private var fieldColor: Color {
-        colorScheme == .dark ? .black : Color(nsColor: .textBackgroundColor)
+    /// Frosted capsule: vibrancy material with a light theme tint.
+    private var fieldBackground: some View {
+        ZStack {
+            Capsule().fill(.regularMaterial)
+            Capsule().fill(colorScheme == .dark ? Color.black.opacity(0.3) : Color.white.opacity(0.3))
+        }
     }
 
     private var borderColor: Color {

@@ -70,7 +70,12 @@ struct BrowserToolbar: View {
         .padding(.horizontal, 20)
         .padding(.vertical, 8)
         .frame(height: BrowserConstants.toolbarHeight)
-        .background(canvasColor)
+        .background { toolbarBackground }
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.08))
+                .frame(height: 0.5)
+        }
         .onChange(of: controller.tabManager.selectedTabID) { _, _ in
             syncAddressText()
         }
@@ -88,8 +93,13 @@ struct BrowserToolbar: View {
         }
     }
 
-    private var canvasColor: Color {
-        colorScheme == .dark ? .black : Color(nsColor: .windowBackgroundColor)
+    /// Frosted glass: system vibrancy blur with a light tint so page content
+    /// bleeds through while icons stay legible in both themes.
+    private var toolbarBackground: some View {
+        ZStack {
+            Rectangle().fill(.ultraThinMaterial)
+            Rectangle().fill(colorScheme == .dark ? Color.black.opacity(0.45) : Color.white.opacity(0.35))
+        }
     }
 
     @ViewBuilder

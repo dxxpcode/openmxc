@@ -26,7 +26,7 @@ struct AskPagePanel: View {
         }
         .padding(16)
         .frame(width: 560)
-        .background(canvasColor, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background { panelBackground }
         .overlay {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .strokeBorder(borderColor, lineWidth: 0.5)
@@ -171,8 +171,15 @@ struct AskPagePanel: View {
         )
     }
 
-    private var canvasColor: Color {
-        colorScheme == .dark ? .black : Color(nsColor: .windowBackgroundColor)
+    /// Frosted panel: vibrancy material with a theme tint so page content
+    /// softly bleeds through the rounded card.
+    private var panelBackground: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(.regularMaterial)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(colorScheme == .dark ? Color.black.opacity(0.35) : Color.white.opacity(0.3))
+        }
     }
 
     private var borderColor: Color {

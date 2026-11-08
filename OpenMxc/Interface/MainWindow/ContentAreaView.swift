@@ -16,6 +16,7 @@ struct ContentAreaView: View {
         .background(canvasColor)
         .overlay(alignment: .top) {
             loadingBar
+                .padding(.top, BrowserConstants.toolbarHeight + 1)
         }
         .animation(.easeInOut(duration: 0.2), value: controller.selectedNavigation?.isLoading ?? false)
         .onChange(of: controller.tabManager.selectedTabID) { _, _ in
