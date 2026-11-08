@@ -15,6 +15,7 @@ struct MainWindowView: View {
 
             VStack(spacing: 0) {
                 BrowserToolbar()
+                loadingProgress
                 Divider()
                 ContentAreaView()
             }
@@ -24,5 +25,14 @@ struct MainWindowView: View {
             minWidth: BrowserConstants.minimumWindowWidth,
             minHeight: BrowserConstants.minimumWindowHeight
         )
+    }
+
+    @ViewBuilder
+    private var loadingProgress: some View {
+        if controller.navigation.isLoading {
+            ProgressView(value: controller.navigation.estimatedProgress)
+                .progressViewStyle(.linear)
+                .frame(height: 2)
+        }
     }
 }
