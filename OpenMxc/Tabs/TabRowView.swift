@@ -41,6 +41,7 @@ struct TabRowView: View {
                 Image(systemName: "speaker.slash.fill")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
             }
 
             if isHovered && !tab.isPinned {
@@ -53,6 +54,7 @@ struct TabRowView: View {
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
                 .help("Close Tab")
+                .accessibilityLabel("Close Tab")
             }
         }
         .padding(.horizontal, tab.isPinned ? 6 : 8)
@@ -77,6 +79,22 @@ struct TabRowView: View {
         }
         .contextMenu { contextMenu }
         .help(tab.address.isEmpty ? tab.displayTitle : tab.address)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityText)
+        .accessibilityHint("Double-tap to switch to this tab")
+        .accessibilityAction { controller.tabManager.select(tab) }
+    }
+
+    private var accessibilityText: String {
+        var parts = [tab.displayTitle]
+        if let host = tab.navigation.currentURL?.host() {
+            parts.append(host)
+        }
+        if tab.isMuted { parts.append("muted") }
+        if tab.isPinned { parts.append("pinned") }
+        if isSelected { parts.append("selected") }
+        parts.append("tab")
+        return parts.joined(separator: ", ")
     }
 
     @ViewBuilder

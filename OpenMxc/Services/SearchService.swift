@@ -32,6 +32,27 @@ enum SearchService {
         return SearchEngine(id: id, name: name, template: template)
     }
 
+    static func allEngines(database: Database? = nil) -> [SearchEngine] {
+        let db = database ?? Database.shared
+        let rows = (try? db.query("""
+            SELECT id, name, search_url_template FROM search_engines ORDER BY name
+            """)) ?? []
+        return rows.compactMap { row in
+            guard let id = row["id"]?.string,
+                  let name = row["name"]?.string,
+                  let template = row["search_url_template"]?.string,
+                  template.contains("{query}")
+            else { return nil }
+            return SearchEngine(id: id, name: name, template: template)
+        }
+    }
+
+    static func setDefaultEngine(id: String, database: Database? = nil) {
+        guard let db = database ?? Optional(Database.shared) else { return }
+        try? db.execute("UPDATE search_engines SET is_default = 0")
+        try? db.execute("UPDATE search_engines SET is_default = 1 WHERE id = ?", arguments: [.text(id)])
+    }
+
     static func resolve(_ input: String) -> URL? {
         let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
