@@ -44,26 +44,28 @@ struct BrowserToolbar: View {
 
             addressField
 
-            Button {
-                controller.toggleFavorite()
-            } label: {
-                Image(systemName: controller.currentPageIsFavorite ? "star.fill" : "star")
-            }
-            .buttonStyle(ToolbarIconStyle(tint: controller.currentPageIsFavorite ? Color.accentColor : nil))
-            .help(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
-            .disabled(controller.selectedNavigation?.currentURL == nil)
-            .accessibilityLabel(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
+            HStack(spacing: 2) {
+                Button {
+                    controller.toggleFavorite()
+                } label: {
+                    Image(systemName: controller.currentPageIsFavorite ? "star.fill" : "star")
+                }
+                .buttonStyle(ToolbarIconStyle(tint: controller.currentPageIsFavorite ? Color.accentColor : nil))
+                .help(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
+                .disabled(controller.selectedNavigation?.currentURL == nil)
+                .accessibilityLabel(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
 
-            shareButton
+                shareButton
 
-            Button {
-                appTheme = colorScheme == .dark ? "light" : "dark"
-            } label: {
-                Image(systemName: colorScheme == .dark ? "sun.max" : "moon")
+                Button {
+                    appTheme = colorScheme == .dark ? "light" : "dark"
+                } label: {
+                    Image(systemName: colorScheme == .dark ? "sun.max" : "moon")
+                }
+                .buttonStyle(ToolbarIconStyle())
+                .help(colorScheme == .dark ? "Switch to Light Mode" : "Switch to Dark Mode")
+                .accessibilityLabel(colorScheme == .dark ? "Switch to Light Mode" : "Switch to Dark Mode")
             }
-            .buttonStyle(ToolbarIconStyle())
-            .help(colorScheme == .dark ? "Switch to Light Mode" : "Switch to Dark Mode")
-            .accessibilityLabel(colorScheme == .dark ? "Switch to Light Mode" : "Switch to Dark Mode")
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 8)
@@ -137,8 +139,9 @@ struct BrowserToolbar: View {
     }
 }
 
-/// Quiet monochrome toolbar button: subtle rounded hover fill, press dimming,
-/// and a smooth transition. Keeps the chrome minimal while feeling tactile.
+/// Quiet monochrome toolbar button: subtle rounded hover fill, press dimming
+/// with a small scale, and a smooth transition. Shared by every toolbar icon so
+/// the chrome reads as one consistent set.
 private struct ToolbarIconStyle: ButtonStyle {
     var tint: Color? = nil
 
@@ -147,31 +150,33 @@ private struct ToolbarIconStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 12.5, weight: .medium))
+            .font(.system(size: 13, weight: .medium))
             .foregroundStyle(labelColor(isPressed: configuration.isPressed))
-            .frame(width: 30, height: 30)
+            .frame(width: 32, height: 32)
             .background {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                RoundedRectangle(cornerRadius: 9, style: .continuous)
                     .fill(Color.primary.opacity(backgroundOpacity(isPressed: configuration.isPressed)))
             }
+            .scaleEffect(configuration.isPressed ? 0.92 : 1)
             .contentShape(Rectangle())
             .onHover { hovering in
                 withAnimation(.easeInOut(duration: 0.12)) {
                     isHovered = hovering
                 }
             }
-            .opacity(isEnabled ? 1 : 0.4)
+            .opacity(isEnabled ? 1 : 0.35)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
             .animation(.easeInOut(duration: 0.12), value: isHovered)
     }
 
     private func labelColor(isPressed: Bool) -> Color {
         if let tint { return tint }
-        if isPressed { return Color.primary.opacity(0.65) }
-        return Color.primary.opacity(isHovered ? 0.95 : 0.72)
+        if isPressed { return Color.primary.opacity(0.6) }
+        return Color.primary.opacity(isHovered ? 0.95 : 0.75)
     }
 
     private func backgroundOpacity(isPressed: Bool) -> Double {
-        if isPressed { return 0.12 }
-        return isHovered ? 0.07 : 0
+        if isPressed { return 0.14 }
+        return isHovered ? 0.08 : 0
     }
 }
