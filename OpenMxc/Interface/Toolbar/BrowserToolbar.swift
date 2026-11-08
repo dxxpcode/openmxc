@@ -10,36 +10,38 @@ struct BrowserToolbar: View {
             navButton(
                 symbol: "chevron.left",
                 help: "Back",
-                enabled: controller.navigation.canGoBack
+                enabled: controller.selectedNavigation?.canGoBack ?? false
             ) {
-                controller.navigation.goBack()
+                controller.selectedNavigation?.goBack()
             }
 
             navButton(
                 symbol: "chevron.right",
                 help: "Forward",
-                enabled: controller.navigation.canGoForward
+                enabled: controller.selectedNavigation?.canGoForward ?? false
             ) {
-                controller.navigation.goForward()
+                controller.selectedNavigation?.goForward()
             }
 
-            if controller.navigation.isLoading {
+            if controller.selectedNavigation?.isLoading ?? false {
                 navButton(symbol: "xmark", help: "Stop") {
-                    controller.navigation.stopLoading()
+                    controller.selectedNavigation?.stopLoading()
                 }
             } else {
                 navButton(
                     symbol: "arrow.clockwise",
                     help: "Reload",
-                    enabled: controller.navigation.hasCommittedNavigation
+                    enabled: controller.selectedNavigation?.hasCommittedNavigation ?? false
                 ) {
-                    controller.navigation.reload()
+                    controller.selectedNavigation?.reload()
                 }
             }
 
             addressField
 
-            navButton(symbol: "plus", help: "New Tab", enabled: false) {}
+            navButton(symbol: "plus", help: "New Tab") {
+                controller.newTab()
+            }
 
             Button {
                 controller.toggleSidebar()
@@ -60,9 +62,11 @@ struct BrowserToolbar: View {
             .allowsHitTesting(false)
             .accessibilityHidden(true)
         }
-        .onChange(of: controller.navigation.currentURL) { _, url in
-            guard !isAddressFocused else { return }
-            addressText = url?.absoluteString ?? ""
+        .onChange(of: controller.tabManager.selectedTabID) { _, _ in
+            syncAddressText()
+        }
+        .onChange(of: controller.selectedNavigation?.currentURL) { _, _ in
+            syncAddressText()
         }
     }
 
@@ -83,6 +87,11 @@ struct BrowserToolbar: View {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 0.5)
             }
+    }
+
+    private func syncAddressText() {
+        guard !isAddressFocused else { return }
+        addressText = controller.selectedNavigation?.currentURL?.absoluteString ?? ""
     }
 
     private func navButton(

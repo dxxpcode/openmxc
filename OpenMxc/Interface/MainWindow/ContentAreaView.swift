@@ -5,18 +5,29 @@ struct ContentAreaView: View {
 
     var body: some View {
         Group {
-            if controller.navigation.webContentCrashed {
-                crashView
-            } else if let loadError = controller.navigation.loadError {
-                loadErrorView(loadError)
-            } else if controller.navigation.hasCommittedNavigation || controller.navigation.isLoading {
-                WebViewContainer(webView: controller.navigation.webView)
+            if let tab = controller.tabManager.selectedTab {
+                content(for: tab)
             } else {
                 startPagePlaceholder
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(nsColor: .windowBackgroundColor))
+    }
+
+    @ViewBuilder
+    private func content(for tab: TabModel) -> some View {
+        let navigation = tab.navigation
+        if navigation.webContentCrashed {
+            crashView(for: tab)
+        } else if let loadError = navigation.loadError {
+            loadErrorView(loadError, for: tab)
+        } else if navigation.hasCommittedNavigation || navigation.isLoading {
+            WebViewContainer(webView: navigation.webView)
+                .id(tab.id)
+        } else {
+            startPagePlaceholder
+        }
     }
 
     private var startPagePlaceholder: some View {
@@ -36,27 +47,27 @@ struct ContentAreaView: View {
         }
     }
 
-    private var crashView: some View {
+    private func crashView(for tab: TabModel) -> some View {
         statusView(
             symbol: "exclamationmark.triangle",
             title: "This webpage quit unexpectedly",
             message: "The content process stopped. Reload to try again."
         ) {
             Button("Reload") {
-                controller.navigation.recoverFromCrash()
+                tab.navigation.recoverFromCrash()
             }
             .keyboardShortcut(.defaultAction)
         }
     }
 
-    private func loadErrorView(_ message: String) -> some View {
+    private func loadErrorView(_ message: String, for tab: TabModel) -> some View {
         statusView(
             symbol: "safari",
             title: "This webpage could not be loaded",
             message: message
         ) {
             Button("Try Again") {
-                controller.navigation.reload()
+                tab.navigation.reload()
             }
             .keyboardShortcut(.defaultAction)
         }
