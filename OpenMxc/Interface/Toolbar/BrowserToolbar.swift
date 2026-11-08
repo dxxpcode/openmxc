@@ -5,6 +5,8 @@ struct BrowserToolbar: View {
     @FocusState private var isAddressFocused: Bool
     @State private var addressText = ""
     @State private var window: NSWindow?
+    @AppStorage("appTheme") private var appTheme = "system"
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HStack(spacing: 16) {
@@ -53,6 +55,15 @@ struct BrowserToolbar: View {
             .accessibilityLabel(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
 
             shareButton
+
+            Button {
+                appTheme = colorScheme == .dark ? "light" : "dark"
+            } label: {
+                Image(systemName: colorScheme == .dark ? "sun.max" : "moon")
+            }
+            .buttonStyle(.borderless)
+            .help(colorScheme == .dark ? "Switch to Light Mode" : "Switch to Dark Mode")
+            .accessibilityLabel(colorScheme == .dark ? "Switch to Light Mode" : "Switch to Dark Mode")
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 10)
