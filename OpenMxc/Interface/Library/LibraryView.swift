@@ -11,7 +11,7 @@ struct LibraryView: View {
             content
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(nsColor: .windowBackgroundColor))
+        .background(OX.background)
     }
 
     private var header: some View {

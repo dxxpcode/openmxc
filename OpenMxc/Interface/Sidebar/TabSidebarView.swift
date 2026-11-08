@@ -6,26 +6,26 @@ struct TabSidebarView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
-            Divider()
             tabsList
                 .padding(.top, 8)
             Spacer()
-            Divider()
             librarySection
-                .padding(.vertical, 8)
+                .padding(.vertical, 10)
         }
-        .background(.regularMaterial)
+        .background(OX.background)
     }
 
     private var header: some View {
         HStack {
             if controller.isPrivate {
-                Label("Private", systemImage: "lock.fill")
-                    .font(.headline)
-                    .foregroundStyle(.purple)
+                Label("private", systemImage: "lock.fill")
+                    .font(OX.mono(.callout, weight: .bold))
+                    .foregroundStyle(OX.accent)
             } else {
-                Text(BrowserConfiguration.applicationName)
-                    .font(.headline)
+                Text("OPENMXC")
+                    .font(OX.mono(.callout, weight: .bold))
+                    .tracking(0.08)
+                    .foregroundStyle(OX.textPrimary)
             }
             Spacer()
             Button {
@@ -33,8 +33,8 @@ struct TabSidebarView: View {
             } label: {
                 Image(systemName: "plus")
             }
-            .buttonStyle(.borderless)
-            .help("New Tab")
+            .buttonStyle(.oxIcon)
+            .help("New Tab (⌘T)")
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
@@ -42,15 +42,15 @@ struct TabSidebarView: View {
 
     private var tabsList: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 2) {
+            LazyVStack(alignment: .leading, spacing: 1) {
                 if !controller.tabManager.pinnedTabs.isEmpty {
-                    sectionHeader("Pinned")
+                    sectionHeader("pinned")
                     ForEach(controller.tabManager.pinnedTabs) { tab in
                         TabRowView(tab: tab)
                     }
                 }
 
-                sectionHeader("Tabs")
+                sectionHeader("tabs")
                 ForEach(controller.tabManager.unpinnedTabs) { tab in
                     TabRowView(tab: tab)
                 }
@@ -60,8 +60,8 @@ struct TabSidebarView: View {
     }
 
     private var librarySection: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            sectionHeader("Library")
+        VStack(alignment: .leading, spacing: 1) {
+            sectionHeader("library")
 
             ForEach(LibrarySection.allCases) { section in
                 libraryRow(section)
@@ -71,23 +71,55 @@ struct TabSidebarView: View {
     }
 
     private func sectionHeader(_ title: String) -> some View {
-        Text(title.uppercased())
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 12)
-            .padding(.top, 8)
-            .padding(.bottom, 4)
+        Text(title)
+            .font(OX.monoSmall)
+            .foregroundStyle(OX.textMuted)
+            .padding(.horizontal, 10)
+            .padding(.top, 10)
+            .padding(.bottom, 2)
     }
 
     private func libraryRow(_ section: LibrarySection) -> some View {
-        Button {
+        let isSelected = controller.librarySection == section
+        return Button {
             controller.showLibrary(section)
         } label: {
-            Label(section.title, systemImage: section.symbol)
-                .font(.callout)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(Rectangle())
+            HStack(spacing: 8) {
+                Image(systemName: section.symbol)
+                    .font(.system(size: 11, weight: .medium))
+                    .frame(width: 16)
+                Text(section.title)
+                    .font(OX.mono(.callout))
+                Spacer()
+                Text(shortcutHint(for: section))
+                    .font(OX.monoSmall)
+                    .foregroundStyle(OX.textMuted)
+            }
+            .foregroundStyle(isSelected ? OX.accent : OX.textSecondary)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background {
+                if isSelected {
+                    Rectangle()
+                        .fill(OX.accent.opacity(0.10))
+                }
+            }
+            .overlay(alignment: .leading) {
+                if isSelected {
+                    Rectangle().fill(OX.accent).frame(width: 2)
+                }
+            }
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+
+    private func shortcutHint(for section: LibrarySection) -> String {
+        switch section {
+        case .bookmarks: return "⌥⌘B"
+        case .history: return "⌘Y"
+        case .downloads: return "⌘⇧L"
+        case .readingList: return ""
+        }
     }
 }

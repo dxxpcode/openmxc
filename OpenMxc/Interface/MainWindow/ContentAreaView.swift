@@ -14,7 +14,7 @@ struct ContentAreaView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(nsColor: .windowBackgroundColor))
+        .background(OX.background)
         .onChange(of: controller.tabManager.selectedTabID) { _, _ in
             controller.librarySection = nil
         }

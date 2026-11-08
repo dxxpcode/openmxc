@@ -2,7 +2,7 @@ import SwiftUI
 
 struct BrowserWindowRoot: View {
     @State private var controller: BrowserController
-    @AppStorage("appTheme") private var appTheme = "system"
+    @AppStorage("appTheme") private var appTheme = "dark"
     @State private var showOnboarding = false
     @State private var window: NSWindow?
 

@@ -17,19 +17,19 @@ struct TabRowView: View {
 
             if tab.isPinned {
                 Text(tab.displayTitle)
-                    .font(.callout)
+                    .font(OX.mono(.callout))
                     .lineLimit(1)
                     .truncationMode(.tail)
             } else {
                 VStack(alignment: .leading, spacing: 1) {
                     Text(tab.displayTitle)
-                        .font(.callout)
+                        .font(OX.mono(.callout))
                         .lineLimit(1)
                         .truncationMode(.tail)
                     if let host = tab.navigation.currentURL?.host() {
                         Text(host)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
+                            .font(OX.monoSmall)
+                            .foregroundStyle(OX.textMuted)
                             .lineLimit(1)
                     }
                 }
@@ -39,8 +39,8 @@ struct TabRowView: View {
 
             if tab.isMuted {
                 Image(systemName: "speaker.slash.fill")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundStyle(OX.textMuted)
                     .accessibilityHidden(true)
             }
 
@@ -49,20 +49,30 @@ struct TabRowView: View {
                     controller.tabManager.closeTab(tab)
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.caption2.weight(.semibold))
+                        .font(.system(size: 9, weight: .bold))
                 }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
-                .help("Close Tab")
+                .buttonStyle(.oxIcon)
+                .frame(width: 20, height: 20)
+                .help("Close Tab (⌘W)")
                 .accessibilityLabel("Close Tab")
             }
         }
-        .padding(.horizontal, tab.isPinned ? 6 : 8)
-        .padding(.vertical, tab.isPinned ? 5 : 6)
+        .padding(.horizontal, tab.isPinned ? 8 : 10)
+        .padding(.vertical, tab.isPinned ? 4 : 6)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
-            RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(isSelected ? Color.accentColor.opacity(0.18) : Color.clear)
+            if isSelected {
+                Rectangle()
+                    .fill(OX.accent.opacity(0.10))
+            } else if isHovered {
+                Rectangle()
+                    .fill(OX.surface)
+            }
+        }
+        .overlay(alignment: .leading) {
+            if isSelected {
+                Rectangle().fill(OX.accent).frame(width: 2)
+            }
         }
         .contentShape(Rectangle())
         .onHover { isHovered = $0 }
@@ -110,8 +120,8 @@ struct TabRowView: View {
                 .frame(width: 16, height: 16)
         } else {
             Image(systemName: "globe")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 10))
+                .foregroundStyle(OX.textMuted)
                 .frame(width: 16, height: 16)
         }
     }

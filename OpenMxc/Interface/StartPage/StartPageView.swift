@@ -10,16 +10,21 @@ struct StartPageView: View {
     @State private var editedAddress = ""
 
     var body: some View {
-        VStack(spacing: 28) {
-            if !greetingIsHidden {
-                greeting
+        VStack(spacing: 0) {
+            Spacer(minLength: 60)
+            VStack(spacing: 28) {
+                if !greetingIsHidden {
+                    greeting
+                }
+
+                searchField
+
+                favoritesSection
             }
-
-            searchField
-
-            favoritesSection
+            Spacer(minLength: 60)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(OX.background)
         .padding(.horizontal, 32)
         .overlay(alignment: .topTrailing) {
             if !greetingIsHidden {
@@ -28,8 +33,8 @@ struct StartPageView: View {
                 } label: {
                     Image(systemName: "eye.slash")
                 }
-                .buttonStyle(.borderless)
-                .foregroundStyle(.secondary)
+                .buttonStyle(.oxIcon)
+                .foregroundStyle(OX.textMuted)
                 .help("Hide Greeting")
                 .padding(12)
             }
@@ -45,49 +50,49 @@ struct StartPageView: View {
     }
 
     private var greeting: some View {
-        VStack(spacing: 10) {
-            Image("OpenMxcLogo")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 56, height: 56)
-                .clipShape(RoundedRectangle(cornerRadius: 13, style: .continuous))
-
-            Text(Self.greetingText)
-                .font(.system(size: 22, weight: .medium))
+        HStack(spacing: 10) {
+            Text("$")
+                .font(OX.mono(.title2, weight: .bold))
+                .foregroundStyle(OX.accent)
+            Text("\(Self.greetingText.lowercased()) — openmxc")
+                .font(OX.mono(.title3, weight: .medium))
+                .foregroundStyle(OX.textPrimary)
         }
-        .padding(.top, 40)
     }
 
     private var searchField: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
-            TextField("Search or enter address", text: $searchText)
+                .font(.system(size: 11))
+                .foregroundStyle(OX.textMuted)
+            TextField("url or search query", text: $searchText)
                 .textFieldStyle(.plain)
+                .font(OX.mono(.callout))
+                .foregroundStyle(OX.textPrimary)
                 .onSubmit {
                     controller.navigate(to: searchText)
                     searchText = ""
                 }
         }
-        .padding(.horizontal, 12)
-        .frame(width: 420, height: 34)
-        .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+        .padding(.horizontal, 14)
+        .frame(width: 520, height: 36)
+        .background(OX.surface, in: RoundedRectangle(cornerRadius: 4, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .strokeBorder(OX.border, lineWidth: 1)
         }
     }
 
     @ViewBuilder
     private var favoritesSection: some View {
         if controller.favorites.favorites.isEmpty {
-            Text("No favorites yet. Add sites from the toolbar to see them here.")
-                .font(.callout)
-                .foregroundStyle(.secondary)
+            Text("no favorites — press ⌘D on any page to pin one here")
+                .font(OX.mono(.callout))
+                .foregroundStyle(OX.textMuted)
         } else {
             LazyVGrid(
-                columns: [GridItem(.adaptive(minimum: 110, maximum: 140), spacing: 16)],
-                spacing: 20
+                columns: [GridItem(.adaptive(minimum: 120, maximum: 150), spacing: 14)],
+                spacing: 14
             ) {
                 ForEach(controller.favorites.favorites) { favorite in
                     FavoriteTileView(favorite: favorite) {
@@ -117,7 +122,7 @@ struct StartPageView: View {
                     }
                 }
             }
-            .frame(maxWidth: 560)
+            .frame(maxWidth: 620)
         }
     }
 
@@ -160,21 +165,40 @@ private struct FavoriteTileView: View {
     let action: () -> Void
 
     @State private var icon: NSImage?
+    @State private var isHovered = false
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 6) {
+            HStack(spacing: 10) {
                 iconView
-                Text(favorite.title)
-                    .font(.callout)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(favorite.title)
+                        .font(OX.mono(.callout))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                    Text(favorite.url.host() ?? favorite.url.absoluteString)
+                        .font(OX.monoSmall)
+                        .foregroundStyle(OX.textMuted)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+                Spacer(minLength: 0)
             }
-            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 12)
             .padding(.vertical, 10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background {
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .fill(isHovered ? OX.surfaceRaised : OX.surface)
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .strokeBorder(isHovered ? OX.accent.opacity(0.5) : OX.border, lineWidth: 1)
+            }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
         .onAppear {
             FaviconService.shared.icon(for: favorite.url) { image in
                 icon = image
@@ -187,12 +211,12 @@ private struct FavoriteTileView: View {
         if let icon {
             Image(nsImage: icon)
                 .resizable()
-                .frame(width: 32, height: 32)
+                .frame(width: 20, height: 20)
         } else {
             Image(systemName: "globe")
-                .font(.system(size: 24))
-                .foregroundStyle(.secondary)
-                .frame(width: 32, height: 32)
+                .font(.system(size: 12))
+                .foregroundStyle(OX.textMuted)
+                .frame(width: 20, height: 20)
         }
     }
 }

@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct BrowserToolbar: View {
@@ -8,32 +9,23 @@ struct BrowserToolbar: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            navButton(
-                symbol: "chevron.left",
-                help: "Back",
-                enabled: controller.selectedNavigation?.canGoBack ?? false
-            ) {
-                controller.selectedNavigation?.goBack()
+            navButton("sidebar.left", help: "Toggle Sidebar (⇧⌘S)") {
+                controller.toggleSidebar()
             }
 
-            navButton(
-                symbol: "chevron.right",
-                help: "Forward",
-                enabled: controller.selectedNavigation?.canGoForward ?? false
-            ) {
+            navButton("chevron.left", help: "Back (⌘[)", enabled: controller.selectedNavigation?.canGoBack ?? false) {
+                controller.selectedNavigation?.goBack()
+            }
+            navButton("chevron.right", help: "Forward (⌘])", enabled: controller.selectedNavigation?.canGoForward ?? false) {
                 controller.selectedNavigation?.goForward()
             }
 
             if controller.selectedNavigation?.isLoading ?? false {
-                navButton(symbol: "xmark", help: "Stop") {
+                navButton("xmark", help: "Stop") {
                     controller.selectedNavigation?.stopLoading()
                 }
             } else {
-                navButton(
-                    symbol: "arrow.clockwise",
-                    help: "Reload",
-                    enabled: controller.selectedNavigation?.hasCommittedNavigation ?? false
-                ) {
+                navButton("arrow.clockwise", help: "Reload (⌘R)", enabled: controller.selectedNavigation?.hasCommittedNavigation ?? false) {
                     controller.selectedNavigation?.reload()
                 }
             }
@@ -44,35 +36,32 @@ struct BrowserToolbar: View {
                 controller.toggleFavorite()
             } label: {
                 Image(systemName: controller.currentPageIsFavorite ? "star.fill" : "star")
+                    .foregroundStyle(controller.currentPageIsFavorite ? OX.accent : OX.textSecondary)
             }
-            .buttonStyle(.borderless)
-            .help(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
+            .buttonStyle(.oxIcon)
+            .help("Favorite (⌘D)")
             .disabled(controller.selectedNavigation?.currentURL == nil)
-            .accessibilityLabel(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
 
-            shareButton
+            if let url = controller.selectedNavigation?.currentURL {
+                ShareLink(item: url) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .buttonStyle(.oxIcon)
+                .help("Share")
+            }
 
-            navButton(symbol: "plus", help: "New Tab") {
+            navButton("plus", help: "New Tab (⌘T)") {
                 controller.newTab()
             }
-
-            Button {
-                controller.toggleSidebar()
-            } label: {
-                Image(systemName: "sidebar.left")
-            }
-            .buttonStyle(.borderless)
-            .help("Toggle Sidebar")
-            .accessibilityLabel("Toggle Sidebar")
         }
-        .padding(.horizontal, 12)
-        .frame(height: BrowserConstants.toolbarHeight)
-        .onChange(of: controller.tabManager.selectedTabID) { _, _ in
-            syncAddressText()
+        .padding(.horizontal, 10)
+        .frame(height: 40)
+        .background(OX.background)
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(OX.border).frame(height: 1)
         }
-        .onChange(of: controller.selectedNavigation?.currentURL) { _, _ in
-            syncAddressText()
-        }
+        .onChange(of: controller.tabManager.selectedTabID) { _, _ in syncAddressText() }
+        .onChange(of: controller.selectedNavigation?.currentURL) { _, _ in syncAddressText() }
         .onReceive(NotificationCenter.default.publisher(for: .openmxcAddressBarFocus)) { _ in
             guard window?.isKeyWindow == true else { return }
             isAddressFocused = true
@@ -84,37 +73,29 @@ struct BrowserToolbar: View {
         }
     }
 
-    @ViewBuilder
-    private var shareButton: some View {
-        if let url = controller.selectedNavigation?.currentURL {
-            ShareLink(item: url) {
-                Image(systemName: "square.and.arrow.up")
-            }
-            .buttonStyle(.borderless)
-            .help("Share")
-            .accessibilityLabel("Share")
-        } else {
-            navButton(symbol: "square.and.arrow.up", help: "Share", enabled: false) {}
-        }
-    }
-
     private var addressField: some View {
-        TextField("Search or enter address", text: $addressText)
-            .textFieldStyle(.plain)
-            .font(.body)
-            .focused($isAddressFocused)
-            .onSubmit {
-                controller.navigate(to: addressText)
-                isAddressFocused = false
-            }
-            .padding(.horizontal, 10)
-            .frame(maxWidth: .infinity)
-            .frame(height: 30)
-            .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 0.5)
-            }
+        HStack(spacing: 6) {
+            Text(">")
+                .font(OX.mono(.callout, weight: .bold))
+                .foregroundStyle(OX.accent)
+            TextField("url or search — ⏎", text: $addressText)
+                .textFieldStyle(.plain)
+                .font(OX.mono(.callout))
+                .foregroundStyle(OX.textPrimary)
+                .focused($isAddressFocused)
+                .onSubmit {
+                    controller.navigate(to: addressText)
+                    isAddressFocused = false
+                }
+        }
+        .padding(.horizontal, 10)
+        .frame(maxWidth: .infinity)
+        .frame(height: 26)
+        .background(OX.surface, in: RoundedRectangle(cornerRadius: 4, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .strokeBorder(isAddressFocused ? OX.accent.opacity(0.6) : OX.border, lineWidth: 1)
+        }
     }
 
     private func syncAddressText() {
@@ -123,7 +104,7 @@ struct BrowserToolbar: View {
     }
 
     private func navButton(
-        symbol: String,
+        _ symbol: String,
         help: String,
         enabled: Bool = true,
         action: @escaping () -> Void
@@ -131,7 +112,7 @@ struct BrowserToolbar: View {
         Button(action: action) {
             Image(systemName: symbol)
         }
-        .buttonStyle(.borderless)
+        .buttonStyle(.oxIcon)
         .help(help)
         .disabled(!enabled)
     }
