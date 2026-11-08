@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct BrowserWindowRoot: View {
@@ -14,6 +15,7 @@ struct BrowserWindowRoot: View {
     var body: some View {
         MainWindowView(showAskPanel: $showAskPanel)
             .environment(controller)
+            .tint(effectiveAccent)
             .preferredColorScheme(colorScheme)
             .sheet(isPresented: $showOnboarding) {
                 OnboardingView()
@@ -101,6 +103,33 @@ struct BrowserWindowRoot: View {
         case "light": return false
         default: return UserDefaults.standard.string(forKey: "AppleInterfaceStyle") == "Dark"
         }
+    }
+
+    /// System accent subtly shifted toward the current page's dominant color,
+    /// so the chrome feels connected to the content (Arc-style tinting).
+    private var effectiveAccent: Color {
+        let base = Color(nsColor: .controlAccentColor)
+        guard let pageColor = controller.selectedNavigation?.dominantColor else {
+            return base
+        }
+        return Self.blend(base: base, page: pageColor, pageWeight: 0.35)
+    }
+
+    private static func blend(base: Color, page: Color, pageWeight: CGFloat) -> Color {
+        guard let baseSRGB = NSColor(base).usingColorSpace(.sRGB),
+              let pageSRGB = NSColor(page).usingColorSpace(.sRGB)
+        else { return base }
+        var r1: CGFloat = 0, g1: CGFloat = 0, b1: CGFloat = 0, a1: CGFloat = 0
+        var r2: CGFloat = 0, g2: CGFloat = 0, b2: CGFloat = 0, a2: CGFloat = 0
+        baseSRGB.getRed(&r1, green: &g1, blue: &b1, alpha: &a1)
+        pageSRGB.getRed(&r2, green: &g2, blue: &b2, alpha: &a2)
+        let w = pageWeight
+        return Color(nsColor: NSColor(
+            srgbRed: r1 * (1 - w) + r2 * w,
+            green: g1 * (1 - w) + g2 * w,
+            blue: b1 * (1 - w) + b2 * w,
+            alpha: 1
+        ))
     }
 
     @Environment(\.openWindow) private var openWindow

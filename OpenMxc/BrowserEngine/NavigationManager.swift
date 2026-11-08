@@ -1,4 +1,5 @@
 import AppKit
+import SwiftUI
 import WebKit
 
 @Observable
@@ -14,6 +15,9 @@ final class NavigationManager: NSObject {
     private(set) var hasCommittedNavigation = false
     private(set) var loadError: String?
     private(set) var webContentCrashed = false
+    /// Dominant page color used to subtly tint the chrome accent; nil for
+    /// neutral pages or before the first sample completes.
+    private(set) var dominantColor: Color?
 
     private(set) var lastLoadedURL: URL?
     var isPrivateBrowsing = false
@@ -156,6 +160,9 @@ extension NavigationManager: WKNavigationDelegate {
         if pendingMainFrameNavigation {
             pendingMainFrameNavigation = false
             recordHistoryIfNeeded()
+        }
+        Task { @MainActor in
+            dominantColor = await PageColorSampler.sample(webView: webView)
         }
     }
 

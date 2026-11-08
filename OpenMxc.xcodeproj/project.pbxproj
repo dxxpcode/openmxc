@@ -42,6 +42,7 @@
 		C05BB93499AA0D4848A3D276 /* BrowserConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64D36C930F561CC83CE806EB /* BrowserConfiguration.swift */; };
 		C0E2C43A35465021381DCAF5 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54C178E9D14516871AC703CD /* OnboardingView.swift */; };
 		C102312F3F6D6367F417799B /* NavigationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A62585F475B94F9CA033971 /* NavigationManager.swift */; };
+		C6D8777F69EF42687F8A969F /* PageColorSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEA17AA7C4B921F917E3FDD /* PageColorSampler.swift */; };
 		CB60248963AA6DDA43E6465A /* FavoritesStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9D64441F96D7A4DE2899F1 /* FavoritesStoreTests.swift */; };
 		D5802EC0EECFDB9AF4AA3A6C /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F7163D3326FD9BBD3A9CB1 /* PermissionManager.swift */; };
 		D6F3388F6C04DCFFB602980A /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402A2ED82D9E1430A499639A /* SettingsStore.swift */; };
@@ -82,6 +83,7 @@
 		402A2ED82D9E1430A499639A /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		43244295502BA14D9D7784E1 /* BrowserControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserControllerTests.swift; sourceTree = "<group>"; };
 		45E0032D6467DE1DA182D8AE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		4CEA17AA7C4B921F917E3FDD /* PageColorSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageColorSampler.swift; sourceTree = "<group>"; };
 		52B5E14C36AEE1EF63A934DF /* LibrarySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibrarySection.swift; sourceTree = "<group>"; };
 		52CF5635ECF51CBB9913ED7D /* BrowserConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserConstants.swift; sourceTree = "<group>"; };
 		53F7163D3326FD9BBD3A9CB1 /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 				8E0F8314192D4862420953FB /* BrowserError.swift */,
 				52B5E14C36AEE1EF63A934DF /* LibrarySection.swift */,
 				C1DA5108058283FA7A64AD0D /* PageAIService.swift */,
+				4CEA17AA7C4B921F917E3FDD /* PageColorSampler.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -436,6 +439,7 @@
 				C102312F3F6D6367F417799B /* NavigationManager.swift in Sources */,
 				C0E2C43A35465021381DCAF5 /* OnboardingView.swift in Sources */,
 				EBB2E26D0BDFD78B1A4E3611 /* PageAIService.swift in Sources */,
+				C6D8777F69EF42687F8A969F /* PageColorSampler.swift in Sources */,
 				D5802EC0EECFDB9AF4AA3A6C /* PermissionManager.swift in Sources */,
 				E597C9BE6AA0FCC44A624A6D /* ReadingListStore.swift in Sources */,
 				96A7B5D010C8B56D244A726D /* Schema.swift in Sources */,
