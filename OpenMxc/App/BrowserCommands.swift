@@ -36,6 +36,18 @@ struct BrowserCommands: Commands {
             .keyboardShortcut("s", modifiers: [.control, .command])
         }
 
+        CommandGroup(after: .windowList) {
+            Button("Minimize") {
+                NotificationCenter.default.post(name: .openmxcMinimizeWindow, object: nil)
+            }
+            .keyboardShortcut("m", modifiers: .command)
+
+            Button("Zoom") {
+                NotificationCenter.default.post(name: .openmxcZoomWindow, object: nil)
+            }
+            .keyboardShortcut(.return, modifiers: .command)
+        }
+
         CommandGroup(after: .sidebar) {
             Button("Add to Favorites") {
                 NotificationCenter.default.post(name: .openmxcToggleFavorite, object: nil)
@@ -77,4 +89,6 @@ extension Notification.Name {
     static let openmxcToggleFavorite = Notification.Name("openmxc.toggleFavorite")
     static let openmxcSelectTabIndex = Notification.Name("openmxc.selectTabIndex")
     static let openmxcAddressBarFocus = Notification.Name("openmxc.addressBarFocus")
+    static let openmxcMinimizeWindow = Notification.Name("openmxc.minimizeWindow")
+    static let openmxcZoomWindow = Notification.Name("openmxc.zoomWindow")
 }
