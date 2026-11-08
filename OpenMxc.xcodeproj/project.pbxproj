@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0890AF9F7EB339054A91E8A2 /* TabDockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B38A141E4EEFD8F64B31022 /* TabDockView.swift */; };
 		0D6D99F86363C163477CE08A /* ContentAreaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1AA071D44ED3A5D457B73D /* ContentAreaView.swift */; };
 		11039824BFFD3235761341A7 /* TabModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A594BD073860C5F405F04D1 /* TabModel.swift */; };
 		1190309498E956BE6B4C24E7 /* SearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2BBB77DC8CBCB9EF61506B /* SearchService.swift */; };
@@ -14,6 +15,7 @@
 		176D3CFCA490697EC18BF6C7 /* TabManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCFA4DB3C5EED14390B2E257 /* TabManagerTests.swift */; };
 		2230F9199412B0AE62F4C041 /* BrowserToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C79D8F145FBC8FCAE9F845 /* BrowserToolbar.swift */; };
 		2820B5C2CC95314AD46DAA3C /* BrowserControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43244295502BA14D9D7784E1 /* BrowserControllerTests.swift */; };
+		2A3199E3C20C043C5CFDFD44 /* DockLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C866A2AF0AB39659F2B6B5CC /* DockLibraryView.swift */; };
 		2C376D4D70C2CE90EEBB83E9 /* DownloadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670CA36D297D11573C1080E7 /* DownloadStore.swift */; };
 		2E6BF3721A1AB2821148FA36 /* MainWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685955B2CDA71C1CA570C436 /* MainWindowView.swift */; };
 		31EB46F736451E1E84AD5FDD /* TabManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AD0403886AD5BB792801C87 /* TabManager.swift */; };
@@ -74,6 +76,7 @@
 		1F1AA071D44ED3A5D457B73D /* ContentAreaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentAreaView.swift; sourceTree = "<group>"; };
 		2A594BD073860C5F405F04D1 /* TabModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabModel.swift; sourceTree = "<group>"; };
 		2A606DC135E0026950F96CD5 /* FaviconService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaviconService.swift; sourceTree = "<group>"; };
+		2B38A141E4EEFD8F64B31022 /* TabDockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabDockView.swift; sourceTree = "<group>"; };
 		2E1B61331F78D81E27DDD259 /* BrowserWindowRoot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserWindowRoot.swift; sourceTree = "<group>"; };
 		402A2ED82D9E1430A499639A /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		43244295502BA14D9D7784E1 /* BrowserControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserControllerTests.swift; sourceTree = "<group>"; };
@@ -101,6 +104,7 @@
 		C3C79D8F145FBC8FCAE9F845 /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
 		C6FE082675EAE6109C66D8FE /* ReadingListStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingListStore.swift; sourceTree = "<group>"; };
 		C71D1693B9981FD671860636 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
+		C866A2AF0AB39659F2B6B5CC /* DockLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockLibraryView.swift; sourceTree = "<group>"; };
 		CCFA4DB3C5EED14390B2E257 /* TabManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabManagerTests.swift; sourceTree = "<group>"; };
 		D308293D2A69FF5E96460437 /* Schema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schema.swift; sourceTree = "<group>"; };
 		D437CC2F198B78FFB82799F0 /* TabRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabRowView.swift; sourceTree = "<group>"; };
@@ -119,7 +123,9 @@
 		093BADD2DB81FA85117D4666 /* Interface */ = {
 			isa = PBXGroup;
 			children = (
+				79611D9F7896350FDA0DBB63 /* Library */,
 				FDDFD33ABD21F9D27ADF8F78 /* MainWindow */,
+				70545B6DE697FDBF6398B8BD /* Overlays */,
 				8B71A314C671CA8DFFDD5EE8 /* StartPage */,
 				2BC2D93A2520A63CD43CD32A /* Toolbar */,
 			);
@@ -228,6 +234,22 @@
 				D437CC2F198B78FFB82799F0 /* TabRowView.swift */,
 			);
 			path = Tabs;
+			sourceTree = "<group>";
+		};
+		70545B6DE697FDBF6398B8BD /* Overlays */ = {
+			isa = PBXGroup;
+			children = (
+				2B38A141E4EEFD8F64B31022 /* TabDockView.swift */,
+			);
+			path = Overlays;
+			sourceTree = "<group>";
+		};
+		79611D9F7896350FDA0DBB63 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				C866A2AF0AB39659F2B6B5CC /* DockLibraryView.swift */,
+			);
+			path = Library;
 			sourceTree = "<group>";
 		};
 		80F9F62215E8AA9E60DD90C0 /* App */ = {
@@ -408,6 +430,7 @@
 				65C588F94CF360DFD6384504 /* BrowserWindowRoot.swift in Sources */,
 				0D6D99F86363C163477CE08A /* ContentAreaView.swift in Sources */,
 				90E9B487353EE756C166773B /* Database.swift in Sources */,
+				2A3199E3C20C043C5CFDFD44 /* DockLibraryView.swift in Sources */,
 				F0E26357B75BC55D22F23926 /* DownloadCoordinator.swift in Sources */,
 				2C376D4D70C2CE90EEBB83E9 /* DownloadStore.swift in Sources */,
 				AC45A77FB068C7815F1BDDF8 /* FaviconService.swift in Sources */,
@@ -425,6 +448,7 @@
 				D6F3388F6C04DCFFB602980A /* SettingsStore.swift in Sources */,
 				35F40188366162674D3DCB09 /* SettingsView.swift in Sources */,
 				404024A5777FC723DB3B735A /* StartPageView.swift in Sources */,
+				0890AF9F7EB339054A91E8A2 /* TabDockView.swift in Sources */,
 				31EB46F736451E1E84AD5FDD /* TabManager.swift in Sources */,
 				11039824BFFD3235761341A7 /* TabModel.swift in Sources */,
 				35997B9257AA0DDFDC2E8E22 /* TabRowView.swift in Sources */,

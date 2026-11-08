@@ -37,6 +37,24 @@ struct BrowserCommands: Commands {
         }
 
         CommandGroup(after: .windowList) {
+            Button("Tab Switcher") {
+                NotificationCenter.default.post(
+                    name: .openmxcTabDock,
+                    object: nil,
+                    userInfo: ["mode": "tabs"]
+                )
+            }
+            .keyboardShortcut("a", modifiers: [.command, .shift])
+
+            Button("Library") {
+                NotificationCenter.default.post(
+                    name: .openmxcTabDock,
+                    object: nil,
+                    userInfo: ["mode": "library"]
+                )
+            }
+            .keyboardShortcut("l", modifiers: [.command, .option])
+
             Button("Minimize") {
                 NotificationCenter.default.post(name: .openmxcMinimizeWindow, object: nil)
             }
@@ -90,5 +108,6 @@ extension Notification.Name {
     static let openmxcSelectTabIndex = Notification.Name("openmxc.selectTabIndex")
     static let openmxcAddressBarFocus = Notification.Name("openmxc.addressBarFocus")
     static let openmxcMinimizeWindow = Notification.Name("openmxc.minimizeWindow")
+    static let openmxcTabDock = Notification.Name("openmxc.tabDock")
     static let openmxcZoomWindow = Notification.Name("openmxc.zoomWindow")
 }

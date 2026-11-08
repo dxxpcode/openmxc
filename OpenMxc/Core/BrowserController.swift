@@ -1,5 +1,10 @@
 import SwiftUI
 
+enum TabDockMode: Equatable {
+    case tabs
+    case library(LibrarySection)
+}
+
 @Observable
 @MainActor
 final class BrowserController {
@@ -10,6 +15,10 @@ final class BrowserController {
     var sidebarIsVisible = true
     private(set) var sidebarWidth: CGFloat = BrowserConstants.sidebarDefaultWidth
     var librarySection: LibrarySection?
+
+    var showTabDock = false
+    var tabDockMode: TabDockMode = .tabs
+    private(set) var lastLibrarySection: LibrarySection = .history
 
     init(isPrivate: Bool = false) {
         self.isPrivate = isPrivate
@@ -43,6 +52,28 @@ final class BrowserController {
 
     func showLibrary(_ section: LibrarySection) {
         librarySection = section
+    }
+
+    func toggleTabDock(_ mode: TabDockMode = .tabs) {
+        if showTabDock && tabDockMode == mode {
+            showTabDock = false
+            return
+        }
+        if case .library(let section) = mode {
+            lastLibrarySection = section
+        }
+        tabDockMode = mode
+        showTabDock = true
+    }
+
+    func open(url: URL) {
+        librarySection = nil
+        showTabDock = false
+        if let selectedTab = tabManager.selectedTab {
+            selectedTab.navigation.load(url)
+        } else {
+            tabManager.newTab(url: url)
+        }
     }
 
     func navigate(to input: String) {

@@ -78,6 +78,7 @@ struct BrowserWindowRoot: View {
                 guard isKeyWindow else { return }
                 window?.zoom(nil)
             }
+            .modifier(DockCommandHandlers(controller: controller, isKeyWindow: isKeyWindow))
             .onDisappear {
                 if !controller.isPrivate {
                     SessionStore.shared.unregister(controller)
@@ -100,6 +101,23 @@ struct BrowserWindowRoot: View {
         case "light": return .light
         case "dark": return .dark
         default: return nil
+        }
+    }
+}
+
+/// Keeps the long `onReceive` chain out of `BrowserWindowRoot.body` so the
+/// type checker stays fast.
+private struct DockCommandHandlers: ViewModifier {
+    let controller: BrowserController
+    let isKeyWindow: Bool
+
+    func body(content: Content) -> some View {
+        content.onReceive(NotificationCenter.default.publisher(for: .openmxcTabDock)) { notification in
+            guard isKeyWindow else { return }
+            let mode: TabDockMode = notification.userInfo?["mode"] as? String == "library"
+                ? .library(controller.lastLibrarySection)
+                : .tabs
+            controller.toggleTabDock(mode)
         }
     }
 }

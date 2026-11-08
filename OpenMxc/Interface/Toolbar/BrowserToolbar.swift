@@ -57,6 +57,15 @@ struct BrowserToolbar: View {
             shareButton
 
             Button {
+                controller.toggleTabDock(.tabs)
+            } label: {
+                Image(systemName: "rectangle.stack")
+            }
+            .buttonStyle(.borderless)
+            .help("Tab Switcher")
+            .accessibilityLabel("Tab Switcher")
+
+            Button {
                 appTheme = colorScheme == .dark ? "light" : "dark"
             } label: {
                 Image(systemName: colorScheme == .dark ? "sun.max" : "moon")

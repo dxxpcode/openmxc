@@ -12,5 +12,10 @@ struct MainWindowView: View {
             minWidth: BrowserConstants.minimumWindowWidth,
             minHeight: BrowserConstants.minimumWindowHeight
         )
+        .overlay(alignment: .bottom) {
+            if controller.showTabDock {
+                TabDockView()
+            }
+        }
     }
 }
