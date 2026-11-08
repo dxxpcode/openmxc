@@ -4,13 +4,19 @@ import SwiftUI
 @MainActor
 final class BrowserController {
     let tabManager = TabManager()
-    let favorites = FavoritesStore()
+    let favorites = FavoritesStore.shared
 
     var sidebarIsVisible = true
     private(set) var sidebarWidth: CGFloat = BrowserConstants.sidebarDefaultWidth
+    var librarySection: LibrarySection?
 
     init() {
-        applyStressTabsArgumentIfPresent()
+        if hasStressTabsArgument {
+            applyStressTabsArgumentIfPresent()
+        } else if let savedWindow = SessionStore.shared.nextWindowSession() {
+            tabManager.restoreWindow(savedWindow)
+        }
+        SessionStore.shared.register(self)
     }
 
     var selectedNavigation: NavigationManager? {
@@ -30,7 +36,12 @@ final class BrowserController {
         )
     }
 
+    func showLibrary(_ section: LibrarySection) {
+        librarySection = section
+    }
+
     func navigate(to input: String) {
+        librarySection = nil
         guard let url = SearchService.resolve(input) else { return }
         if let selectedTab = tabManager.selectedTab {
             selectedTab.navigation.load(url)
@@ -40,6 +51,7 @@ final class BrowserController {
     }
 
     func newTab() {
+        librarySection = nil
         tabManager.newTab()
     }
 
@@ -49,10 +61,12 @@ final class BrowserController {
     }
 
     func selectTab(at index: Int) {
+        librarySection = nil
         tabManager.selectTab(at: index)
     }
 
     func selectAdjacentTab(_ offset: Int) {
+        librarySection = nil
         tabManager.selectAdjacentTab(offset)
     }
 
@@ -73,11 +87,16 @@ final class BrowserController {
     }
 
     func openFavorite(_ favorite: Favorite) {
+        librarySection = nil
         if let selectedTab = tabManager.selectedTab {
             selectedTab.navigation.load(favorite.url)
         } else {
             tabManager.newTab(url: favorite.url)
         }
+    }
+
+    var hasStressTabsArgument: Bool {
+        ProcessInfo.processInfo.arguments.contains { $0.hasPrefix("--stress-tabs=") }
     }
 
     private func applyStressTabsArgumentIfPresent() {

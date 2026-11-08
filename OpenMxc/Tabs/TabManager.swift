@@ -43,12 +43,14 @@ final class TabManager {
         if wasSelected {
             let nextIndex = min(index, tabs.count - 1)
             selectedTabID = tabs[nextIndex].id
+            tabs[nextIndex].activate()
         }
     }
 
     func select(_ tab: TabModel) {
         guard tabs.contains(where: { $0.id == tab.id }) else { return }
         selectedTabID = tab.id
+        tab.activate()
     }
 
     func togglePin(_ tab: TabModel) {
@@ -79,9 +81,32 @@ final class TabManager {
         newTab()
     }
 
+    /// Replaces all tabs with a restored session. Only the selected tab gets a URL
+    /// to load immediately; the rest load lazily when selected.
+    func restoreWindow(_ savedWindow: SavedWindow) {
+        tabs.forEach { $0.navigation.webView.stopLoading() }
+        tabs.removeAll()
+
+        for savedTab in savedWindow.tabs {
+            let tab = TabModel()
+            tab.restore(url: savedTab.url, title: savedTab.title, isPinned: savedTab.isPinned, isMuted: savedTab.isMuted)
+            tabs.append(tab)
+        }
+
+        if tabs.isEmpty {
+            newTab()
+            return
+        }
+
+        let clamped = min(max(savedWindow.selectedIndex, 0), tabs.count - 1)
+        selectedTabID = tabs[clamped].id
+        tabs[clamped].activate()
+    }
+
     func selectTab(at index: Int) {
         guard tabs.indices.contains(index) else { return }
         selectedTabID = tabs[index].id
+        tabs[index].activate()
     }
 
     func selectAdjacentTab(_ offset: Int) {

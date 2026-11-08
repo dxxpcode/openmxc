@@ -57,10 +57,9 @@ struct TabSidebarView: View {
         VStack(alignment: .leading, spacing: 2) {
             sectionHeader("Library")
 
-            libraryRow("bookmark", "Bookmarks")
-            libraryRow("text.bookmark", "Reading List")
-            libraryRow("clock", "History")
-            libraryRow("arrow.down.circle", "Downloads")
+            ForEach(LibrarySection.allCases) { section in
+                libraryRow(section)
+            }
         }
         .padding(.horizontal, 8)
     }
@@ -74,13 +73,15 @@ struct TabSidebarView: View {
             .padding(.bottom, 4)
     }
 
-    private func libraryRow(_ symbol: String, _ title: String) -> some View {
-        Label(title, systemImage: symbol)
-            .font(.callout)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 5)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
-            .disabled(true)
+    private func libraryRow(_ section: LibrarySection) -> some View {
+        Button {
+            controller.showLibrary(section)
+        } label: {
+            Label(section.title, systemImage: section.symbol)
+                .font(.callout)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }

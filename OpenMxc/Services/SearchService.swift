@@ -7,11 +7,30 @@ struct SearchEngine: Identifiable, Hashable {
 }
 
 enum SearchService {
-    static let defaultEngine = SearchEngine(
+    /// Fallback used when the database is unavailable (e.g. unit tests).
+    static let fallbackEngine = SearchEngine(
         id: "duckduckgo",
         name: "DuckDuckGo",
         template: "https://duckduckgo.com/?q={query}"
     )
+
+    static var defaultEngine: SearchEngine {
+        configuredDefaultEngine()
+    }
+
+    static func configuredDefaultEngine(database: Database? = nil) -> SearchEngine {
+        let db = database ?? Database.shared
+        guard let row = try? db.query("""
+                  SELECT id, name, search_url_template FROM search_engines
+                  WHERE is_default = 1 LIMIT 1
+                  """).first,
+              let id = row["id"]?.string,
+              let name = row["name"]?.string,
+              let template = row["search_url_template"]?.string,
+              template.contains("{query}")
+        else { return fallbackEngine }
+        return SearchEngine(id: id, name: name, template: template)
+    }
 
     static func resolve(_ input: String) -> URL? {
         let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
