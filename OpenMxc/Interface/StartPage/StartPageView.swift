@@ -227,7 +227,7 @@ private struct TopSiteTileView<MenuContent: View>: View {
     private var iconView: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color.primary.opacity(isHovered ? 0.05 : 0.03))
+                .fill(Color.primary.opacity(fillOpacity))
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .strokeBorder(borderColor, lineWidth: 0.5)
             if let icon {
@@ -250,9 +250,17 @@ private struct TopSiteTileView<MenuContent: View>: View {
         .animation(.easeOut(duration: 0.18), value: isHovered)
     }
 
+    private var fillOpacity: Double {
+        if colorScheme == .dark {
+            return isHovered ? 0.1 : 0.07
+        }
+        return isHovered ? 0.05 : 0.03
+    }
+
     private var borderColor: Color {
-        isHovered
-            ? Color.primary.opacity(0.28)
-            : (colorScheme == .dark ? Color.primary.opacity(0.12) : Color.primary.opacity(0.09))
+        if isHovered {
+            return Color.primary.opacity(colorScheme == .dark ? 0.35 : 0.28)
+        }
+        return Color.primary.opacity(colorScheme == .dark ? 0.16 : 0.09)
     }
 }
