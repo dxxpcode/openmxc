@@ -14,6 +14,10 @@ struct ContentAreaView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(canvasColor)
+        .overlay(alignment: .top) {
+            loadingBar
+        }
+        .animation(.easeInOut(duration: 0.2), value: controller.selectedNavigation?.isLoading ?? false)
         .onChange(of: controller.tabManager.selectedTabID) { _, _ in
             controller.librarySection = nil
         }
@@ -21,6 +25,26 @@ struct ContentAreaView: View {
 
     private var canvasColor: Color {
         colorScheme == .dark ? .black : Color(nsColor: .windowBackgroundColor)
+    }
+
+    @ViewBuilder
+    private var loadingBar: some View {
+        let isLoading = controller.selectedNavigation?.isLoading ?? false
+        if isLoading {
+            TimelineView(.animation) { timeline in
+                GeometryReader { geometry in
+                    let period = 1.4
+                    let t = timeline.date.timeIntervalSinceReferenceDate
+                        .truncatingRemainder(dividingBy: period) / period
+                    Capsule()
+                        .fill(Color.accentColor)
+                        .frame(width: geometry.size.width * 0.3, height: 2)
+                        .offset(x: geometry.size.width * CGFloat(0.7 * t - 0.15))
+                }
+                .frame(height: 2)
+            }
+            .transition(.opacity)
+        }
     }
 
     @ViewBuilder
