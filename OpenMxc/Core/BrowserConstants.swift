@@ -10,5 +10,4 @@ enum BrowserConstants {
     static let sidebarDefaultWidth: CGFloat = 220
     static let sidebarMinimumWidth: CGFloat = 180
     static let sidebarMaximumWidth: CGFloat = 320
-    static let toolbarHeight: CGFloat = 48
 }

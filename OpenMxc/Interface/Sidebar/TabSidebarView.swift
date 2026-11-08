@@ -6,15 +6,12 @@ struct TabSidebarView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
-            Divider()
             tabsList
                 .padding(.top, 8)
             Spacer()
-            Divider()
             librarySection
                 .padding(.vertical, 8)
         }
-        .background(.regularMaterial)
     }
 
     private var header: some View {
