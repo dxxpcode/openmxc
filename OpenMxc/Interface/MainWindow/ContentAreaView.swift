@@ -8,7 +8,7 @@ struct ContentAreaView: View {
             if let tab = controller.tabManager.selectedTab {
                 content(for: tab)
             } else {
-                startPagePlaceholder
+                StartPageView()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -26,24 +26,7 @@ struct ContentAreaView: View {
             WebViewContainer(webView: navigation.webView)
                 .id(tab.id)
         } else {
-            startPagePlaceholder
-        }
-    }
-
-    private var startPagePlaceholder: some View {
-        VStack(spacing: 20) {
-            Image("OpenMxcLogo")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 72, height: 72)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-
-            Text(BrowserConfiguration.applicationName)
-                .font(.system(size: 28, weight: .semibold))
-
-            Text("A quiet place to browse.")
-                .font(.body)
-                .foregroundStyle(.secondary)
+            StartPageView()
         }
     }
 
