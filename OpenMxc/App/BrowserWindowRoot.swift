@@ -6,5 +6,8 @@ struct BrowserWindowRoot: View {
     var body: some View {
         MainWindowView()
             .environment(controller)
+            .onDisappear {
+                SessionStore.shared.unregister(controller)
+            }
     }
 }

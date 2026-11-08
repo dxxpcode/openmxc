@@ -4,7 +4,7 @@ import XCTest
 @MainActor
 final class FavoritesStoreTests: XCTestCase {
     private func makeStore() -> FavoritesStore {
-        FavoritesStore()
+        FavoritesStore(database: nil)
     }
 
     func testAddAppendsWithSequentialPositions() {

@@ -16,8 +16,14 @@ final class NavigationManager: NSObject {
     private(set) var webContentCrashed = false
 
     private(set) var lastLoadedURL: URL?
+    var isPrivateBrowsing = false
 
     private var observations: [NSKeyValueObservation] = []
+    private var pendingMainFrameNavigation = false
+    private var pendingDownloadURL: URL?
+    private var activeDownload: WKDownload?
+    private var activeDownloadItemID: String?
+    private var activeDownloadDestination: URL?
 
     override init() {
         webView = WebViewFactory.makeWebView()
@@ -117,11 +123,13 @@ extension NavigationManager: WKNavigationDelegate {
         }
 
         if navigationAction.targetFrame == nil {
+            pendingMainFrameNavigation = true
             webView.load(navigationAction.request)
             decisionHandler(.cancel)
             return
         }
 
+        pendingMainFrameNavigation = navigationAction.targetFrame?.isMainFrame ?? false
         decisionHandler(.allow)
     }
 
@@ -136,6 +144,53 @@ extension NavigationManager: WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         hasCommittedNavigation = true
+        if pendingMainFrameNavigation {
+            pendingMainFrameNavigation = false
+            recordHistoryIfNeeded()
+        }
+    }
+
+    func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
+        download.delegate = self
+    }
+
+    func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
+        download.delegate = self
+    }
+
+    func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationResponse: WKNavigationResponse,
+        decisionHandler: @escaping @MainActor (WKNavigationResponsePolicy) -> Void
+    ) {
+        if navigationResponse.canShowMIMEType {
+            pendingDownloadURL = nil
+            decisionHandler(.allow)
+        } else {
+            pendingDownloadURL = navigationResponse.response.url
+            decisionHandler(.download)
+        }
+    }
+
+    private func recordHistoryIfNeeded() {
+        guard !isPrivateBrowsing,
+              let url = webView.url,
+              let scheme = url.scheme?.lowercased(),
+              scheme == "http" || scheme == "https"
+        else { return }
+        HistoryStore.shared.record(url: url, title: webView.title ?? pageTitle)
+    }
+
+    func cancelDownload(itemID: String) -> Bool {
+        guard activeDownloadItemID == itemID, let download = activeDownload else { return false }
+        download.cancel()
+        activeDownload = nil
+        activeDownloadItemID = nil
+        activeDownloadDestination = nil
+        if let item = DownloadStore.shared.items.first(where: { $0.id == itemID }) {
+            DownloadStore.shared.update(item, status: .cancelled, completedAt: Date())
+        }
+        return true
     }
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
@@ -235,5 +290,87 @@ extension NavigationManager: WKUIDelegate {
         panel.begin { response in
             completionHandler(response == .OK ? panel.urls : nil)
         }
+    }
+}
+
+extension NavigationManager: WKDownloadDelegate {
+    func download(
+        _ download: WKDownload,
+        decideDestinationUsing response: URLResponse,
+        suggestedFilename: String,
+        completionHandler: @escaping @MainActor (URL?) -> Void
+    ) {
+        activeDownload = download
+
+        let url = pendingDownloadURL ?? response.url ?? URL(fileURLWithPath: "/")
+        let item = DownloadStore.shared.begin(url: url, suggestedFilename: suggestedFilename)
+        activeDownloadItemID = item.id
+        pendingDownloadURL = nil
+
+        let destination = Self.uniqueDestination(in: Self.downloadsDirectory, filename: suggestedFilename)
+        activeDownloadDestination = destination
+        completionHandler(destination)
+    }
+
+    func download(_ download: WKDownload, didReceive response: URLResponse) {
+        guard let itemID = activeDownloadItemID,
+              let item = DownloadStore.shared.items.first(where: { $0.id == itemID })
+        else { return }
+        let total = response.expectedContentLength > 0 ? response.expectedContentLength : nil
+        DownloadStore.shared.updateProgress(item, bytesReceived: 0, totalBytes: total)
+    }
+
+    func download(
+        _ download: WKDownload,
+        didWriteData bytesWritten: Int64,
+        totalBytesWritten: Int64,
+        totalBytesExpectedToWrite: Int64
+    ) {
+        guard let itemID = activeDownloadItemID,
+              let item = DownloadStore.shared.items.first(where: { $0.id == itemID })
+        else { return }
+        let total = totalBytesExpectedToWrite > 0 ? totalBytesExpectedToWrite : nil
+        DownloadStore.shared.updateProgress(item, bytesReceived: totalBytesWritten, totalBytes: total)
+    }
+
+    func downloadDidFinish(_ download: WKDownload) {
+        completeActiveDownload(status: .completed)
+    }
+
+    func download(_ download: WKDownload, didFailWithError error: Error, resumeData: Data?) {
+        completeActiveDownload(status: .failed)
+    }
+
+    private func completeActiveDownload(status: DownloadStatus) {
+        guard let itemID = activeDownloadItemID,
+              let item = DownloadStore.shared.items.first(where: { $0.id == itemID })
+        else { return }
+        activeDownload = nil
+        activeDownloadItemID = nil
+        DownloadStore.shared.update(
+            item,
+            status: status,
+            destinationPath: activeDownloadDestination?.path,
+            completedAt: Date()
+        )
+        activeDownloadDestination = nil
+    }
+
+    private static var downloadsDirectory: URL {
+        FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+    }
+
+    private static func uniqueDestination(in directory: URL, filename: String) -> URL {
+        let base = (filename as NSString).deletingPathExtension
+        let ext = (filename as NSString).pathExtension
+        var candidate = directory.appendingPathComponent(filename)
+        var counter = 1
+        while FileManager.default.fileExists(atPath: candidate.path) {
+            let name = ext.isEmpty ? "\(base) (\(counter))" : "\(base) (\(counter)).\(ext)"
+            candidate = directory.appendingPathComponent(name)
+            counter += 1
+        }
+        return candidate
     }
 }

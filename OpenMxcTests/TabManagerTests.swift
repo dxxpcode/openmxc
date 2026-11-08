@@ -70,4 +70,40 @@ final class TabManagerTests: XCTestCase {
         XCTAssertEqual(manager.selectedTabID, second.id)
         _ = third
     }
+
+    func testRestoreWindowSelectsSavedTabAndDefersLoading() {
+        let manager = TabManager()
+        manager.tabs.forEach { $0.navigation.webView.stopLoading() }
+
+        let saved = SavedWindow(
+            tabs: [
+                SavedTab(url: URL(string: "https://one.example")!, title: "One", isPinned: true, isMuted: false),
+                SavedTab(url: URL(string: "https://two.example")!, title: "Two", isPinned: false, isMuted: false),
+            ],
+            selectedIndex: 1
+        )
+        manager.restoreWindow(saved)
+
+        XCTAssertEqual(manager.tabs.count, 2)
+        XCTAssertEqual(manager.selectedTab?.pendingURL, nil)
+        XCTAssertEqual(manager.tabs[0].pendingURL?.absoluteString, "https://one.example")
+        XCTAssertTrue(manager.tabs[0].isPinned)
+    }
+
+    func testSelectTabActivatesPendingURL() {
+        let manager = TabManager()
+        manager.tabs.forEach { $0.navigation.webView.stopLoading() }
+
+        manager.restoreWindow(SavedWindow(
+            tabs: [
+                SavedTab(url: URL(string: "https://one.example")!, title: nil, isPinned: false, isMuted: false),
+                SavedTab(url: URL(string: "https://two.example")!, title: nil, isPinned: false, isMuted: false),
+            ],
+            selectedIndex: 0
+        ))
+
+        XCTAssertNil(manager.tabs[0].pendingURL)
+        manager.selectTab(at: 1)
+        XCTAssertNil(manager.tabs[1].pendingURL)
+    }
 }

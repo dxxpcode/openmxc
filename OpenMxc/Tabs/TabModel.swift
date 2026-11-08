@@ -23,7 +23,7 @@ final class TabModel: Identifiable {
     var displayTitle: String {
         if let customTitle, !customTitle.isEmpty { return customTitle }
         if !navigation.pageTitle.isEmpty { return navigation.pageTitle }
-        if let host = navigation.currentURL?.host() { return host }
+        if let host = navigation.currentURL?.host() ?? pendingURL?.host() { return host }
         return "New Tab"
     }
 
@@ -32,6 +32,27 @@ final class TabModel: Identifiable {
     }
 
     var isLoading: Bool { navigation.isLoading }
+
+    /// URL to load when the tab is first selected (session restoration).
+    /// Loads lazily so restoring a session does not spin up every web view at once.
+    private(set) var pendingURL: URL?
+
+    func activate() {
+        guard let url = pendingURL else { return }
+        pendingURL = nil
+        navigation.load(url)
+    }
+
+    func restore(url: URL?, title: String?, isPinned: Bool, isMuted: Bool) {
+        self.isPinned = isPinned
+        pendingURL = url
+        if url == nil {
+            customTitle = title
+        }
+        if isMuted {
+            self.isMuted = true
+        }
+    }
 
     func setMuted(_ muted: Bool) {
         guard muted != isMuted else { return }

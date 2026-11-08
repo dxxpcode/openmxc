@@ -20,6 +20,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.openmxc.browser
         PRODUCT_NAME: OpenMxc
+        OTHER_LDFLAGS: "$(inherited) -lsqlite3"
         INFOPLIST_KEY_CFBundleDisplayName: OPENMXC
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.productivity
         GENERATE_INFOPLIST_FILE: YES
