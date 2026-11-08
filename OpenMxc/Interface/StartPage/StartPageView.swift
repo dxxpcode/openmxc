@@ -190,27 +190,28 @@ private struct TopSiteTileView<MenuContent: View>: View {
     let action: () -> Void
     @ViewBuilder let contextMenu: () -> MenuContent
 
+    @Environment(\.colorScheme) private var colorScheme
     @State private var icon: NSImage?
     @State private var isHovered = false
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(spacing: 10) {
                 iconView
                 Text(site.title)
                     .font(.caption)
+                    .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                    .frame(width: 76)
+                    .frame(width: 84)
             }
         }
         .buttonStyle(.plain)
-        .scaleEffect(isHovered ? 1.05 : 1)
+        .offset(y: isHovered ? -3 : 0)
+        .animation(.easeOut(duration: 0.18), value: isHovered)
         .contentShape(Rectangle())
         .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.12)) {
-                isHovered = hovering
-            }
+            isHovered = hovering
         }
         .contextMenu { contextMenu() }
         .onAppear {
@@ -225,19 +226,33 @@ private struct TopSiteTileView<MenuContent: View>: View {
     @ViewBuilder
     private var iconView: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 13, style: .continuous)
-                .fill(Color.primary.opacity(0.06))
-                .frame(width: 48, height: 48)
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color.primary.opacity(isHovered ? 0.05 : 0.03))
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(borderColor, lineWidth: 0.5)
             if let icon {
                 Image(nsImage: icon)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 26, height: 26)
+                    .frame(width: 30, height: 30)
             } else {
                 Image(systemName: "globe")
-                    .font(.system(size: 19))
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 20, weight: .light))
+                    .foregroundStyle(.tertiary)
             }
         }
+        .frame(width: 56, height: 56)
+        .shadow(
+            color: .black.opacity(isHovered ? (colorScheme == .dark ? 0.4 : 0.1) : 0),
+            radius: isHovered ? 10 : 0,
+            y: isHovered ? 4 : 0
+        )
+        .animation(.easeOut(duration: 0.18), value: isHovered)
+    }
+
+    private var borderColor: Color {
+        isHovered
+            ? Color.primary.opacity(0.28)
+            : (colorScheme == .dark ? Color.primary.opacity(0.12) : Color.primary.opacity(0.09))
     }
 }
