@@ -7,6 +7,7 @@ struct SearchField: View {
     let placeholder: String
     @Binding var text: String
     var height: CGFloat = 32
+    var icon: String = "magnifyingglass"
     var focus: FocusState<Bool>.Binding
     var onSubmit: () -> Void
 
@@ -16,7 +17,7 @@ struct SearchField: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: "magnifyingglass")
+            Image(systemName: icon)
                 .font(.system(size: 12.5, weight: .medium))
                 .foregroundStyle(.secondary)
             TextField(placeholder, text: $text)

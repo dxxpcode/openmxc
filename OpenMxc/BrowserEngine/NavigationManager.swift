@@ -66,6 +66,15 @@ final class NavigationManager: NSObject {
         }
     }
 
+    /// Visible text of the current page, for on-device AI features.
+    /// Returns nil when there is no committed page to read.
+    func pageText() async -> String? {
+        guard hasCommittedNavigation, !webContentCrashed else { return nil }
+        return try? await webView.evaluateJavaScript(
+            "document.body ? document.body.innerText : ''"
+        ) as? String
+    }
+
     private func observeWebView() {
         observations = [
             webView.observe(\.url, options: [.new]) { [weak self] _, _ in
