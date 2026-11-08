@@ -26,6 +26,10 @@ final class PageAIService {
         state = .idle
     }
 
+    func fail(_ message: String) {
+        state = .failed(message)
+    }
+
     func ask(question: String, pageTitle: String, pageURL: URL?, pageText: String) async {
         state = .thinking
         do {

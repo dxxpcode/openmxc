@@ -34,6 +34,11 @@ struct BrowserCommands: Commands {
                 NotificationCenter.default.post(name: .openmxcToggleSidebar, object: nil)
             }
             .keyboardShortcut("s", modifiers: [.control, .command])
+
+            Button("Ask About This Page") {
+                NotificationCenter.default.post(name: .openmxcAskPage, object: nil)
+            }
+            .keyboardShortcut("a", modifiers: [.command, .shift])
         }
 
         CommandGroup(after: .windowList) {
@@ -89,6 +94,7 @@ extension Notification.Name {
     static let openmxcToggleFavorite = Notification.Name("openmxc.toggleFavorite")
     static let openmxcSelectTabIndex = Notification.Name("openmxc.selectTabIndex")
     static let openmxcAddressBarFocus = Notification.Name("openmxc.addressBarFocus")
+    static let openmxcAskPage = Notification.Name("openmxc.askPage")
     static let openmxcMinimizeWindow = Notification.Name("openmxc.minimizeWindow")
     static let openmxcZoomWindow = Notification.Name("openmxc.zoomWindow")
 }

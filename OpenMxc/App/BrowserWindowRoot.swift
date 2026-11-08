@@ -4,6 +4,7 @@ struct BrowserWindowRoot: View {
     @State private var controller: BrowserController
     @AppStorage("appTheme") private var appTheme = "system"
     @State private var showOnboarding = false
+    @State private var showAskPanel = false
     @State private var window: NSWindow?
 
     init(isPrivate: Bool = false) {
@@ -11,7 +12,7 @@ struct BrowserWindowRoot: View {
     }
 
     var body: some View {
-        MainWindowView()
+        MainWindowView(showAskPanel: $showAskPanel)
             .environment(controller)
             .preferredColorScheme(colorScheme)
             .sheet(isPresented: $showOnboarding) {
@@ -56,6 +57,10 @@ struct BrowserWindowRoot: View {
             .onReceive(NotificationCenter.default.publisher(for: .openmxcFocusAddressBar)) { _ in
                 guard isKeyWindow else { return }
                 NotificationCenter.default.post(name: .openmxcAddressBarFocus, object: nil)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcAskPage)) { _ in
+                guard isKeyWindow else { return }
+                showAskPanel = true
             }
             .onReceive(NotificationCenter.default.publisher(for: .openmxcToggleFavorite)) { _ in
                 guard isKeyWindow else { return }
