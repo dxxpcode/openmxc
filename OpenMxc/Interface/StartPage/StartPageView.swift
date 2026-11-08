@@ -231,10 +231,24 @@ private struct TopSiteTileView<MenuContent: View>: View {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .strokeBorder(borderColor, lineWidth: 0.5)
             if let icon {
-                Image(nsImage: icon)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 30, height: 30)
+                if colorScheme == .dark {
+                    // Dark favicons vanish on the dark tile; give them a light
+                    // backing plate, like Safari's dark-mode top sites.
+                    Image(nsImage: icon)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 26, height: 26)
+                        .padding(7)
+                        .background(
+                            Color.white,
+                            in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        )
+                } else {
+                    Image(nsImage: icon)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 30, height: 30)
+                }
             } else {
                 Image(systemName: "globe")
                     .font(.system(size: 20, weight: .light))
