@@ -26,6 +26,7 @@ struct BrowserWindowRoot: View {
                     window?.standardWindowButton(.miniaturizeButton)?.isHidden = true
                     window?.standardWindowButton(.zoomButton)?.isHidden = true
                     window?.isMovableByWindowBackground = true
+                    window?.backgroundColor = isDarkMode ? .black : .windowBackgroundColor
                 }
             }
             .onAppear {
@@ -87,6 +88,14 @@ struct BrowserWindowRoot: View {
 
     private var isKeyWindow: Bool {
         window?.isKeyWindow ?? false
+    }
+
+    private var isDarkMode: Bool {
+        switch appTheme {
+        case "dark": return true
+        case "light": return false
+        default: return UserDefaults.standard.string(forKey: "AppleInterfaceStyle") == "Dark"
+        }
     }
 
     @Environment(\.openWindow) private var openWindow

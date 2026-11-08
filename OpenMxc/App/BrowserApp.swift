@@ -10,6 +10,7 @@ struct BrowserApp: App {
         }
         .defaultSize(width: BrowserConstants.defaultWindowWidth, height: BrowserConstants.defaultWindowHeight)
         .windowResizability(.contentMinSize)
+        .windowStyle(.hiddenTitleBar)
         .commands { BrowserCommands() }
 
         WindowGroup(id: BrowserConstants.privateWindowID) {
@@ -17,6 +18,7 @@ struct BrowserApp: App {
         }
         .defaultSize(width: BrowserConstants.defaultWindowWidth, height: BrowserConstants.defaultWindowHeight)
         .windowResizability(.contentMinSize)
+        .windowStyle(.hiddenTitleBar)
 
         Settings {
             SettingsView()
