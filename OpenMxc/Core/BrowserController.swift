@@ -45,7 +45,30 @@ final class BrowserController {
 
     func navigate(to input: String) {
         librarySection = nil
-        guard let url = SearchService.resolve(input) else { return }
+        let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        navigationToken = UUID()
+        let token = navigationToken
+
+        if SearchService.directURL(for: trimmed) != nil {
+            loadResolved(SearchService.resolve(trimmed), token: token)
+            return
+        }
+
+        Task { @MainActor in
+            if let url = await SmartAddressService.shared.resolve(query: trimmed) {
+                loadResolved(url, token: token)
+            } else if let url = SearchService.resolve(trimmed) {
+                loadResolved(url, token: token)
+            }
+        }
+    }
+
+    private var navigationToken = UUID()
+
+    private func loadResolved(_ url: URL?, token: UUID) {
+        guard token == navigationToken, let url else { return }
         if let selectedTab = tabManager.selectedTab {
             selectedTab.navigation.load(url)
         } else {

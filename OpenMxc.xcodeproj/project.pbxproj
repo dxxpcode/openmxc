@@ -53,6 +53,7 @@
 		EBB2E26D0BDFD78B1A4E3611 /* PageAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DA5108058283FA7A64AD0D /* PageAIService.swift */; };
 		EF8F9D951A5025032AD9EF06 /* DatabaseStoresTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90A293463791001B41E3983B /* DatabaseStoresTests.swift */; };
 		F0E26357B75BC55D22F23926 /* DownloadCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60993A0BCCD0080C9D23C7D /* DownloadCoordinator.swift */; };
+		F22660EF20CA7CF128E7E19D /* SmartAddressService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FEAC6C9A39408F093BF863 /* SmartAddressService.swift */; };
 		FAD8DEAA9788981FFE547F82 /* BrowserApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A3B5E16EA85E704AADBF99 /* BrowserApp.swift */; };
 		FF90F03E8EDA75A4E72CB3CF /* WebsiteDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF0DCD9B52AB00381A648F1E /* WebsiteDataManager.swift */; };
 /* End PBXBuildFile section */
@@ -116,6 +117,7 @@
 		E4117693A5112344D61F28DC /* HistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryStore.swift; sourceTree = "<group>"; };
 		F3950AFC01E0F69E6438F432 /* OpenMxc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenMxc.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F60993A0BCCD0080C9D23C7D /* DownloadCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadCoordinator.swift; sourceTree = "<group>"; };
+		F7FEAC6C9A39408F093BF863 /* SmartAddressService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartAddressService.swift; sourceTree = "<group>"; };
 		FC934E4E8F98F53868D70C36 /* BrowserCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserCommands.swift; sourceTree = "<group>"; };
 		FDE10E591D6AF94F6E726C7B /* WindowAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowAccessor.swift; sourceTree = "<group>"; };
 		FFA1B83CBDB787537D20DA13 /* FavoritesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesStore.swift; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 				8E0F8314192D4862420953FB /* BrowserError.swift */,
 				52B5E14C36AEE1EF63A934DF /* LibrarySection.swift */,
 				C1DA5108058283FA7A64AD0D /* PageAIService.swift */,
+				F7FEAC6C9A39408F093BF863 /* SmartAddressService.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -444,6 +447,7 @@
 				9BAF7F12F1079080D9EC015F /* SessionStore.swift in Sources */,
 				D6F3388F6C04DCFFB602980A /* SettingsStore.swift in Sources */,
 				35F40188366162674D3DCB09 /* SettingsView.swift in Sources */,
+				F22660EF20CA7CF128E7E19D /* SmartAddressService.swift in Sources */,
 				404024A5777FC723DB3B735A /* StartPageView.swift in Sources */,
 				31EB46F736451E1E84AD5FDD /* TabManager.swift in Sources */,
 				11039824BFFD3235761341A7 /* TabModel.swift in Sources */,
