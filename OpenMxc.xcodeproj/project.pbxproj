@@ -1,0 +1,507 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		07B86C3373F7B0511C12E988 /* TabSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E0D98E4278AE1CADB1AA40C /* TabSidebarView.swift */; };
+		0D6D99F86363C163477CE08A /* ContentAreaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1AA071D44ED3A5D457B73D /* ContentAreaView.swift */; };
+		2230F9199412B0AE62F4C041 /* BrowserToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C79D8F145FBC8FCAE9F845 /* BrowserToolbar.swift */; };
+		2820B5C2CC95314AD46DAA3C /* BrowserControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43244295502BA14D9D7784E1 /* BrowserControllerTests.swift */; };
+		2E6BF3721A1AB2821148FA36 /* MainWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685955B2CDA71C1CA570C436 /* MainWindowView.swift */; };
+		4F54928BA8F57C4C7C935211 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8932A81CA4AB8B508CF13C /* AppDelegate.swift */; };
+		5E8C880F82333525A84AAF4C /* BrowserConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CF5635ECF51CBB9913ED7D /* BrowserConstants.swift */; };
+		617B6CE9C0FAE8FE96E0020C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9BC1CCE68ED23040A05E215F /* Assets.xcassets */; };
+		7C1E5F437A41B8DB51F3D0EB /* BrowserError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0F8314192D4862420953FB /* BrowserError.swift */; };
+		998C82B1AB88ACA398A59AE2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 45E0032D6467DE1DA182D8AE /* PrivacyInfo.xcprivacy */; };
+		C05BB93499AA0D4848A3D276 /* BrowserConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64D36C930F561CC83CE806EB /* BrowserConfiguration.swift */; };
+		EB67C31D16188A736EFAB9C0 /* BrowserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16B780C6242274D68414F4BD /* BrowserController.swift */; };
+		FAD8DEAA9788981FFE547F82 /* BrowserApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A3B5E16EA85E704AADBF99 /* BrowserApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		955ECBF022E65100B4AA5972 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7D09B8766998978ED388E8D4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 035186A6A7BED2BFA1E09FB4;
+			remoteInfo = OpenMxc;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		16B780C6242274D68414F4BD /* BrowserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserController.swift; sourceTree = "<group>"; };
+		1C1A9C8ACFA67E3B6608D888 /* OpenMxcTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenMxcTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F1AA071D44ED3A5D457B73D /* ContentAreaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentAreaView.swift; sourceTree = "<group>"; };
+		43244295502BA14D9D7784E1 /* BrowserControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserControllerTests.swift; sourceTree = "<group>"; };
+		45E0032D6467DE1DA182D8AE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		52CF5635ECF51CBB9913ED7D /* BrowserConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserConstants.swift; sourceTree = "<group>"; };
+		5E8932A81CA4AB8B508CF13C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		64D36C930F561CC83CE806EB /* BrowserConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserConfiguration.swift; sourceTree = "<group>"; };
+		685955B2CDA71C1CA570C436 /* MainWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowView.swift; sourceTree = "<group>"; };
+		77C7ACB3EF58978EB1655B19 /* OpenMxc.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OpenMxc.entitlements; sourceTree = "<group>"; };
+		88A3B5E16EA85E704AADBF99 /* BrowserApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserApp.swift; sourceTree = "<group>"; };
+		8E0F8314192D4862420953FB /* BrowserError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserError.swift; sourceTree = "<group>"; };
+		9BC1CCE68ED23040A05E215F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9E0D98E4278AE1CADB1AA40C /* TabSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabSidebarView.swift; sourceTree = "<group>"; };
+		C3C79D8F145FBC8FCAE9F845 /* BrowserToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserToolbar.swift; sourceTree = "<group>"; };
+		F3950AFC01E0F69E6438F432 /* OpenMxc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenMxc.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		093BADD2DB81FA85117D4666 /* Interface */ = {
+			isa = PBXGroup;
+			children = (
+				FDDFD33ABD21F9D27ADF8F78 /* MainWindow */,
+				EFA3CBE1A99192F693A32190 /* Sidebar */,
+				2BC2D93A2520A63CD43CD32A /* Toolbar */,
+			);
+			path = Interface;
+			sourceTree = "<group>";
+		};
+		0C3D8DC367E0380726B2E736 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				64D36C930F561CC83CE806EB /* BrowserConfiguration.swift */,
+				52CF5635ECF51CBB9913ED7D /* BrowserConstants.swift */,
+				16B780C6242274D68414F4BD /* BrowserController.swift */,
+				8E0F8314192D4862420953FB /* BrowserError.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		2B392293568A1DFC06538C8A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F3950AFC01E0F69E6438F432 /* OpenMxc.app */,
+				1C1A9C8ACFA67E3B6608D888 /* OpenMxcTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2BC2D93A2520A63CD43CD32A /* Toolbar */ = {
+			isa = PBXGroup;
+			children = (
+				C3C79D8F145FBC8FCAE9F845 /* BrowserToolbar.swift */,
+			);
+			path = Toolbar;
+			sourceTree = "<group>";
+		};
+		4A5F5D62A54B89DB4720A0A6 /* OpenMxcTests */ = {
+			isa = PBXGroup;
+			children = (
+				43244295502BA14D9D7784E1 /* BrowserControllerTests.swift */,
+			);
+			path = OpenMxcTests;
+			sourceTree = "<group>";
+		};
+		502B4A35D618F8C59015CBC4 = {
+			isa = PBXGroup;
+			children = (
+				E3860809F84A554B0C39FEC9 /* OpenMxc */,
+				4A5F5D62A54B89DB4720A0A6 /* OpenMxcTests */,
+				2B392293568A1DFC06538C8A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		80F9F62215E8AA9E60DD90C0 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				5E8932A81CA4AB8B508CF13C /* AppDelegate.swift */,
+				88A3B5E16EA85E704AADBF99 /* BrowserApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A3EDC2B7CAECDD773BD485DE /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9BC1CCE68ED23040A05E215F /* Assets.xcassets */,
+				45E0032D6467DE1DA182D8AE /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		E3860809F84A554B0C39FEC9 /* OpenMxc */ = {
+			isa = PBXGroup;
+			children = (
+				77C7ACB3EF58978EB1655B19 /* OpenMxc.entitlements */,
+				80F9F62215E8AA9E60DD90C0 /* App */,
+				0C3D8DC367E0380726B2E736 /* Core */,
+				093BADD2DB81FA85117D4666 /* Interface */,
+				A3EDC2B7CAECDD773BD485DE /* Resources */,
+			);
+			path = OpenMxc;
+			sourceTree = "<group>";
+		};
+		EFA3CBE1A99192F693A32190 /* Sidebar */ = {
+			isa = PBXGroup;
+			children = (
+				9E0D98E4278AE1CADB1AA40C /* TabSidebarView.swift */,
+			);
+			path = Sidebar;
+			sourceTree = "<group>";
+		};
+		FDDFD33ABD21F9D27ADF8F78 /* MainWindow */ = {
+			isa = PBXGroup;
+			children = (
+				1F1AA071D44ED3A5D457B73D /* ContentAreaView.swift */,
+				685955B2CDA71C1CA570C436 /* MainWindowView.swift */,
+			);
+			path = MainWindow;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		035186A6A7BED2BFA1E09FB4 /* OpenMxc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DC5A0857334DF08A2D163D89 /* Build configuration list for PBXNativeTarget "OpenMxc" */;
+			buildPhases = (
+				348E5C1D364BAEE2E9E2FE8A /* Sources */,
+				64CF4AAF145653EABEAEA3F0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OpenMxc;
+			packageProductDependencies = (
+			);
+			productName = OpenMxc;
+			productReference = F3950AFC01E0F69E6438F432 /* OpenMxc.app */;
+			productType = "com.apple.product-type.application";
+		};
+		5B8CA58BBEC68C6CB590D4F5 /* OpenMxcTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 96295CE7803BEC75089C6ED3 /* Build configuration list for PBXNativeTarget "OpenMxcTests" */;
+			buildPhases = (
+				BB1512241B07238C31E2FFDC /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				202BF2C8E151349A6EAFDF49 /* PBXTargetDependency */,
+			);
+			name = OpenMxcTests;
+			packageProductDependencies = (
+			);
+			productName = OpenMxcTests;
+			productReference = 1C1A9C8ACFA67E3B6608D888 /* OpenMxcTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7D09B8766998978ED388E8D4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					035186A6A7BED2BFA1E09FB4 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 10A11C5CA1100398D6845831 /* Build configuration list for PBXProject "OpenMxc" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 502B4A35D618F8C59015CBC4;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 2B392293568A1DFC06538C8A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				035186A6A7BED2BFA1E09FB4 /* OpenMxc */,
+				5B8CA58BBEC68C6CB590D4F5 /* OpenMxcTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		64CF4AAF145653EABEAEA3F0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				617B6CE9C0FAE8FE96E0020C /* Assets.xcassets in Resources */,
+				998C82B1AB88ACA398A59AE2 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		348E5C1D364BAEE2E9E2FE8A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F54928BA8F57C4C7C935211 /* AppDelegate.swift in Sources */,
+				FAD8DEAA9788981FFE547F82 /* BrowserApp.swift in Sources */,
+				C05BB93499AA0D4848A3D276 /* BrowserConfiguration.swift in Sources */,
+				5E8C880F82333525A84AAF4C /* BrowserConstants.swift in Sources */,
+				EB67C31D16188A736EFAB9C0 /* BrowserController.swift in Sources */,
+				7C1E5F437A41B8DB51F3D0EB /* BrowserError.swift in Sources */,
+				2230F9199412B0AE62F4C041 /* BrowserToolbar.swift in Sources */,
+				0D6D99F86363C163477CE08A /* ContentAreaView.swift in Sources */,
+				2E6BF3721A1AB2821148FA36 /* MainWindowView.swift in Sources */,
+				07B86C3373F7B0511C12E988 /* TabSidebarView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB1512241B07238C31E2FFDC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2820B5C2CC95314AD46DAA3C /* BrowserControllerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		202BF2C8E151349A6EAFDF49 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 035186A6A7BED2BFA1E09FB4 /* OpenMxc */;
+			targetProxy = 955ECBF022E65100B4AA5972 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		073430E29FD96AF2FA51A988 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		3BF10DE5EF7149C11B8A4F40 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.openmxc.OpenMxcTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenMxc.app/Contents/MacOS/OpenMxc";
+			};
+			name = Release;
+		};
+		4383DF4646B8CF1F4B14D4CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		C4B65682598B529D4744D392 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = OpenMxc/OpenMxc.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = OPENMXC;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.openmxc.browser;
+				PRODUCT_NAME = OpenMxc;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C86136E5A409D2F308C3276C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.openmxc.OpenMxcTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenMxc.app/Contents/MacOS/OpenMxc";
+			};
+			name = Debug;
+		};
+		F4E2B868055936563338ADD8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = OpenMxc/OpenMxc.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = OPENMXC;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.openmxc.browser;
+				PRODUCT_NAME = OpenMxc;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		10A11C5CA1100398D6845831 /* Build configuration list for PBXProject "OpenMxc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				073430E29FD96AF2FA51A988 /* Debug */,
+				4383DF4646B8CF1F4B14D4CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		96295CE7803BEC75089C6ED3 /* Build configuration list for PBXNativeTarget "OpenMxcTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C86136E5A409D2F308C3276C /* Debug */,
+				3BF10DE5EF7149C11B8A4F40 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DC5A0857334DF08A2D163D89 /* Build configuration list for PBXNativeTarget "OpenMxc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4E2B868055936563338ADD8 /* Debug */,
+				C4B65682598B529D4744D392 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7D09B8766998978ED388E8D4 /* Project object */;
+}
