@@ -15,9 +15,7 @@ final class BrowserController {
         self.isPrivate = isPrivate
         self.tabManager = TabManager(isPrivate: isPrivate)
         if !isPrivate {
-            if hasStressTabsArgument {
-                applyStressTabsArgumentIfPresent()
-            } else if let savedWindow = SessionStore.shared.nextWindowSession() {
+            if let savedWindow = SessionStore.shared.nextWindowSession() {
                 tabManager.restoreWindow(savedWindow)
             }
             SessionStore.shared.register(self)
@@ -100,19 +98,4 @@ final class BrowserController {
         }
     }
 
-    var hasStressTabsArgument: Bool {
-        ProcessInfo.processInfo.arguments.contains { $0.hasPrefix("--stress-tabs=") }
-    }
-
-    private func applyStressTabsArgumentIfPresent() {
-        guard let argument = ProcessInfo.processInfo.arguments
-            .first(where: { $0.hasPrefix("--stress-tabs=") }),
-            let count = Int(argument.dropFirst("--stress-tabs=".count)),
-            count > 0
-        else { return }
-
-        for index in 0..<count {
-            tabManager.newTab(url: URL(string: "https://example.com/?tab=\(index)"))
-        }
-    }
 }
