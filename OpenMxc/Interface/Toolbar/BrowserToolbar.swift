@@ -7,7 +7,12 @@ struct BrowserToolbar: View {
     @State private var window: NSWindow?
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 12) {
+            Text("OPENMXC")
+                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                .tracking(1.2)
+                .foregroundStyle(.secondary)
+
             navButton(
                 symbol: "chevron.left",
                 help: "Back",
@@ -52,21 +57,10 @@ struct BrowserToolbar: View {
 
             shareButton
 
-            navButton(symbol: "plus", help: "New Tab") {
-                controller.newTab()
-            }
-
-            Button {
-                controller.toggleSidebar()
-            } label: {
-                Image(systemName: "sidebar.left")
-            }
-            .buttonStyle(.borderless)
-            .help("Toggle Sidebar")
-            .accessibilityLabel("Toggle Sidebar")
         }
-        .padding(.horizontal, 12)
-        .frame(height: BrowserConstants.toolbarHeight)
+        .padding(.horizontal, 18)
+        .padding(.vertical, 10)
+        .background(Color(nsColor: .windowBackgroundColor))
         .onChange(of: controller.tabManager.selectedTabID) { _, _ in
             syncAddressText()
         }
@@ -108,11 +102,11 @@ struct BrowserToolbar: View {
                 isAddressFocused = false
             }
             .padding(.horizontal, 10)
-            .frame(maxWidth: .infinity)
-            .frame(height: 30)
-            .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .frame(maxWidth: 680)
+            .frame(height: 32)
+            .background(Color(nsColor: .textBackgroundColor), in: Capsule())
             .overlay {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                Capsule()
                     .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 0.5)
             }
     }
