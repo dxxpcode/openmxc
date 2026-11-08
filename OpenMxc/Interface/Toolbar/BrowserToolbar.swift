@@ -86,16 +86,6 @@ struct BrowserToolbar: View {
         }
     }
 
-    private var fieldColor: Color {
-        colorScheme == .dark ? .black : Color(nsColor: .textBackgroundColor)
-    }
-
-    private var fieldBorderColor: Color {
-        isAddressFocused
-            ? Color.accentColor.opacity(colorScheme == .dark ? 0.65 : 0.55)
-            : (colorScheme == .dark ? Color.primary.opacity(0.22) : Color(nsColor: .separatorColor))
-    }
-
     private var canvasColor: Color {
         colorScheme == .dark ? .black : Color(nsColor: .windowBackgroundColor)
     }
@@ -115,23 +105,16 @@ struct BrowserToolbar: View {
     }
 
     private var addressField: some View {
-        TextField("Search or enter address", text: $addressText)
-            .textFieldStyle(.plain)
-            .font(.body)
-            .focused($isAddressFocused)
-            .onSubmit {
-                controller.navigate(to: addressText)
-                isAddressFocused = false
-            }
-            .padding(.horizontal, 14)
-            .frame(maxWidth: 640)
-            .frame(height: 32)
-            .background(fieldColor, in: Capsule())
-            .overlay {
-                Capsule()
-                    .strokeBorder(fieldBorderColor, lineWidth: isAddressFocused ? 1.2 : 0.5)
-            }
-            .animation(.easeInOut(duration: 0.15), value: isAddressFocused)
+        SearchField(
+            placeholder: "Search or enter address",
+            text: $addressText,
+            height: 32,
+            focus: $isAddressFocused
+        ) {
+            controller.navigate(to: addressText)
+            isAddressFocused = false
+        }
+        .frame(maxWidth: 640)
     }
 
     private func syncAddressText() {

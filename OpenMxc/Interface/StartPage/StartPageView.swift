@@ -39,37 +39,16 @@ struct StartPageView: View {
     }
 
     private var searchField: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 12))
-                .foregroundStyle(.secondary)
-            TextField("Search or enter address", text: $searchText)
-                .textFieldStyle(.plain)
-                .font(.body)
-                .focused($isSearchFocused)
-                .onSubmit {
-                    controller.navigate(to: searchText)
-                    searchText = ""
-                }
+        SearchField(
+            placeholder: "Search or enter address",
+            text: $searchText,
+            height: 40,
+            focus: $isSearchFocused
+        ) {
+            controller.navigate(to: searchText)
+            searchText = ""
         }
-        .padding(.horizontal, 16)
-        .frame(width: 520, height: 40)
-        .background(fieldColor, in: Capsule())
-        .overlay {
-            Capsule()
-                .strokeBorder(fieldBorderColor, lineWidth: isSearchFocused ? 1.2 : 0.5)
-        }
-        .animation(.easeInOut(duration: 0.15), value: isSearchFocused)
-    }
-
-    private var fieldColor: Color {
-        colorScheme == .dark ? .black : Color(nsColor: .textBackgroundColor)
-    }
-
-    private var fieldBorderColor: Color {
-        isSearchFocused
-            ? Color.accentColor.opacity(colorScheme == .dark ? 0.65 : 0.55)
-            : (colorScheme == .dark ? Color.primary.opacity(0.22) : Color(nsColor: .separatorColor))
+        .frame(width: 520)
     }
 
     @ViewBuilder
