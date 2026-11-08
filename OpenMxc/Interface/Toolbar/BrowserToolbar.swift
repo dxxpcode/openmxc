@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct BrowserToolbar: View {
@@ -7,7 +8,38 @@ struct BrowserToolbar: View {
     @State private var window: NSWindow?
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 10) {
+            navigationGroup
+
+            addressField
+                .glassField(isFocused: isAddressFocused, cornerRadius: 12)
+                .frame(height: 34)
+
+            actionsGroup
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .frame(height: BrowserConstants.toolbarHeight)
+        .background(.bar)
+        .onChange(of: controller.tabManager.selectedTabID) { _, _ in
+            syncAddressText()
+        }
+        .onChange(of: controller.selectedNavigation?.currentURL) { _, _ in
+            syncAddressText()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openmxcAddressBarFocus)) { _ in
+            guard window?.isKeyWindow == true else { return }
+            isAddressFocused = true
+        }
+        .background {
+            WindowAccessor { window in
+                self.window = window
+            }
+        }
+    }
+
+    private var navigationGroup: some View {
+        HStack(spacing: 2) {
             navButton(
                 symbol: "chevron.left",
                 help: "Back",
@@ -37,20 +69,28 @@ struct BrowserToolbar: View {
                     controller.selectedNavigation?.reload()
                 }
             }
+        }
+        .glassCapsule()
+    }
 
-            addressField
-
+    private var actionsGroup: some View {
+        HStack(spacing: 2) {
             Button {
                 controller.toggleFavorite()
             } label: {
                 Image(systemName: controller.currentPageIsFavorite ? "star.fill" : "star")
+                    .foregroundStyle(controller.currentPageIsFavorite ? Color.accentColor : Color.secondary)
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(.glassIcon)
             .help(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
             .disabled(controller.selectedNavigation?.currentURL == nil)
             .accessibilityLabel(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
 
             shareButton
+
+            Divider()
+                .frame(height: 16)
+                .padding(.horizontal, 4)
 
             navButton(symbol: "plus", help: "New Tab") {
                 controller.newTab()
@@ -61,27 +101,11 @@ struct BrowserToolbar: View {
             } label: {
                 Image(systemName: "sidebar.left")
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(.glassIcon)
             .help("Toggle Sidebar")
             .accessibilityLabel("Toggle Sidebar")
         }
-        .padding(.horizontal, 12)
-        .frame(height: BrowserConstants.toolbarHeight)
-        .onChange(of: controller.tabManager.selectedTabID) { _, _ in
-            syncAddressText()
-        }
-        .onChange(of: controller.selectedNavigation?.currentURL) { _, _ in
-            syncAddressText()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .openmxcAddressBarFocus)) { _ in
-            guard window?.isKeyWindow == true else { return }
-            isAddressFocused = true
-        }
-        .background {
-            WindowAccessor { window in
-                self.window = window
-            }
-        }
+        .glassCapsule()
     }
 
     @ViewBuilder
@@ -90,7 +114,7 @@ struct BrowserToolbar: View {
             ShareLink(item: url) {
                 Image(systemName: "square.and.arrow.up")
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(.glassIcon)
             .help("Share")
             .accessibilityLabel("Share")
         } else {
@@ -107,14 +131,8 @@ struct BrowserToolbar: View {
                 controller.navigate(to: addressText)
                 isAddressFocused = false
             }
-            .padding(.horizontal, 10)
+            .padding(.horizontal, 12)
             .frame(maxWidth: .infinity)
-            .frame(height: 30)
-            .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 0.5)
-            }
     }
 
     private func syncAddressText() {
@@ -131,7 +149,7 @@ struct BrowserToolbar: View {
         Button(action: action) {
             Image(systemName: symbol)
         }
-        .buttonStyle(.borderless)
+        .buttonStyle(.glassIcon)
         .help(help)
         .disabled(!enabled)
     }

@@ -6,26 +6,25 @@ struct TabSidebarView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
-            Divider()
             tabsList
-                .padding(.top, 8)
+                .padding(.top, 6)
             Spacer()
-            Divider()
             librarySection
-                .padding(.vertical, 8)
+                .padding(.vertical, 10)
         }
-        .background(.regularMaterial)
+        .background(.thinMaterial)
     }
 
     private var header: some View {
-        HStack {
+        HStack(spacing: 8) {
             if controller.isPrivate {
                 Label("Private", systemImage: "lock.fill")
-                    .font(.headline)
-                    .foregroundStyle(.purple)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.secondary)
             } else {
                 Text(BrowserConfiguration.applicationName)
-                    .font(.headline)
+                    .font(.system(size: 13, weight: .bold))
+                    .tracking(0.5)
             }
             Spacer()
             Button {
@@ -33,11 +32,12 @@ struct TabSidebarView: View {
             } label: {
                 Image(systemName: "plus")
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(.glassIcon)
             .help("New Tab")
+            .accessibilityLabel("New Tab")
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
     }
 
     private var tabsList: some View {
@@ -55,7 +55,7 @@ struct TabSidebarView: View {
                     TabRowView(tab: tab)
                 }
             }
-            .padding(.horizontal, 8)
+            .padding(.horizontal, 10)
         }
     }
 
@@ -67,25 +67,35 @@ struct TabSidebarView: View {
                 libraryRow(section)
             }
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, 10)
     }
 
     private func sectionHeader(_ title: String) -> some View {
         Text(title.uppercased())
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 12)
-            .padding(.top, 8)
+            .font(.system(size: 10, weight: .semibold))
+            .foregroundStyle(.tertiary)
+            .padding(.horizontal, 10)
+            .padding(.top, 10)
             .padding(.bottom, 4)
     }
 
     private func libraryRow(_ section: LibrarySection) -> some View {
-        Button {
+        let isSelected = controller.librarySection == section
+        return Button {
             controller.showLibrary(section)
         } label: {
             Label(section.title, systemImage: section.symbol)
                 .font(.callout)
+                .foregroundStyle(isSelected ? Color.primary : Color.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .fill(Color.accentColor.opacity(0.18))
+                    }
+                }
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

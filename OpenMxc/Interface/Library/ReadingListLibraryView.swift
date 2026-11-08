@@ -17,10 +17,17 @@ struct ReadingListLibraryView: View {
 
     private var toolbar: some View {
         HStack(spacing: 12) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
-            TextField("Search reading list", text: $searchText)
+            HStack(spacing: 6) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                TextField("Search reading list", text: $searchText)
                 .textFieldStyle(.plain)
+            }
+            .padding(.horizontal, 10)
+            .frame(maxWidth: 280, minHeight: 30)
+            .glassField(cornerRadius: 9)
+
+            Spacer()
 
             Button {
                 addCurrentPage()

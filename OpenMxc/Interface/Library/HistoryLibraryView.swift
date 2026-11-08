@@ -18,10 +18,17 @@ struct HistoryLibraryView: View {
 
     private var toolbar: some View {
         HStack(spacing: 12) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
-            TextField("Search history", text: $searchText)
-                .textFieldStyle(.plain)
+            HStack(spacing: 6) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                TextField("Search history", text: $searchText)
+                    .textFieldStyle(.plain)
+            }
+            .padding(.horizontal, 10)
+            .frame(maxWidth: 280, minHeight: 30)
+            .glassField(cornerRadius: 9)
+
+            Spacer()
 
             Menu("Clear History") {
                 Button("Last Hour") { clear(olderThan: Date().addingTimeInterval(-3600)) }

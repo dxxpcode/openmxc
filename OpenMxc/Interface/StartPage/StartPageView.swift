@@ -10,17 +10,17 @@ struct StartPageView: View {
     @State private var editedAddress = ""
 
     var body: some View {
-        VStack(spacing: 28) {
-            if !greetingIsHidden {
-                greeting
-            }
-
+        VStack(spacing: 0) {
+            Spacer(minLength: 80)
+            greetingSection
             searchField
-
+                .padding(.top, 32)
             favoritesSection
+                .padding(.top, 40)
+            Spacer(minLength: 60)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.horizontal, 32)
+        .padding(.horizontal, 40)
         .overlay(alignment: .topTrailing) {
             if !greetingIsHidden {
                 Button {
@@ -28,7 +28,7 @@ struct StartPageView: View {
                 } label: {
                     Image(systemName: "eye.slash")
                 }
-                .buttonStyle(.borderless)
+                .buttonStyle(.glassIcon)
                 .foregroundStyle(.secondary)
                 .help("Hide Greeting")
                 .padding(12)
@@ -44,50 +44,58 @@ struct StartPageView: View {
         }
     }
 
-    private var greeting: some View {
-        VStack(spacing: 10) {
-            Image("OpenMxcLogo")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 56, height: 56)
-                .clipShape(RoundedRectangle(cornerRadius: 13, style: .continuous))
+    @ViewBuilder
+    private var greetingSection: some View {
+        if !greetingIsHidden {
+            VStack(spacing: 14) {
+                Image("OpenMxcLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 72, height: 72)
+                    .clipShape(RoundedRectangle(cornerRadius: 17, style: .continuous))
 
-            Text(Self.greetingText)
-                .font(.system(size: 22, weight: .medium))
+                Text(Self.greetingText)
+                    .font(.system(size: 26, weight: .medium))
+            }
         }
-        .padding(.top, 40)
     }
 
     private var searchField: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
+                .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(.secondary)
             TextField("Search or enter address", text: $searchText)
                 .textFieldStyle(.plain)
+                .font(.system(size: 15))
                 .onSubmit {
                     controller.navigate(to: searchText)
                     searchText = ""
                 }
         }
-        .padding(.horizontal, 12)
-        .frame(width: 420, height: 34)
-        .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 0.5)
-        }
+        .padding(.horizontal, 16)
+        .frame(width: 520, height: 42)
+        .glassField(cornerRadius: 14)
     }
 
     @ViewBuilder
     private var favoritesSection: some View {
         if controller.favorites.favorites.isEmpty {
-            Text("No favorites yet. Add sites from the toolbar to see them here.")
-                .font(.callout)
-                .foregroundStyle(.secondary)
+            VStack(spacing: 12) {
+                Image(systemName: "star")
+                    .font(.system(size: 30, weight: .light))
+                    .foregroundStyle(.tertiary)
+                Text("No favorites yet")
+                    .font(.headline)
+                Text("Tap the star in the toolbar to save a site here.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.top, 8)
         } else {
             LazyVGrid(
-                columns: [GridItem(.adaptive(minimum: 110, maximum: 140), spacing: 16)],
-                spacing: 20
+                columns: [GridItem(.adaptive(minimum: 120, maximum: 150), spacing: 18)],
+                spacing: 22
             ) {
                 ForEach(controller.favorites.favorites) { favorite in
                     FavoriteTileView(favorite: favorite) {
@@ -117,7 +125,7 @@ struct StartPageView: View {
                     }
                 }
             }
-            .frame(maxWidth: 560)
+            .frame(maxWidth: 620)
         }
     }
 
@@ -160,10 +168,11 @@ private struct FavoriteTileView: View {
     let action: () -> Void
 
     @State private var icon: NSImage?
+    @State private var isHovered = false
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 6) {
+            VStack(spacing: 10) {
                 iconView
                 Text(favorite.title)
                     .font(.callout)
@@ -171,10 +180,16 @@ private struct FavoriteTileView: View {
                     .truncationMode(.tail)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
+            .padding(.vertical, 14)
+            .padding(.horizontal, 8)
+            .background {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(isHovered ? Color.primary.opacity(0.07) : .clear)
+            }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
         .onAppear {
             FaviconService.shared.icon(for: favorite.url) { image in
                 icon = image
@@ -187,12 +202,14 @@ private struct FavoriteTileView: View {
         if let icon {
             Image(nsImage: icon)
                 .resizable()
-                .frame(width: 32, height: 32)
+                .frame(width: 44, height: 44)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         } else {
             Image(systemName: "globe")
-                .font(.system(size: 24))
+                .font(.system(size: 26))
                 .foregroundStyle(.secondary)
-                .frame(width: 32, height: 32)
+                .frame(width: 44, height: 44)
+                .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
     }
 }
