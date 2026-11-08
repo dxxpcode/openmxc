@@ -9,7 +9,7 @@ struct BrowserToolbar: View {
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
             HStack(spacing: 2) {
                 navButton(
                     symbol: "chevron.left",
@@ -42,7 +42,11 @@ struct BrowserToolbar: View {
                 }
             }
 
+            groupDivider
+
             addressField
+
+            groupDivider
 
             HStack(spacing: 2) {
                 Button {
@@ -67,10 +71,14 @@ struct BrowserToolbar: View {
                 .accessibilityLabel(colorScheme == .dark ? "Switch to Light Mode" : "Switch to Dark Mode")
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 8)
-        .frame(height: BrowserConstants.toolbarHeight)
-        .background(canvasColor)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 7)
+        .background { barBackground }
+        .overlay {
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .strokeBorder(borderColor, lineWidth: 0.5)
+        }
+        .shadow(color: .black.opacity(colorScheme == .dark ? 0.4 : 0.12), radius: 16, y: 6)
         .onChange(of: controller.tabManager.selectedTabID) { _, _ in
             syncAddressText()
         }
@@ -88,8 +96,25 @@ struct BrowserToolbar: View {
         }
     }
 
-    private var canvasColor: Color {
-        colorScheme == .dark ? .black : Color(nsColor: .windowBackgroundColor)
+    /// Floating frosted capsule: vibrancy material with a theme tint so page
+    /// content softly bleeds through while controls stay legible.
+    private var barBackground: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(.ultraThinMaterial)
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(colorScheme == .dark ? Color.black.opacity(0.5) : Color.white.opacity(0.55))
+        }
+    }
+
+    private var borderColor: Color {
+        Color.primary.opacity(colorScheme == .dark ? 0.14 : 0.1)
+    }
+
+    private var groupDivider: some View {
+        Rectangle()
+            .fill(Color.primary.opacity(0.1))
+            .frame(width: 0.5, height: 18)
     }
 
     @ViewBuilder
@@ -116,7 +141,7 @@ struct BrowserToolbar: View {
             controller.navigate(to: addressText)
             isAddressFocused = false
         }
-        .frame(maxWidth: 640)
+        .frame(maxWidth: .infinity)
     }
 
     private func syncAddressText() {
