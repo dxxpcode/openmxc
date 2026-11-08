@@ -12,23 +12,23 @@ struct TabRowView: View {
     }
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 10) {
             icon
 
             if tab.isPinned {
                 Text(tab.displayTitle)
-                    .font(.callout)
+                    .font(.body.weight(.medium))
                     .lineLimit(1)
                     .truncationMode(.tail)
             } else {
-                VStack(alignment: .leading, spacing: 1) {
+                VStack(alignment: .leading, spacing: 2) {
                     Text(tab.displayTitle)
-                        .font(.callout)
+                        .font(.body.weight(.medium))
                         .lineLimit(1)
                         .truncationMode(.tail)
                     if let host = tab.navigation.currentURL?.host() {
                         Text(host)
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                     }
@@ -39,7 +39,7 @@ struct TabRowView: View {
 
             if tab.isMuted {
                 Image(systemName: "speaker.slash.fill")
-                    .font(.caption2)
+                    .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
                     .accessibilityHidden(true)
             }
@@ -49,7 +49,9 @@ struct TabRowView: View {
                     controller.tabManager.closeTab(tab)
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.caption2.weight(.semibold))
+                        .font(.callout.weight(.semibold))
+                        .frame(width: 20, height: 20)
+                        .background(Color.primary.opacity(0.08), in: Circle())
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
@@ -57,12 +59,12 @@ struct TabRowView: View {
                 .accessibilityLabel("Close Tab")
             }
         }
-        .padding(.horizontal, tab.isPinned ? 6 : 8)
-        .padding(.vertical, tab.isPinned ? 5 : 6)
+        .padding(.horizontal, tab.isPinned ? 8 : 12)
+        .padding(.vertical, tab.isPinned ? 6 : 10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
-            RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(isSelected ? Color.accentColor.opacity(0.18) : Color.clear)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(isSelected ? Color.accentColor.opacity(0.22) : (isHovered ? Color.primary.opacity(0.05) : .clear))
         }
         .contentShape(Rectangle())
         .onHover { isHovered = $0 }
@@ -102,17 +104,19 @@ struct TabRowView: View {
         if tab.isLoading {
             ProgressView()
                 .controlSize(.small)
-                .frame(width: 16, height: 16)
+                .frame(width: 22, height: 22)
         } else if let favicon = tab.favicon {
             Image(nsImage: favicon)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 16, height: 16)
+                .frame(width: 22, height: 22)
+                .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
         } else {
             Image(systemName: "globe")
-                .font(.caption)
+                .font(.callout)
                 .foregroundStyle(.secondary)
-                .frame(width: 16, height: 16)
+                .frame(width: 22, height: 22)
+                .background(Color.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 5, style: .continuous))
         }
     }
 

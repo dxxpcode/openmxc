@@ -7,7 +7,7 @@ enum BrowserConstants {
     static let defaultWindowHeight: CGFloat = 800
     static let minimumWindowWidth: CGFloat = 800
     static let minimumWindowHeight: CGFloat = 550
-    static let sidebarDefaultWidth: CGFloat = 220
-    static let sidebarMinimumWidth: CGFloat = 180
-    static let sidebarMaximumWidth: CGFloat = 320
+    static let sidebarDefaultWidth: CGFloat = 260
+    static let sidebarMinimumWidth: CGFloat = 200
+    static let sidebarMaximumWidth: CGFloat = 340
 }

@@ -82,15 +82,15 @@ struct TabSidebarView: View {
             controller.showLibrary(section)
         } label: {
             Label(section.title, systemImage: section.symbol)
-                .font(.callout)
+                .font(.body.weight(.medium))
                 .foregroundStyle(isSelected ? Color.primary : Color.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
                 .background {
                     if isSelected {
-                        RoundedRectangle(cornerRadius: 6, style: .continuous)
-                            .fill(Color.accentColor.opacity(0.16))
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(Color.accentColor.opacity(0.22))
                     }
                 }
                 .contentShape(Rectangle())
