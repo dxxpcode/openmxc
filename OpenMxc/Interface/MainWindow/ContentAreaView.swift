@@ -45,6 +45,7 @@ struct ContentAreaView: View {
                 tab.navigation.recoverFromCrash()
             }
             .keyboardShortcut(.defaultAction)
+            .buttonStyle(.borderedProminent)
         }
     }
 
@@ -58,6 +59,7 @@ struct ContentAreaView: View {
                 tab.navigation.reload()
             }
             .keyboardShortcut(.defaultAction)
+            .buttonStyle(.borderedProminent)
         }
     }
 
@@ -67,20 +69,23 @@ struct ContentAreaView: View {
         message: String,
         @ViewBuilder actions: () -> Actions
     ) -> some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 14) {
             Image(systemName: symbol)
-                .font(.system(size: 40))
+                .font(.system(size: 44, weight: .light))
                 .foregroundStyle(.secondary)
+                .frame(width: 72, height: 72)
+                .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
             Text(title)
-                .font(.headline)
+                .font(.title3.weight(.semibold))
             Text(message)
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+                .frame(maxWidth: 380)
             actions()
-                .padding(.top, 4)
+                .padding(.top, 6)
         }
         .padding(32)
-        .frame(maxWidth: 420)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

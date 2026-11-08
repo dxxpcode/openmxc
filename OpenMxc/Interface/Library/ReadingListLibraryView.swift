@@ -17,16 +17,24 @@ struct ReadingListLibraryView: View {
 
     private var toolbar: some View {
         HStack(spacing: 12) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
-            TextField("Search reading list", text: $searchText)
-                .textFieldStyle(.plain)
+            HStack(spacing: 6) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                TextField("Search reading list", text: $searchText)
+                    .textFieldStyle(.plain)
+            }
+            .padding(.horizontal, 10)
+            .frame(maxWidth: 280, minHeight: 30)
+            .chromeField()
+
+            Spacer()
 
             Button {
                 addCurrentPage()
             } label: {
                 Label("Add This Page", systemImage: "plus")
             }
+            .buttonStyle(.borderless)
             .disabled(controller.selectedNavigation?.currentURL == nil)
         }
         .padding(.horizontal, 16)
@@ -50,8 +58,14 @@ struct ReadingListLibraryView: View {
                     controller.navigate(to: item.url.absoluteString)
                 } label: {
                     HStack(spacing: 10) {
-                        Image(systemName: item.isRead ? "checkmark.circle.fill" : "circle")
-                            .foregroundStyle(item.isRead ? Color.accentColor : Color.secondary)
+                        Button {
+                            store.setRead(item, isRead: !item.isRead)
+                        } label: {
+                            Image(systemName: item.isRead ? "checkmark.circle.fill" : "circle")
+                                .foregroundStyle(item.isRead ? Color.accentColor : Color.secondary)
+                        }
+                        .buttonStyle(.plain)
+                        .help(item.isRead ? "Mark as Unread" : "Mark as Read")
                         VStack(alignment: .leading, spacing: 2) {
                             Text(item.title)
                                 .lineLimit(1)

@@ -13,6 +13,7 @@ struct OnboardingView: View {
         VStack(spacing: 20) {
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .animation(.easeInOut(duration: 0.2), value: page)
 
             HStack(spacing: 8) {
                 ForEach(0..<pageCount, id: \.self) { index in
@@ -59,6 +60,7 @@ struct OnboardingView: View {
         default: readyPage
         }
     }
+
 
     private var welcomePage: some View {
         VStack(spacing: 16) {

@@ -62,7 +62,7 @@ struct TabRowView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
             RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .fill(isSelected ? Color.accentColor.opacity(0.18) : Color.clear)
+                .fill(isSelected ? Color.accentColor.opacity(0.15) : (isHovered ? Color.primary.opacity(0.06) : .clear))
         }
         .contentShape(Rectangle())
         .onHover { isHovered = $0 }
@@ -108,6 +108,7 @@ struct TabRowView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 16, height: 16)
+                .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
         } else {
             Image(systemName: "globe")
                 .font(.caption)

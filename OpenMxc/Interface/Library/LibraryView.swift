@@ -24,8 +24,9 @@ struct LibraryView: View {
             } label: {
                 Image(systemName: "xmark")
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(.chromeIcon)
             .help("Back to Tabs")
+            .accessibilityLabel("Back to Tabs")
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)

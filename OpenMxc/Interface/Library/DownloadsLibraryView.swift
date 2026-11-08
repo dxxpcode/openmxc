@@ -20,6 +20,7 @@ struct DownloadsLibraryView: View {
             Button("Clear Completed") {
                 store.clearCompleted()
             }
+            .buttonStyle(.borderless)
             .disabled(!store.items.contains { $0.status != .inProgress })
         }
         .padding(.horizontal, 16)
@@ -78,9 +79,19 @@ struct DownloadsLibraryView: View {
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                if item.status == .inProgress {
+                    ProgressView(value: progress(for: item))
+                        .progressViewStyle(.linear)
+                        .frame(maxWidth: 220)
+                }
             }
             Spacer()
         }
+    }
+
+    private func progress(for item: DownloadItem) -> Double {
+        guard let total = item.totalBytes, total > 0 else { return 0 }
+        return min(1, Double(item.bytesReceived) / Double(total))
     }
 
     private func icon(for status: DownloadStatus) -> String {

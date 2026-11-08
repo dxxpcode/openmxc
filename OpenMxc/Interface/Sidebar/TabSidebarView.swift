@@ -18,11 +18,11 @@ struct TabSidebarView: View {
     }
 
     private var header: some View {
-        HStack {
+        HStack(spacing: 6) {
             if controller.isPrivate {
                 Label("Private", systemImage: "lock.fill")
                     .font(.headline)
-                    .foregroundStyle(.purple)
+                    .foregroundStyle(.secondary)
             } else {
                 Text(BrowserConfiguration.applicationName)
                     .font(.headline)
@@ -33,8 +33,9 @@ struct TabSidebarView: View {
             } label: {
                 Image(systemName: "plus")
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(.chromeIcon)
             .help("New Tab")
+            .accessibilityLabel("New Tab")
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
@@ -73,19 +74,27 @@ struct TabSidebarView: View {
     private func sectionHeader(_ title: String) -> some View {
         Text(title.uppercased())
             .font(.caption.weight(.semibold))
-            .foregroundStyle(.secondary)
+            .foregroundStyle(.tertiary)
             .padding(.horizontal, 12)
             .padding(.top, 8)
             .padding(.bottom, 4)
     }
 
     private func libraryRow(_ section: LibrarySection) -> some View {
-        Button {
+        let isSelected = controller.librarySection == section
+        return Button {
             controller.showLibrary(section)
         } label: {
             Label(section.title, systemImage: section.symbol)
                 .font(.callout)
+                .foregroundStyle(isSelected ? Color.primary : Color.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 5)
+                .background {
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(isSelected ? Color.accentColor.opacity(0.16) : .clear)
+                }
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

@@ -32,6 +32,7 @@
 		6573B93CA70190DDE997BC92 /* PrivacyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AC5A62176EE9375D5E4D1 /* PrivacyTests.swift */; };
 		65C588F94CF360DFD6384504 /* BrowserWindowRoot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1B61331F78D81E27DDD259 /* BrowserWindowRoot.swift */; };
 		70EFC71422FA9432B6357DB5 /* BrowserCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC934E4E8F98F53868D70C36 /* BrowserCommands.swift */; };
+		75A5C8AC534DF671CE566656 /* ChromeComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573AEF26C3A4891CB9028B64 /* ChromeComponents.swift */; };
 		7C1E5F437A41B8DB51F3D0EB /* BrowserError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0F8314192D4862420953FB /* BrowserError.swift */; };
 		809D9C834337AB058AF7E81A /* TrackingProtection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8366AC46BB64E5F2E28EB9E7 /* TrackingProtection.swift */; };
 		88995418481A442A12C784FD /* FavoritesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA1B83CBDB787537D20DA13 /* FavoritesStore.swift */; };
@@ -90,6 +91,7 @@
 		52CF5635ECF51CBB9913ED7D /* BrowserConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserConstants.swift; sourceTree = "<group>"; };
 		53F7163D3326FD9BBD3A9CB1 /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
 		54C178E9D14516871AC703CD /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		573AEF26C3A4891CB9028B64 /* ChromeComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromeComponents.swift; sourceTree = "<group>"; };
 		5E8932A81CA4AB8B508CF13C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		64D36C930F561CC83CE806EB /* BrowserConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserConfiguration.swift; sourceTree = "<group>"; };
 		670CA36D297D11573C1080E7 /* DownloadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadStore.swift; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 		093BADD2DB81FA85117D4666 /* Interface */ = {
 			isa = PBXGroup;
 			children = (
+				746143409490D14EE0DAA990 /* Components */,
 				79611D9F7896350FDA0DBB63 /* Library */,
 				FDDFD33ABD21F9D27ADF8F78 /* MainWindow */,
 				EFA3CBE1A99192F693A32190 /* Sidebar */,
@@ -242,6 +245,14 @@
 				D437CC2F198B78FFB82799F0 /* TabRowView.swift */,
 			);
 			path = Tabs;
+			sourceTree = "<group>";
+		};
+		746143409490D14EE0DAA990 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				573AEF26C3A4891CB9028B64 /* ChromeComponents.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		79611D9F7896350FDA0DBB63 /* Library */ = {
@@ -441,6 +452,7 @@
 				7C1E5F437A41B8DB51F3D0EB /* BrowserError.swift in Sources */,
 				2230F9199412B0AE62F4C041 /* BrowserToolbar.swift in Sources */,
 				65C588F94CF360DFD6384504 /* BrowserWindowRoot.swift in Sources */,
+				75A5C8AC534DF671CE566656 /* ChromeComponents.swift in Sources */,
 				0D6D99F86363C163477CE08A /* ContentAreaView.swift in Sources */,
 				90E9B487353EE756C166773B /* Database.swift in Sources */,
 				F0E26357B75BC55D22F23926 /* DownloadCoordinator.swift in Sources */,

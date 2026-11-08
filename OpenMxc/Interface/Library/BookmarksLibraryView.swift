@@ -43,16 +43,24 @@ struct BookmarksLibraryView: View {
 
     private var toolbar: some View {
         HStack(spacing: 12) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
-            TextField("Search bookmarks", text: $searchText)
-                .textFieldStyle(.plain)
+            HStack(spacing: 6) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                TextField("Search bookmarks", text: $searchText)
+                    .textFieldStyle(.plain)
+            }
+            .padding(.horizontal, 10)
+            .frame(maxWidth: 280, minHeight: 30)
+            .chromeField()
+
+            Spacer()
 
             Button {
                 bookmarkCurrentPage()
             } label: {
                 Label("Bookmark This Page", systemImage: "plus")
             }
+            .buttonStyle(.borderless)
             .disabled(controller.selectedNavigation?.currentURL == nil)
 
             Button {
@@ -61,6 +69,7 @@ struct BookmarksLibraryView: View {
             } label: {
                 Label("New Folder", systemImage: "folder.badge.plus")
             }
+            .buttonStyle(.borderless)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)

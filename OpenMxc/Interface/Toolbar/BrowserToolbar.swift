@@ -45,7 +45,7 @@ struct BrowserToolbar: View {
             } label: {
                 Image(systemName: controller.currentPageIsFavorite ? "star.fill" : "star")
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(.chromeIcon)
             .help(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
             .disabled(controller.selectedNavigation?.currentURL == nil)
             .accessibilityLabel(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
@@ -61,7 +61,7 @@ struct BrowserToolbar: View {
             } label: {
                 Image(systemName: "sidebar.left")
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(.chromeIcon)
             .help("Toggle Sidebar")
             .accessibilityLabel("Toggle Sidebar")
         }
@@ -90,7 +90,7 @@ struct BrowserToolbar: View {
             ShareLink(item: url) {
                 Image(systemName: "square.and.arrow.up")
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(.chromeIcon)
             .help("Share")
             .accessibilityLabel("Share")
         } else {
@@ -107,14 +107,10 @@ struct BrowserToolbar: View {
                 controller.navigate(to: addressText)
                 isAddressFocused = false
             }
-            .padding(.horizontal, 10)
+            .padding(.horizontal, 12)
             .frame(maxWidth: .infinity)
-            .frame(height: 30)
-            .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 0.5)
-            }
+            .frame(height: 32)
+            .chromeField(isFocused: isAddressFocused)
     }
 
     private func syncAddressText() {
@@ -131,7 +127,7 @@ struct BrowserToolbar: View {
         Button(action: action) {
             Image(systemName: symbol)
         }
-        .buttonStyle(.borderless)
+        .buttonStyle(.chromeIcon)
         .help(help)
         .disabled(!enabled)
     }
