@@ -10,7 +10,7 @@ struct BrowserToolbar: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            HStack(spacing: 4) {
+            HStack(spacing: 2) {
                 navButton(
                     symbol: "chevron.left",
                     help: "Back",
@@ -49,7 +49,7 @@ struct BrowserToolbar: View {
             } label: {
                 Image(systemName: controller.currentPageIsFavorite ? "star.fill" : "star")
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(ToolbarIconStyle(tint: controller.currentPageIsFavorite ? Color.accentColor : nil))
             .help(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
             .disabled(controller.selectedNavigation?.currentURL == nil)
             .accessibilityLabel(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
@@ -61,12 +61,12 @@ struct BrowserToolbar: View {
             } label: {
                 Image(systemName: colorScheme == .dark ? "sun.max" : "moon")
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(ToolbarIconStyle())
             .help(colorScheme == .dark ? "Switch to Light Mode" : "Switch to Dark Mode")
             .accessibilityLabel(colorScheme == .dark ? "Switch to Light Mode" : "Switch to Dark Mode")
         }
         .padding(.horizontal, 20)
-        .padding(.vertical, 10)
+        .padding(.vertical, 8)
         .frame(height: BrowserConstants.toolbarHeight)
         .background(canvasColor)
         .onChange(of: controller.tabManager.selectedTabID) { _, _ in
@@ -91,7 +91,9 @@ struct BrowserToolbar: View {
     }
 
     private var fieldBorderColor: Color {
-        colorScheme == .dark ? Color.primary.opacity(0.22) : Color(nsColor: .separatorColor)
+        isAddressFocused
+            ? Color.accentColor.opacity(colorScheme == .dark ? 0.65 : 0.55)
+            : (colorScheme == .dark ? Color.primary.opacity(0.22) : Color(nsColor: .separatorColor))
     }
 
     private var canvasColor: Color {
@@ -104,7 +106,7 @@ struct BrowserToolbar: View {
             ShareLink(item: url) {
                 Image(systemName: "square.and.arrow.up")
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(ToolbarIconStyle())
             .help("Share")
             .accessibilityLabel("Share")
         } else {
@@ -127,8 +129,9 @@ struct BrowserToolbar: View {
             .background(fieldColor, in: Capsule())
             .overlay {
                 Capsule()
-                    .strokeBorder(fieldBorderColor, lineWidth: 0.5)
+                    .strokeBorder(fieldBorderColor, lineWidth: isAddressFocused ? 1.2 : 0.5)
             }
+            .animation(.easeInOut(duration: 0.15), value: isAddressFocused)
     }
 
     private func syncAddressText() {
@@ -145,8 +148,47 @@ struct BrowserToolbar: View {
         Button(action: action) {
             Image(systemName: symbol)
         }
-        .buttonStyle(.borderless)
+        .buttonStyle(ToolbarIconStyle())
         .help(help)
         .disabled(!enabled)
+    }
+}
+
+/// Quiet monochrome toolbar button: subtle rounded hover fill, press dimming,
+/// and a smooth transition. Keeps the chrome minimal while feeling tactile.
+private struct ToolbarIconStyle: ButtonStyle {
+    var tint: Color? = nil
+
+    @Environment(\.isEnabled) private var isEnabled
+    @State private var isHovered = false
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 12.5, weight: .medium))
+            .foregroundStyle(labelColor(isPressed: configuration.isPressed))
+            .frame(width: 30, height: 30)
+            .background {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(Color.primary.opacity(backgroundOpacity(isPressed: configuration.isPressed)))
+            }
+            .contentShape(Rectangle())
+            .onHover { hovering in
+                withAnimation(.easeInOut(duration: 0.12)) {
+                    isHovered = hovering
+                }
+            }
+            .opacity(isEnabled ? 1 : 0.4)
+            .animation(.easeInOut(duration: 0.12), value: isHovered)
+    }
+
+    private func labelColor(isPressed: Bool) -> Color {
+        if let tint { return tint }
+        if isPressed { return Color.primary.opacity(0.65) }
+        return Color.primary.opacity(isHovered ? 0.95 : 0.72)
+    }
+
+    private func backgroundOpacity(isPressed: Bool) -> Double {
+        if isPressed { return 0.12 }
+        return isHovered ? 0.07 : 0
     }
 }

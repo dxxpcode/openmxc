@@ -8,6 +8,7 @@ struct StartPageView: View {
     @State private var searchText = ""
     @State private var editingFavorite: Favorite?
     @State private var editedAddress = ""
+    @FocusState private var isSearchFocused: Bool
 
     var body: some View {
         VStack(spacing: 0) {
@@ -45,6 +46,7 @@ struct StartPageView: View {
             TextField("Search or enter address", text: $searchText)
                 .textFieldStyle(.plain)
                 .font(.body)
+                .focused($isSearchFocused)
                 .onSubmit {
                     controller.navigate(to: searchText)
                     searchText = ""
@@ -55,8 +57,9 @@ struct StartPageView: View {
         .background(fieldColor, in: Capsule())
         .overlay {
             Capsule()
-                .strokeBorder(fieldBorderColor, lineWidth: 0.5)
+                .strokeBorder(fieldBorderColor, lineWidth: isSearchFocused ? 1.2 : 0.5)
         }
+        .animation(.easeInOut(duration: 0.15), value: isSearchFocused)
     }
 
     private var fieldColor: Color {
@@ -64,7 +67,9 @@ struct StartPageView: View {
     }
 
     private var fieldBorderColor: Color {
-        colorScheme == .dark ? Color.primary.opacity(0.22) : Color(nsColor: .separatorColor)
+        isSearchFocused
+            ? Color.accentColor.opacity(colorScheme == .dark ? 0.65 : 0.55)
+            : (colorScheme == .dark ? Color.primary.opacity(0.22) : Color(nsColor: .separatorColor))
     }
 
     @ViewBuilder
@@ -114,6 +119,7 @@ private struct FavoriteTileView: View {
     let action: () -> Void
 
     @State private var icon: NSImage?
+    @State private var isHovered = false
 
     var body: some View {
         Button(action: action) {
@@ -126,9 +132,20 @@ private struct FavoriteTileView: View {
                     .frame(maxWidth: 72)
             }
             .padding(.vertical, 8)
+            .padding(.horizontal, 6)
+            .background {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color.primary.opacity(isHovered ? 0.06 : 0))
+            }
+            .scaleEffect(isHovered ? 1.04 : 1)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.12)) {
+                isHovered = hovering
+            }
+        }
         .onAppear {
             FaviconService.shared.icon(for: favorite.url) { image in
                 icon = image
