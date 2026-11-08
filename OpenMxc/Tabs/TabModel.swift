@@ -12,8 +12,8 @@ final class TabModel: Identifiable {
     var customTitle: String?
     var favicon: NSImage?
 
-    init(url: URL? = nil) {
-        navigation = NavigationManager()
+    init(url: URL? = nil, isPrivate: Bool = false) {
+        navigation = NavigationManager(isPrivate: isPrivate)
         if let url {
             navigation.load(url)
         }

@@ -5,8 +5,10 @@ import Foundation
 final class TabManager {
     private(set) var tabs: [TabModel] = []
     private(set) var selectedTabID: UUID?
+    private let isPrivate: Bool
 
-    init() {
+    init(isPrivate: Bool = false) {
+        self.isPrivate = isPrivate
         newTab()
     }
 
@@ -24,7 +26,7 @@ final class TabManager {
 
     @discardableResult
     func newTab(url: URL? = nil) -> TabModel {
-        let tab = TabModel(url: url)
+        let tab = TabModel(url: url, isPrivate: isPrivate)
         tabs.append(tab)
         selectedTabID = tab.id
         return tab
@@ -88,7 +90,7 @@ final class TabManager {
         tabs.removeAll()
 
         for savedTab in savedWindow.tabs {
-            let tab = TabModel()
+            let tab = TabModel(isPrivate: isPrivate)
             tab.restore(url: savedTab.url, title: savedTab.title, isPinned: savedTab.isPinned, isMuted: savedTab.isMuted)
             tabs.append(tab)
         }

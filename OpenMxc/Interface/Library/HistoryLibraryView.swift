@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct HistoryLibraryView: View {
@@ -31,6 +32,12 @@ struct HistoryLibraryView: View {
                 Divider()
                 Button("All History", role: .destructive) {
                     store.clearAll()
+                }
+            }
+
+            Menu("Website Data") {
+                Button("Clear Cookies and Website Data…") {
+                    clearWebsiteData()
                 }
             }
         }
@@ -83,5 +90,15 @@ struct HistoryLibraryView: View {
 
     private func clear(olderThan date: Date) {
         store.clear(.olderThan(date))
+    }
+
+    private func clearWebsiteData() {
+        let alert = NSAlert()
+        alert.messageText = "Clear cookies and website data?"
+        alert.informativeText = "This signs you out of websites and clears cached content. Bookmarks and history are not affected."
+        alert.addButton(withTitle: "Clear")
+        alert.addButton(withTitle: "Cancel")
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        Task { await WebsiteDataManager.clearAllData() }
     }
 }
