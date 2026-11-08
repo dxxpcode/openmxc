@@ -20,6 +20,8 @@ struct BrowserWindowRoot: View {
             .background {
                 WindowAccessor { window in
                     self.window = window
+                    window?.titleVisibility = .hidden
+                    window?.title = ""
                 }
             }
             .onAppear {
