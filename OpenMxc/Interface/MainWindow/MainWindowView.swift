@@ -4,13 +4,9 @@ struct MainWindowView: View {
     @Environment(BrowserController.self) private var controller
 
     var body: some View {
-        Group {
-            if let tab = controller.tabManager.selectedTab {
-                WebViewContainer(webView: tab.navigation.webView)
-                    .id(tab.id)
-            } else {
-                Color(nsColor: .windowBackgroundColor)
-            }
+        VStack(spacing: 0) {
+            BrowserToolbar()
+            ContentAreaView()
         }
         .frame(
             minWidth: BrowserConstants.minimumWindowWidth,
