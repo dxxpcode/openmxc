@@ -1,0 +1,59 @@
+name: OpenMxc
+options:
+  bundleIdPrefix: com.openmxc
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+
+targets:
+  OpenMxc:
+    type: application
+    platform: macOS
+    sources:
+      - path: OpenMxc
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.openmxc.browser
+        PRODUCT_NAME: OpenMxc
+        INFOPLIST_KEY_CFBundleDisplayName: OPENMXC
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.productivity
+        GENERATE_INFOPLIST_FILE: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_HARDENED_RUNTIME: YES
+    entitlements:
+      path: OpenMxc/OpenMxc.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+
+  OpenMxcTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: OpenMxcTests
+    dependencies:
+      - target: OpenMxc
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/OpenMxc.app/Contents/MacOS/OpenMxc"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+
+schemes:
+  OpenMxc:
+    build:
+      targets:
+        OpenMxc: all
+        OpenMxcTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - OpenMxcTests
