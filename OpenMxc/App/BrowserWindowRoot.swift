@@ -22,6 +22,10 @@ struct BrowserWindowRoot: View {
                     self.window = window
                     window?.titleVisibility = .hidden
                     window?.title = ""
+                    window?.standardWindowButton(.closeButton)?.isHidden = true
+                    window?.standardWindowButton(.miniaturizeButton)?.isHidden = true
+                    window?.standardWindowButton(.zoomButton)?.isHidden = true
+                    window?.isMovableByWindowBackground = true
                 }
             }
             .onAppear {
@@ -65,6 +69,14 @@ struct BrowserWindowRoot: View {
             .onReceive(NotificationCenter.default.publisher(for: .openmxcCloseWindow)) { _ in
                 guard isKeyWindow else { return }
                 window?.close()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcMinimizeWindow)) { _ in
+                guard isKeyWindow else { return }
+                window?.miniaturize(nil)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcZoomWindow)) { _ in
+                guard isKeyWindow else { return }
+                window?.zoom(nil)
             }
             .onDisappear {
                 if !controller.isPrivate {
