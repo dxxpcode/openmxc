@@ -22,6 +22,10 @@ struct BrowserWindowRoot: View {
                     self.window = window
                     window?.titleVisibility = .hidden
                     window?.title = ""
+                    window?.standardWindowButton(.closeButton)?.isHidden = true
+                    window?.standardWindowButton(.miniaturizeButton)?.isHidden = true
+                    window?.standardWindowButton(.zoomButton)?.isHidden = true
+                    window?.isMovableByWindowBackground = true
                 }
             }
             .onAppear {

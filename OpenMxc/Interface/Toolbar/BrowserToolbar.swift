@@ -8,6 +8,8 @@ struct BrowserToolbar: View {
 
     var body: some View {
         HStack(spacing: 16) {
+            windowControls
+
             HStack(spacing: 4) {
                 navButton(
                     symbol: "chevron.left",
@@ -72,6 +74,30 @@ struct BrowserToolbar: View {
                 self.window = window
             }
         }
+    }
+
+    private var windowControls: some View {
+        HStack(spacing: 2) {
+            windowButton(symbol: "xmark", help: "Close Window", action: { window?.close() })
+            windowButton(symbol: "minus", help: "Minimize", action: { window?.miniaturize(nil) })
+            windowButton(
+                symbol: "arrow.up.left.and.arrow.down.right",
+                help: "Zoom",
+                action: { window?.zoom(nil) }
+            )
+        }
+    }
+
+    private func windowButton(symbol: String, help: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .frame(width: 18, height: 18)
+                .background(Color(nsColor: .controlBackgroundColor), in: Circle())
+        }
+        .buttonStyle(.plain)
+        .help(help)
     }
 
     @ViewBuilder
