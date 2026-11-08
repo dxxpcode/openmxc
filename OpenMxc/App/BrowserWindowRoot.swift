@@ -5,6 +5,7 @@ struct BrowserWindowRoot: View {
     @AppStorage("appTheme") private var appTheme = "system"
     @State private var showOnboarding = false
     @State private var showAskPanel = false
+    @State private var showTabGroupsPanel = false
     @State private var window: NSWindow?
 
     init(isPrivate: Bool = false) {
@@ -12,7 +13,28 @@ struct BrowserWindowRoot: View {
     }
 
     var body: some View {
-        MainWindowView(showAskPanel: $showAskPanel)
+        content
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcCloseWindow)) { _ in
+                guard isKeyWindow else { return }
+                window?.close()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcMinimizeWindow)) { _ in
+                guard isKeyWindow else { return }
+                window?.miniaturize(nil)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcZoomWindow)) { _ in
+                guard isKeyWindow else { return }
+                window?.zoom(nil)
+            }
+            .onDisappear {
+                if !controller.isPrivate {
+                    SessionStore.shared.unregister(controller)
+                }
+            }
+    }
+
+    private var content: some View {
+        MainWindowView(showAskPanel: $showAskPanel, showTabGroupsPanel: $showTabGroupsPanel)
             .environment(controller)
             .preferredColorScheme(colorScheme)
             .sheet(isPresented: $showOnboarding) {
@@ -62,6 +84,10 @@ struct BrowserWindowRoot: View {
                 guard isKeyWindow else { return }
                 showAskPanel = true
             }
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcOrganizeTabs)) { _ in
+                guard isKeyWindow else { return }
+                showTabGroupsPanel = true
+            }
             .onReceive(NotificationCenter.default.publisher(for: .openmxcToggleFavorite)) { _ in
                 guard isKeyWindow else { return }
                 controller.toggleFavorite()
@@ -71,23 +97,6 @@ struct BrowserWindowRoot: View {
                       let index = notification.userInfo?["index"] as? Int
                 else { return }
                 controller.selectTab(at: index)
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .openmxcCloseWindow)) { _ in
-                guard isKeyWindow else { return }
-                window?.close()
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .openmxcMinimizeWindow)) { _ in
-                guard isKeyWindow else { return }
-                window?.miniaturize(nil)
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .openmxcZoomWindow)) { _ in
-                guard isKeyWindow else { return }
-                window?.zoom(nil)
-            }
-            .onDisappear {
-                if !controller.isPrivate {
-                    SessionStore.shared.unregister(controller)
-                }
             }
     }
 
