@@ -20,9 +20,9 @@ struct TabSidebarView: View {
     private var header: some View {
         HStack {
             if controller.isPrivate {
-                Label("Private", systemImage: "lock.fill")
+                Label("Private", systemImage: "hand.raised")
                     .font(.headline)
-                    .foregroundStyle(.purple)
+                    .foregroundStyle(.secondary)
             } else {
                 Text(BrowserConfiguration.applicationName)
                     .font(.headline)
@@ -80,12 +80,22 @@ struct TabSidebarView: View {
     }
 
     private func libraryRow(_ section: LibrarySection) -> some View {
-        Button {
+        let isSelected = controller.librarySection == section
+        return Button {
             controller.showLibrary(section)
         } label: {
             Label(section.title, systemImage: section.symbol)
                 .font(.callout)
+                .foregroundStyle(isSelected ? Color.primary : Color.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .fill(Color.accentColor.opacity(0.16))
+                    }
+                }
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

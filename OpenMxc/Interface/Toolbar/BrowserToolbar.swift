@@ -1,138 +1,223 @@
+import AppKit
 import SwiftUI
 
-struct BrowserToolbar: View {
-    @Environment(BrowserController.self) private var controller
-    @FocusState private var isAddressFocused: Bool
+/// Native macOS toolbar content: sidebar toggle, navigation, address/search
+/// field, reload/stop, downloads, new tab, and browser menu.
+struct BrowserToolbarContent: ToolbarContent {
+    let controller: BrowserController
+
+    var body: some ToolbarContent {
+        ToolbarItemGroup(placement: .navigation) {
+            Button {
+                controller.toggleSidebar()
+            } label: {
+                Label("Sidebar", systemImage: "sidebar.left")
+            }
+            .help("Toggle Sidebar")
+            .accessibilityLabel("Toggle Sidebar")
+
+            Button {
+                controller.selectedNavigation?.goBack()
+            } label: {
+                Label("Back", systemImage: "chevron.left")
+            }
+            .disabled(!(controller.selectedNavigation?.canGoBack ?? false))
+            .help("Back")
+            .accessibilityLabel("Back")
+
+            Button {
+                controller.selectedNavigation?.goForward()
+            } label: {
+                Label("Forward", systemImage: "chevron.right")
+            }
+            .disabled(!(controller.selectedNavigation?.canGoForward ?? false))
+            .help("Forward")
+            .accessibilityLabel("Forward")
+        }
+
+        ToolbarItem(placement: .principal) {
+            AddressFieldView(controller: controller)
+        }
+
+        ToolbarItemGroup(placement: .primaryAction) {
+            if controller.selectedNavigation?.isLoading ?? false {
+                Button {
+                    controller.selectedNavigation?.stopLoading()
+                } label: {
+                    Label("Stop", systemImage: "xmark")
+                }
+                .help("Stop Loading")
+                .accessibilityLabel("Stop Loading")
+            } else {
+                Button {
+                    controller.selectedNavigation?.reload()
+                } label: {
+                    Label("Reload", systemImage: "arrow.clockwise")
+                }
+                .disabled(!(controller.selectedNavigation?.hasCommittedNavigation ?? false))
+                .help("Reload")
+                .accessibilityLabel("Reload")
+            }
+
+            Button {
+                controller.showLibrary(.downloads)
+            } label: {
+                Label("Downloads", systemImage: "arrow.down.circle")
+            }
+            .help("Downloads")
+            .accessibilityLabel("Downloads")
+
+            Button {
+                controller.newTab()
+            } label: {
+                Label("New Tab", systemImage: "plus")
+            }
+            .help("New Tab")
+            .accessibilityLabel("New Tab")
+
+            PageInfoButton(controller: controller)
+
+            BrowserMenu(controller: controller)
+        }
+    }
+}
+
+private struct AddressFieldView: View {
+    let controller: BrowserController
+    @FocusState private var isFocused: Bool
     @State private var addressText = ""
     @State private var window: NSWindow?
 
     var body: some View {
-        HStack(spacing: 8) {
-            navButton(
-                symbol: "chevron.left",
-                help: "Back",
-                enabled: controller.selectedNavigation?.canGoBack ?? false
-            ) {
-                controller.selectedNavigation?.goBack()
-            }
-
-            navButton(
-                symbol: "chevron.right",
-                help: "Forward",
-                enabled: controller.selectedNavigation?.canGoForward ?? false
-            ) {
-                controller.selectedNavigation?.goForward()
-            }
-
-            if controller.selectedNavigation?.isLoading ?? false {
-                navButton(symbol: "xmark", help: "Stop") {
-                    controller.selectedNavigation?.stopLoading()
-                }
-            } else {
-                navButton(
-                    symbol: "arrow.clockwise",
-                    help: "Reload",
-                    enabled: controller.selectedNavigation?.hasCommittedNavigation ?? false
-                ) {
-                    controller.selectedNavigation?.reload()
-                }
-            }
-
-            addressField
-
-            Button {
-                controller.toggleFavorite()
-            } label: {
-                Image(systemName: controller.currentPageIsFavorite ? "star.fill" : "star")
-            }
-            .buttonStyle(.borderless)
-            .help(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
-            .disabled(controller.selectedNavigation?.currentURL == nil)
-            .accessibilityLabel(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
-
-            shareButton
-
-            navButton(symbol: "plus", help: "New Tab") {
-                controller.newTab()
-            }
-
-            Button {
-                controller.toggleSidebar()
-            } label: {
-                Image(systemName: "sidebar.left")
-            }
-            .buttonStyle(.borderless)
-            .help("Toggle Sidebar")
-            .accessibilityLabel("Toggle Sidebar")
-        }
-        .padding(.horizontal, 12)
-        .frame(height: BrowserConstants.toolbarHeight)
-        .onChange(of: controller.tabManager.selectedTabID) { _, _ in
-            syncAddressText()
-        }
-        .onChange(of: controller.selectedNavigation?.currentURL) { _, _ in
-            syncAddressText()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .openmxcAddressBarFocus)) { _ in
-            guard window?.isKeyWindow == true else { return }
-            isAddressFocused = true
-        }
-        .background {
-            WindowAccessor { window in
-                self.window = window
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var shareButton: some View {
-        if let url = controller.selectedNavigation?.currentURL {
-            ShareLink(item: url) {
-                Image(systemName: "square.and.arrow.up")
-            }
-            .buttonStyle(.borderless)
-            .help("Share")
-            .accessibilityLabel("Share")
-        } else {
-            navButton(symbol: "square.and.arrow.up", help: "Share", enabled: false) {}
-        }
-    }
-
-    private var addressField: some View {
         TextField("Search or enter address", text: $addressText)
             .textFieldStyle(.plain)
-            .font(.body)
-            .focused($isAddressFocused)
+            .focused($isFocused)
             .onSubmit {
                 controller.navigate(to: addressText)
-                isAddressFocused = false
+                isFocused = false
             }
-            .padding(.horizontal, 10)
-            .frame(maxWidth: .infinity)
-            .frame(height: 30)
-            .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 0.5)
+            .frame(minWidth: 220, idealWidth: 380, maxWidth: 560)
+            .onChange(of: controller.tabManager.selectedTabID) { _, _ in syncAddressText() }
+            .onChange(of: controller.selectedNavigation?.currentURL) { _, _ in syncAddressText() }
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcAddressBarFocus)) { _ in
+                guard window?.isKeyWindow == true else { return }
+                isFocused = true
+            }
+            .background {
+                WindowAccessor { window in
+                    self.window = window
+                }
             }
     }
 
     private func syncAddressText() {
-        guard !isAddressFocused else { return }
+        guard !isFocused else { return }
         addressText = controller.selectedNavigation?.currentURL?.absoluteString ?? ""
     }
+}
 
-    private func navButton(
-        symbol: String,
-        help: String,
-        enabled: Bool = true,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            Image(systemName: symbol)
+private struct PageInfoButton: View {
+    let controller: BrowserController
+    @State private var isPresented = false
+
+    var body: some View {
+        let url = controller.selectedNavigation?.currentURL
+        Button {
+            isPresented.toggle()
+        } label: {
+            Label("Page Info", systemImage: securitySymbol(for: url))
         }
-        .buttonStyle(.borderless)
-        .help(help)
-        .disabled(!enabled)
+        .help("Page Info")
+        .accessibilityLabel("Page Info")
+        .popover(isPresented: $isPresented, arrowEdge: .bottom) {
+            pageInfoContent(url: url)
+                .padding(16)
+                .frame(minWidth: 280)
+        }
+    }
+
+    private func securitySymbol(for url: URL?) -> String {
+        switch url?.scheme {
+        case "https": return "lock.fill"
+        case "http": return "lock.open.fill"
+        default: return "info.circle"
+        }
+    }
+
+    @ViewBuilder
+    private func pageInfoContent(url: URL?) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if let url {
+                Text(url.host() ?? url.absoluteString)
+                    .font(.headline)
+                Text(url.absoluteString)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .textSelection(.enabled)
+                Divider()
+            }
+            Label(securityDescription(for: url), systemImage: securitySymbol(for: url))
+                .font(.callout)
+            Text("HTTPS encrypts the connection to this website, but it does not guarantee that the website is trustworthy.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private func securityDescription(for url: URL?) -> String {
+        switch url?.scheme {
+        case "https": return "Connection is encrypted"
+        case "http": return "Connection is not encrypted"
+        default: return "No web address loaded"
+        }
+    }
+}
+
+private struct BrowserMenu: View {
+    let controller: BrowserController
+
+    var body: some View {
+        Menu {
+            Button("Add to Favorites") {
+                controller.toggleFavorite()
+            }
+            .disabled(controller.selectedNavigation?.currentURL == nil)
+
+            Divider()
+
+            Button("Show Bookmarks") {
+                controller.showLibrary(.bookmarks)
+            }
+            Button("Show History") {
+                controller.showLibrary(.history)
+            }
+            Button("Show Downloads") {
+                controller.showLibrary(.downloads)
+            }
+
+            Divider()
+
+            Button("New Private Window") {
+                NotificationCenter.default.post(name: .openmxcNewPrivateWindow, object: nil)
+            }
+            .keyboardShortcut("n", modifiers: [.command, .shift])
+
+            Divider()
+
+            Button("Reload Page") {
+                controller.selectedNavigation?.reload()
+            }
+            .keyboardShortcut("r", modifiers: .command)
+            .disabled(!(controller.selectedNavigation?.hasCommittedNavigation ?? false))
+
+            Button("Stop Loading") {
+                controller.selectedNavigation?.stopLoading()
+            }
+            .disabled(!(controller.selectedNavigation?.isLoading ?? false))
+        } label: {
+            Label("Browser Menu", systemImage: "ellipsis")
+        }
+        .help("Browser Menu")
+        .accessibilityLabel("Browser Menu")
     }
 }

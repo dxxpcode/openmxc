@@ -10,14 +10,18 @@ struct StartPageView: View {
     @State private var editedAddress = ""
 
     var body: some View {
-        VStack(spacing: 28) {
-            if !greetingIsHidden {
-                greeting
+        VStack(spacing: 0) {
+            Spacer(minLength: 48)
+            VStack(spacing: 32) {
+                if !greetingIsHidden {
+                    greeting
+                }
+
+                searchField
+
+                favoritesSection
             }
-
-            searchField
-
-            favoritesSection
+            Spacer(minLength: 48)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.horizontal, 32)
@@ -49,13 +53,12 @@ struct StartPageView: View {
             Image("OpenMxcLogo")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 56, height: 56)
-                .clipShape(RoundedRectangle(cornerRadius: 13, style: .continuous))
+                .frame(width: 64, height: 64)
+                .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
 
             Text(Self.greetingText)
-                .font(.system(size: 22, weight: .medium))
+                .font(.system(size: 24, weight: .medium))
         }
-        .padding(.top, 40)
     }
 
     private var searchField: some View {
@@ -69,11 +72,11 @@ struct StartPageView: View {
                     searchText = ""
                 }
         }
-        .padding(.horizontal, 12)
-        .frame(width: 420, height: 34)
-        .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+        .padding(.horizontal, 14)
+        .frame(width: 460, height: 38)
+        .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 9, style: .continuous)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 0.5)
         }
     }
@@ -81,9 +84,16 @@ struct StartPageView: View {
     @ViewBuilder
     private var favoritesSection: some View {
         if controller.favorites.favorites.isEmpty {
-            Text("No favorites yet. Add sites from the toolbar to see them here.")
-                .font(.callout)
-                .foregroundStyle(.secondary)
+            VStack(spacing: 8) {
+                Image(systemName: "star")
+                    .font(.system(size: 28, weight: .light))
+                    .foregroundStyle(.tertiary)
+                Text("No favorites yet")
+                    .font(.headline)
+                Text("Add sites from the toolbar to see them here.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
         } else {
             LazyVGrid(
                 columns: [GridItem(.adaptive(minimum: 110, maximum: 140), spacing: 16)],
@@ -160,10 +170,11 @@ private struct FavoriteTileView: View {
     let action: () -> Void
 
     @State private var icon: NSImage?
+    @State private var isHovered = false
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 6) {
+            VStack(spacing: 8) {
                 iconView
                 Text(favorite.title)
                     .font(.callout)
@@ -171,10 +182,16 @@ private struct FavoriteTileView: View {
                     .truncationMode(.tail)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 8)
+            .background {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(isHovered ? Color.primary.opacity(0.06) : .clear)
+            }
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
         .onAppear {
             FaviconService.shared.icon(for: favorite.url) { image in
                 icon = image
@@ -187,12 +204,14 @@ private struct FavoriteTileView: View {
         if let icon {
             Image(nsImage: icon)
                 .resizable()
-                .frame(width: 32, height: 32)
+                .frame(width: 40, height: 40)
+                .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
         } else {
             Image(systemName: "globe")
                 .font(.system(size: 24))
                 .foregroundStyle(.secondary)
-                .frame(width: 32, height: 32)
+                .frame(width: 40, height: 40)
+                .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
         }
     }
 }

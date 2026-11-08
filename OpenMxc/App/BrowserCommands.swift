@@ -22,6 +22,11 @@ struct BrowserCommands: Commands {
                 NotificationCenter.default.post(name: .openmxcCloseWindow, object: nil)
             }
             .keyboardShortcut("w", modifiers: [.command, .shift])
+
+            Button("Reopen Closed Tab") {
+                NotificationCenter.default.post(name: .openmxcReopenClosedTab, object: nil)
+            }
+            .keyboardShortcut("t", modifiers: [.command, .shift])
         }
 
         CommandGroup(after: .toolbar) {
@@ -33,7 +38,24 @@ struct BrowserCommands: Commands {
             Button("Toggle Sidebar") {
                 NotificationCenter.default.post(name: .openmxcToggleSidebar, object: nil)
             }
-            .keyboardShortcut("s", modifiers: [.control, .command])
+            .keyboardShortcut("s", modifiers: [.command, .shift])
+        }
+
+        CommandGroup(after: .sidebar) {
+            Button("Show Bookmarks") {
+                NotificationCenter.default.post(name: .openmxcShowLibrary, object: nil, userInfo: ["section": LibrarySection.bookmarks.rawValue])
+            }
+            .keyboardShortcut("b", modifiers: [.command, .option])
+
+            Button("Show History") {
+                NotificationCenter.default.post(name: .openmxcShowLibrary, object: nil, userInfo: ["section": LibrarySection.history.rawValue])
+            }
+            .keyboardShortcut("y", modifiers: .command)
+
+            Button("Show Downloads") {
+                NotificationCenter.default.post(name: .openmxcShowLibrary, object: nil, userInfo: ["section": LibrarySection.downloads.rawValue])
+            }
+            .keyboardShortcut("l", modifiers: [.command, .shift])
         }
 
         CommandGroup(after: .sidebar) {
@@ -77,4 +99,6 @@ extension Notification.Name {
     static let openmxcToggleFavorite = Notification.Name("openmxc.toggleFavorite")
     static let openmxcSelectTabIndex = Notification.Name("openmxc.selectTabIndex")
     static let openmxcAddressBarFocus = Notification.Name("openmxc.addressBarFocus")
+    static let openmxcReopenClosedTab = Notification.Name("openmxc.reopenClosedTab")
+    static let openmxcShowLibrary = Notification.Name("openmxc.showLibrary")
 }

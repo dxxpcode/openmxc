@@ -13,6 +13,9 @@ struct BrowserWindowRoot: View {
     var body: some View {
         MainWindowView()
             .environment(controller)
+            .toolbar {
+                BrowserToolbarContent(controller: controller)
+            }
             .preferredColorScheme(colorScheme)
             .sheet(isPresented: $showOnboarding) {
                 OnboardingView()
@@ -20,11 +23,43 @@ struct BrowserWindowRoot: View {
             .background {
                 WindowAccessor { window in
                     self.window = window
+                    window?.titleVisibility = .hidden
+                    window?.title = ""
                 }
             }
             .onAppear {
                 showOnboarding = !controller.isPrivate && !AppSettings.bool("onboardingCompleted", default: false)
             }
+            .modifier(TabCommandHandlers(controller: controller, window: $window))
+            .modifier(LibraryCommandHandlers(controller: controller, window: $window))
+            .onDisappear {
+                if !controller.isPrivate {
+                    SessionStore.shared.unregister(controller)
+                }
+            }
+    }
+
+    private var colorScheme: ColorScheme? {
+        switch appTheme {
+        case "light": return .light
+        case "dark": return .dark
+        default: return nil
+        }
+    }
+}
+
+private struct TabCommandHandlers: ViewModifier {
+    let controller: BrowserController
+    @Binding var window: NSWindow?
+
+    @Environment(\.openWindow) private var openWindow
+
+    private var isKeyWindow: Bool {
+        window?.isKeyWindow ?? false
+    }
+
+    func body(content: Content) -> some View {
+        content
             .onReceive(NotificationCenter.default.publisher(for: .openmxcNewTab)) { _ in
                 guard isKeyWindow else { return }
                 controller.newTab()
@@ -44,7 +79,7 @@ struct BrowserWindowRoot: View {
             }
             .onReceive(NotificationCenter.default.publisher(for: .openmxcNewPrivateWindow)) { _ in
                 guard isKeyWindow else { return }
-                openPrivateWindow()
+                openWindow(id: BrowserConstants.privateWindowID)
             }
             .onReceive(NotificationCenter.default.publisher(for: .openmxcFocusAddressBar)) { _ in
                 guard isKeyWindow else { return }
@@ -64,28 +99,29 @@ struct BrowserWindowRoot: View {
                 guard isKeyWindow else { return }
                 window?.close()
             }
-            .onDisappear {
-                if !controller.isPrivate {
-                    SessionStore.shared.unregister(controller)
-                }
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcReopenClosedTab)) { _ in
+                guard isKeyWindow else { return }
+                controller.tabManager.reopenClosedTab()
             }
     }
+}
+
+private struct LibraryCommandHandlers: ViewModifier {
+    let controller: BrowserController
+    @Binding var window: NSWindow?
 
     private var isKeyWindow: Bool {
         window?.isKeyWindow ?? false
     }
 
-    @Environment(\.openWindow) private var openWindow
-
-    private func openPrivateWindow() {
-        openWindow(id: BrowserConstants.privateWindowID)
-    }
-
-    private var colorScheme: ColorScheme? {
-        switch appTheme {
-        case "light": return .light
-        case "dark": return .dark
-        default: return nil
-        }
+    func body(content: Content) -> some View {
+        content
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcShowLibrary)) { notification in
+                guard isKeyWindow,
+                      let raw = notification.userInfo?["section"] as? String,
+                      let section = LibrarySection(rawValue: raw)
+                else { return }
+                controller.showLibrary(section)
+            }
     }
 }

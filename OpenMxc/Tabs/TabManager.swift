@@ -6,6 +6,7 @@ final class TabManager {
     private(set) var tabs: [TabModel] = []
     private(set) var selectedTabID: UUID?
     private let isPrivate: Bool
+    private(set) var recentlyClosed: [(url: URL, title: String)] = []
 
     init(isPrivate: Bool = false) {
         self.isPrivate = isPrivate
@@ -35,6 +36,10 @@ final class TabManager {
     func closeTab(_ tab: TabModel) {
         guard let index = tabs.firstIndex(where: { $0.id == tab.id }) else { return }
         let wasSelected = tab.id == selectedTabID
+        if !isPrivate, let url = tab.navigation.currentURL {
+            recentlyClosed.insert((url: url, title: tab.displayTitle), at: 0)
+            recentlyClosed = Array(recentlyClosed.prefix(10))
+        }
         tabs.remove(at: index)
 
         if tabs.isEmpty {
@@ -47,6 +52,13 @@ final class TabManager {
             selectedTabID = tabs[nextIndex].id
             tabs[nextIndex].activate()
         }
+    }
+
+    @discardableResult
+    func reopenClosedTab() -> TabModel? {
+        guard !isPrivate, let closed = recentlyClosed.first else { return nil }
+        recentlyClosed.removeFirst()
+        return newTab(url: closed.url)
     }
 
     func select(_ tab: TabModel) {

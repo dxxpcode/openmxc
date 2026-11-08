@@ -21,9 +21,7 @@ struct MainWindowView: View {
             Divider()
 
             VStack(spacing: 0) {
-                BrowserToolbar()
                 loadingProgress
-                Divider()
                 ContentAreaView()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
