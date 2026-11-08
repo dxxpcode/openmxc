@@ -12,5 +12,17 @@ struct MainWindowView: View {
             minWidth: BrowserConstants.minimumWindowWidth,
             minHeight: BrowserConstants.minimumWindowHeight
         )
+        .overlay {
+            if controller.showTabSwitcher {
+                TabSwitcherView()
+            }
+        }
+        .overlay(alignment: .trailing) {
+            if controller.showLibraryPanel {
+                LibraryPanelView()
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+            }
+        }
+        .animation(.easeInOut(duration: 0.18), value: controller.showLibraryPanel)
     }
 }

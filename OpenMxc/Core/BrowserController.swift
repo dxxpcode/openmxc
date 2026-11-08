@@ -10,6 +10,9 @@ final class BrowserController {
     var sidebarIsVisible = true
     private(set) var sidebarWidth: CGFloat = BrowserConstants.sidebarDefaultWidth
     var librarySection: LibrarySection?
+    var showTabSwitcher = false
+    var showLibraryPanel = false
+    var libraryPanelSection: LibrarySection = .history
 
     init(isPrivate: Bool = false) {
         self.isPrivate = isPrivate
@@ -43,6 +46,32 @@ final class BrowserController {
 
     func showLibrary(_ section: LibrarySection) {
         librarySection = section
+    }
+
+    func toggleTabSwitcher() {
+        showTabSwitcher.toggle()
+        if showTabSwitcher {
+            showLibraryPanel = false
+        }
+    }
+
+    func toggleLibraryPanel(section: LibrarySection? = nil) {
+        if let section {
+            libraryPanelSection = section
+        }
+        showLibraryPanel.toggle()
+        if showLibraryPanel {
+            showTabSwitcher = false
+        }
+    }
+
+    func open(url: URL) {
+        librarySection = nil
+        if let selectedTab = tabManager.selectedTab {
+            selectedTab.navigation.load(url)
+        } else {
+            tabManager.newTab(url: url)
+        }
     }
 
     func navigate(to input: String) {

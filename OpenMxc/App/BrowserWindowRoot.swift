@@ -78,6 +78,7 @@ struct BrowserWindowRoot: View {
                 guard isKeyWindow else { return }
                 window?.zoom(nil)
             }
+            .modifier(OverlayCommandHandlers(controller: controller, isKeyWindow: isKeyWindow))
             .onDisappear {
                 if !controller.isPrivate {
                     SessionStore.shared.unregister(controller)
@@ -101,5 +102,22 @@ struct BrowserWindowRoot: View {
         case "dark": return .dark
         default: return nil
         }
+    }
+}
+
+private struct OverlayCommandHandlers: ViewModifier {
+    let controller: BrowserController
+    let isKeyWindow: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcTabSwitcher)) { _ in
+                guard isKeyWindow else { return }
+                controller.toggleTabSwitcher()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcLibraryPanel)) { _ in
+                guard isKeyWindow else { return }
+                controller.toggleLibraryPanel()
+            }
     }
 }

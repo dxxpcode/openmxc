@@ -45,6 +45,15 @@ struct BrowserToolbar: View {
             addressField
 
             Button {
+                controller.toggleTabSwitcher()
+            } label: {
+                Image(systemName: "rectangle.stack")
+            }
+            .buttonStyle(.borderless)
+            .help("Tab Switcher (⌘⇧A)")
+            .accessibilityLabel("Tab Switcher")
+
+            Button {
                 controller.toggleFavorite()
             } label: {
                 Image(systemName: controller.currentPageIsFavorite ? "star.fill" : "star")
@@ -55,6 +64,15 @@ struct BrowserToolbar: View {
             .accessibilityLabel(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
 
             shareButton
+
+            Button {
+                controller.toggleLibraryPanel()
+            } label: {
+                Image(systemName: "books.vertical")
+            }
+            .buttonStyle(.borderless)
+            .help("Library (⌘⌥L)")
+            .accessibilityLabel("Library")
 
             Button {
                 appTheme = colorScheme == .dark ? "light" : "dark"
