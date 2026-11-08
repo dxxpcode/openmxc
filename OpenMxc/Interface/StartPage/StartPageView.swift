@@ -3,6 +3,7 @@ import SwiftUI
 
 struct StartPageView: View {
     @Environment(BrowserController.self) private var controller
+    @Environment(\.colorScheme) private var colorScheme
 
     @State private var searchText = ""
     @State private var editingFavorite: Favorite?
@@ -51,11 +52,19 @@ struct StartPageView: View {
         }
         .padding(.horizontal, 16)
         .frame(width: 520, height: 40)
-        .background(Color(nsColor: .textBackgroundColor), in: Capsule())
+        .background(fieldColor, in: Capsule())
         .overlay {
             Capsule()
-                .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 0.5)
+                .strokeBorder(fieldBorderColor, lineWidth: 0.5)
         }
+    }
+
+    private var fieldColor: Color {
+        colorScheme == .dark ? .black : Color(nsColor: .textBackgroundColor)
+    }
+
+    private var fieldBorderColor: Color {
+        colorScheme == .dark ? Color.primary.opacity(0.22) : Color(nsColor: .separatorColor)
     }
 
     @ViewBuilder

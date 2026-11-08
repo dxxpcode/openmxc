@@ -86,6 +86,14 @@ struct BrowserToolbar: View {
         }
     }
 
+    private var fieldColor: Color {
+        colorScheme == .dark ? .black : Color(nsColor: .textBackgroundColor)
+    }
+
+    private var fieldBorderColor: Color {
+        colorScheme == .dark ? Color.primary.opacity(0.22) : Color(nsColor: .separatorColor)
+    }
+
     private var canvasColor: Color {
         colorScheme == .dark ? .black : Color(nsColor: .windowBackgroundColor)
     }
@@ -116,10 +124,10 @@ struct BrowserToolbar: View {
             .padding(.horizontal, 14)
             .frame(maxWidth: 640)
             .frame(height: 32)
-            .background(Color(nsColor: .textBackgroundColor), in: Capsule())
+            .background(fieldColor, in: Capsule())
             .overlay {
                 Capsule()
-                    .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 0.5)
+                    .strokeBorder(fieldBorderColor, lineWidth: 0.5)
             }
     }
 
