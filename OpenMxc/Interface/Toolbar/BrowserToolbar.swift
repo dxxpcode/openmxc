@@ -68,6 +68,7 @@ struct BrowserToolbar: View {
         .padding(.horizontal, 20)
         .padding(.vertical, 10)
         .frame(height: BrowserConstants.toolbarHeight)
+        .background(canvasColor)
         .onChange(of: controller.tabManager.selectedTabID) { _, _ in
             syncAddressText()
         }
@@ -83,6 +84,10 @@ struct BrowserToolbar: View {
                 self.window = window
             }
         }
+    }
+
+    private var canvasColor: Color {
+        colorScheme == .dark ? .black : Color(nsColor: .windowBackgroundColor)
     }
 
     @ViewBuilder

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentAreaView: View {
     @Environment(BrowserController.self) private var controller
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         Group {
@@ -12,10 +13,14 @@ struct ContentAreaView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(nsColor: .windowBackgroundColor))
+        .background(canvasColor)
         .onChange(of: controller.tabManager.selectedTabID) { _, _ in
             controller.librarySection = nil
         }
+    }
+
+    private var canvasColor: Color {
+        colorScheme == .dark ? .black : Color(nsColor: .windowBackgroundColor)
     }
 
     @ViewBuilder
