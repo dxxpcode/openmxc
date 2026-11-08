@@ -3,6 +3,7 @@ import SwiftUI
 
 struct MainWindowView: View {
     @Environment(BrowserController.self) private var controller
+    @Environment(\.openWindow) private var openWindow
 
     @State private var sidebarDragStartWidth: CGFloat = 0
 
@@ -67,6 +68,8 @@ struct MainWindowView: View {
         VStack(spacing: 0) {
             Button("New Tab") { controller.newTab() }
                 .keyboardShortcut("t", modifiers: .command)
+            Button("New Private Window") { openWindow(id: BrowserConstants.privateWindowID) }
+                .keyboardShortcut("n", modifiers: [.command, .shift])
             Button("Close Tab") { controller.closeSelectedTab() }
                 .keyboardShortcut("w", modifiers: .command)
             Button("Add to Favorites") { controller.toggleFavorite() }

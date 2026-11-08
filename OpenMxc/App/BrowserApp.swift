@@ -10,5 +10,11 @@ struct BrowserApp: App {
         }
         .defaultSize(width: BrowserConstants.defaultWindowWidth, height: BrowserConstants.defaultWindowHeight)
         .windowResizability(.contentMinSize)
+
+        WindowGroup(id: BrowserConstants.privateWindowID) {
+            BrowserWindowRoot(isPrivate: true)
+        }
+        .defaultSize(width: BrowserConstants.defaultWindowWidth, height: BrowserConstants.defaultWindowHeight)
+        .windowResizability(.contentMinSize)
     }
 }

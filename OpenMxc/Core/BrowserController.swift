@@ -3,20 +3,25 @@ import SwiftUI
 @Observable
 @MainActor
 final class BrowserController {
-    let tabManager = TabManager()
+    let tabManager: TabManager
     let favorites = FavoritesStore.shared
+    let isPrivate: Bool
 
     var sidebarIsVisible = true
     private(set) var sidebarWidth: CGFloat = BrowserConstants.sidebarDefaultWidth
     var librarySection: LibrarySection?
 
-    init() {
-        if hasStressTabsArgument {
-            applyStressTabsArgumentIfPresent()
-        } else if let savedWindow = SessionStore.shared.nextWindowSession() {
-            tabManager.restoreWindow(savedWindow)
+    init(isPrivate: Bool = false) {
+        self.isPrivate = isPrivate
+        self.tabManager = TabManager(isPrivate: isPrivate)
+        if !isPrivate {
+            if hasStressTabsArgument {
+                applyStressTabsArgumentIfPresent()
+            } else if let savedWindow = SessionStore.shared.nextWindowSession() {
+                tabManager.restoreWindow(savedWindow)
+            }
+            SessionStore.shared.register(self)
         }
-        SessionStore.shared.register(self)
     }
 
     var selectedNavigation: NavigationManager? {

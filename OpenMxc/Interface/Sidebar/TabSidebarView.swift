@@ -19,8 +19,14 @@ struct TabSidebarView: View {
 
     private var header: some View {
         HStack {
-            Text(BrowserConfiguration.applicationName)
-                .font(.headline)
+            if controller.isPrivate {
+                Label("Private", systemImage: "lock.fill")
+                    .font(.headline)
+                    .foregroundStyle(.purple)
+            } else {
+                Text(BrowserConfiguration.applicationName)
+                    .font(.headline)
+            }
             Spacer()
             Button {
                 controller.newTab()

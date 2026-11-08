@@ -17,7 +17,6 @@ final class NavigationManager: NSObject {
 
     private(set) var lastLoadedURL: URL?
     var isPrivateBrowsing = false
-
     private var observations: [NSKeyValueObservation] = []
     private var pendingMainFrameNavigation = false
     private var pendingDownloadURL: URL?
@@ -25,8 +24,9 @@ final class NavigationManager: NSObject {
     private var activeDownloadItemID: String?
     private var activeDownloadDestination: URL?
 
-    override init() {
-        webView = WebViewFactory.makeWebView()
+    init(isPrivate: Bool = false) {
+        isPrivateBrowsing = isPrivate
+        webView = WebViewFactory.makeWebView(isPrivate: isPrivate)
         super.init()
         webView.navigationDelegate = self
         webView.uiDelegate = self
@@ -163,11 +163,18 @@ extension NavigationManager: WKNavigationDelegate {
         decidePolicyFor navigationResponse: WKNavigationResponse,
         decisionHandler: @escaping @MainActor (WKNavigationResponsePolicy) -> Void
     ) {
+        guard let responseURL = navigationResponse.response.url,
+              let scheme = responseURL.scheme?.lowercased(),
+              scheme == "http" || scheme == "https"
+        else {
+            decisionHandler(.cancel)
+            return
+        }
         if navigationResponse.canShowMIMEType {
             pendingDownloadURL = nil
             decisionHandler(.allow)
         } else {
-            pendingDownloadURL = navigationResponse.response.url
+            pendingDownloadURL = responseURL
             decisionHandler(.download)
         }
     }
@@ -219,7 +226,69 @@ extension NavigationManager: WKNavigationDelegate {
     }
 }
 
+extension NavigationManager {
+    func requestPermission(
+        _ type: PermissionManager.PermissionType,
+        for origin: String,
+        completion: @escaping @MainActor (Bool) -> Void
+    ) {
+        if let stored = PermissionManager.shared.decision(for: type, origin: origin) {
+            completion(stored == .allow)
+            return
+        }
+
+        let alert = NSAlert()
+        alert.messageText = "\"\(origin)\" would like to use your \(type.displayName.lowercased())"
+        alert.informativeText = "You can change this later in Settings."
+        alert.addButton(withTitle: "Allow")
+        alert.addButton(withTitle: "Deny")
+        let rememberCheckbox = NSButton(checkboxWithTitle: "Remember for this website", target: nil, action: nil)
+        rememberCheckbox.state = .off
+        alert.accessoryView = rememberCheckbox
+        alert.window.initialFirstResponder = alert.window.contentView
+
+        let response = alert.runModal()
+        let allowed = response == .alertFirstButtonReturn
+        if rememberCheckbox.state == .on {
+            PermissionManager.shared.setDecision(allowed ? .allow : .deny, for: type, origin: origin)
+        }
+        completion(allowed)
+    }
+}
+
 extension NavigationManager: WKUIDelegate {
+    func webView(
+        _ webView: WKWebView,
+        requestMediaCapturePermissionFor origin: WKSecurityOrigin,
+        initiatedByFrame frame: WKFrameInfo,
+        type: WKMediaCaptureType,
+        decisionHandler: @escaping @MainActor (WKPermissionDecision) -> Void
+    ) {
+        let permissionType: PermissionManager.PermissionType
+        switch type {
+        case .camera: permissionType = .camera
+        case .microphone: permissionType = .microphone
+        case .cameraAndMicrophone: permissionType = .cameraAndMicrophone
+        @unknown default: permissionType = .cameraAndMicrophone
+        }
+        let originKey = "\(origin.protocol)://\(origin.host)"
+        requestPermission(permissionType, for: originKey) { allowed in
+            decisionHandler(allowed ? .grant : .deny)
+        }
+    }
+
+    func webView(
+        _ webView: WKWebView,
+        requestGeolocationPermissionFor origin: WKSecurityOrigin,
+        initiatedByFrame frame: WKFrameInfo,
+        decisionHandler: @escaping @MainActor (WKPermissionDecision) -> Void
+    ) {
+        let originKey = "\(origin.protocol)://\(origin.host)"
+        requestPermission(.geolocation, for: originKey) { allowed in
+            decisionHandler(allowed ? .grant : .deny)
+        }
+    }
+
     func webView(
         _ webView: WKWebView,
         createWebViewWith configuration: WKWebViewConfiguration,
