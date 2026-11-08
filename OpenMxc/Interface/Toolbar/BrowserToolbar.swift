@@ -4,6 +4,7 @@ struct BrowserToolbar: View {
     @Environment(BrowserController.self) private var controller
     @FocusState private var isAddressFocused: Bool
     @State private var addressText = ""
+    @State private var window: NSWindow?
 
     var body: some View {
         HStack(spacing: 8) {
@@ -47,6 +48,9 @@ struct BrowserToolbar: View {
             .buttonStyle(.borderless)
             .help(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
             .disabled(controller.selectedNavigation?.currentURL == nil)
+            .accessibilityLabel(controller.currentPageIsFavorite ? "Remove Favorite" : "Add to Favorites")
+
+            shareButton
 
             navButton(symbol: "plus", help: "New Tab") {
                 controller.newTab()
@@ -59,23 +63,38 @@ struct BrowserToolbar: View {
             }
             .buttonStyle(.borderless)
             .help("Toggle Sidebar")
+            .accessibilityLabel("Toggle Sidebar")
         }
         .padding(.horizontal, 12)
         .frame(height: BrowserConstants.toolbarHeight)
-        .overlay(alignment: .topLeading) {
-            Button("Focus Address Bar") {
-                isAddressFocused = true
-            }
-            .keyboardShortcut("l", modifiers: .command)
-            .opacity(0)
-            .allowsHitTesting(false)
-            .accessibilityHidden(true)
-        }
         .onChange(of: controller.tabManager.selectedTabID) { _, _ in
             syncAddressText()
         }
         .onChange(of: controller.selectedNavigation?.currentURL) { _, _ in
             syncAddressText()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .openmxcAddressBarFocus)) { _ in
+            guard window?.isKeyWindow == true else { return }
+            isAddressFocused = true
+        }
+        .background {
+            WindowAccessor { window in
+                self.window = window
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var shareButton: some View {
+        if let url = controller.selectedNavigation?.currentURL {
+            ShareLink(item: url) {
+                Image(systemName: "square.and.arrow.up")
+            }
+            .buttonStyle(.borderless)
+            .help("Share")
+            .accessibilityLabel("Share")
+        } else {
+            navButton(symbol: "square.and.arrow.up", help: "Share", enabled: false) {}
         }
     }
 

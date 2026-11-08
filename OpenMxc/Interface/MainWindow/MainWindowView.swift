@@ -3,7 +3,6 @@ import SwiftUI
 
 struct MainWindowView: View {
     @Environment(BrowserController.self) private var controller
-    @Environment(\.openWindow) private var openWindow
 
     @State private var sidebarDragStartWidth: CGFloat = 0
 
@@ -33,9 +32,6 @@ struct MainWindowView: View {
             minWidth: BrowserConstants.minimumWindowWidth,
             minHeight: BrowserConstants.minimumWindowHeight
         )
-        .overlay(alignment: .topLeading) {
-            shortcutButtons
-        }
     }
 
     private var sidebarResizeHandle: some View {
@@ -62,30 +58,6 @@ struct MainWindowView: View {
                         sidebarDragStartWidth = 0
                     }
             )
-    }
-
-    private var shortcutButtons: some View {
-        VStack(spacing: 0) {
-            Button("New Tab") { controller.newTab() }
-                .keyboardShortcut("t", modifiers: .command)
-            Button("New Private Window") { openWindow(id: BrowserConstants.privateWindowID) }
-                .keyboardShortcut("n", modifiers: [.command, .shift])
-            Button("Close Tab") { controller.closeSelectedTab() }
-                .keyboardShortcut("w", modifiers: .command)
-            Button("Add to Favorites") { controller.toggleFavorite() }
-                .keyboardShortcut("d", modifiers: .command)
-            ForEach(1...9, id: \.self) { index in
-                Button("Select Tab \(index)") { controller.selectTab(at: index - 1) }
-                    .keyboardShortcut(KeyEquivalent(Character("\(index)")), modifiers: .command)
-            }
-            Button("Previous Tab") { controller.selectAdjacentTab(-1) }
-                .keyboardShortcut("[", modifiers: [.command, .shift])
-            Button("Next Tab") { controller.selectAdjacentTab(1) }
-                .keyboardShortcut("]", modifiers: [.command, .shift])
-        }
-        .opacity(0)
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
     }
 
     @ViewBuilder
