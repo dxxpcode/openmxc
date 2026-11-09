@@ -9,6 +9,7 @@ struct BrowserToolbar: View {
     @State private var suggestionNavActive = false
     @State private var searchEngines: [SearchEngine] = []
     @State private var currentEngineID = ""
+    @State private var isEngineHovered = false
     @AppStorage("appTheme") private var appTheme = "system"
     @Environment(\.colorScheme) private var colorScheme
 
@@ -234,25 +235,45 @@ struct BrowserToolbar: View {
                 }
             }
         } label: {
-            HStack(spacing: 5) {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 10.5, weight: .semibold))
+            HStack(spacing: 6) {
+                engineMonogram
                 Text(currentEngineName)
                     .font(.system(size: 11, weight: .medium))
                     .lineLimit(1)
                 Image(systemName: "chevron.down")
-                    .font(.system(size: 8, weight: .bold))
+                    .font(.system(size: 7.5, weight: .bold))
+                    .foregroundStyle(.tertiary)
             }
             .foregroundStyle(.secondary)
-            .padding(.horizontal, 10)
+            .padding(.leading, 5)
+            .padding(.trailing, 10)
             .frame(height: 28)
-            .background(Color.primary.opacity(0.06), in: Capsule())
+            .background {
+                Capsule()
+                    .fill(Color.primary.opacity(isEngineHovered ? 0.1 : 0.05))
+            }
+            .overlay {
+                Capsule()
+                    .strokeBorder(Color.primary.opacity(isEngineHovered ? 0.14 : 0.08), lineWidth: 0.5)
+            }
             .contentShape(Capsule())
+            .onHover { hovering in
+                withAnimation(Motion.quick) { isEngineHovered = hovering }
+            }
         }
         .menuIndicator(.hidden)
         .fixedSize()
         .help("Search Engine")
         .accessibilityLabel("Search Engine")
+    }
+
+    /// Tiny monogram tile identifying the active engine at a glance.
+    private var engineMonogram: some View {
+        Text(String(currentEngineName.prefix(1)).uppercased())
+            .font(.system(size: 9.5, weight: .bold))
+            .foregroundStyle(Color.accentColor)
+            .frame(width: 16, height: 16)
+            .background(Color.accentColor.opacity(0.14), in: RoundedRectangle(cornerRadius: 5, style: .continuous))
     }
 
     private var currentEngineName: String {
