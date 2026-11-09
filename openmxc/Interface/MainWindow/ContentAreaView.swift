@@ -6,7 +6,9 @@ struct ContentAreaView: View {
 
     var body: some View {
         Group {
-            if let tab = controller.tabManager.selectedTab {
+            if let section = controller.librarySection {
+                LibraryCanvasView(section: section)
+            } else if let tab = controller.tabManager.selectedTab {
                 content(for: tab)
             } else {
                 StartPageView()

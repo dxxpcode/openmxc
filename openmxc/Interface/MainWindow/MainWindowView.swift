@@ -6,20 +6,7 @@ struct MainWindowView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            HStack(spacing: 0) {
-                if !controller.zenMode, let section = controller.librarySection {
-                    LibraryPanelView(section: section)
-                        .frame(width: 320)
-                        .background { panelBackground }
-                        .overlay(alignment: .trailing) {
-                            Rectangle()
-                                .fill(Color.primary.opacity(0.12))
-                                .frame(width: 0.5)
-                        }
-                        .transition(.move(edge: .leading).combined(with: .opacity))
-                }
-                ContentAreaView()
-            }
+            ContentAreaView()
             if !controller.zenMode {
                 BrowserToolbar()
                     .padding(.top, 12)
@@ -56,15 +43,6 @@ struct MainWindowView: View {
         .animation(Motion.standard, value: controller.zenMode)
         .animation(Motion.standard, value: controller.showCommandPalette)
         .animation(Motion.standard, value: controller.librarySection != nil)
-    }
-
-    @Environment(\.colorScheme) private var colorScheme
-
-    private var panelBackground: some View {
-        ZStack {
-            Rectangle().fill(.ultraThinMaterial)
-            Rectangle().fill(colorScheme == .dark ? Color.black.opacity(0.55) : Color.white.opacity(0.6))
-        }
     }
 
     @ViewBuilder
