@@ -33,12 +33,7 @@ struct AddressSuggestionsView: View {
             }
         }
         .padding(4)
-        .background { panelBackground }
-        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .strokeBorder(borderColor, lineWidth: 0.5)
-        }
+        .glassEffect(.regular, in: .rect(cornerRadius: 12, style: .continuous))
         .shadow(color: .black.opacity(colorScheme == .dark ? 0.4 : 0.12), radius: 16, y: 6)
     }
 
@@ -85,16 +80,4 @@ struct AddressSuggestionsView: View {
         }
     }
 
-    private var panelBackground: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(.regularMaterial)
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(colorScheme == .dark ? Color.black.opacity(0.55) : Color.white.opacity(0.65))
-        }
-    }
-
-    private var borderColor: Color {
-        Color.primary.opacity(colorScheme == .dark ? 0.14 : 0.1)
-    }
 }

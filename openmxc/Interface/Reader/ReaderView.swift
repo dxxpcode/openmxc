@@ -25,16 +25,12 @@ struct ReaderView: View {
                     .frame(maxWidth: .infinity)
             }
         }
-        .background(canvasColor)
+        .background(GlassCanvasBackground())
         .background { escapeHandler }
         .onAppear {
             savedToReadingList = !navigation.isPrivateBrowsing
                 && ReadingListStore.shared.items.contains { $0.url == article.url }
         }
-    }
-
-    private var canvasColor: Color {
-        colorScheme == .dark ? .black : Color(nsColor: .windowBackgroundColor)
     }
 
     // MARK: - Chrome
