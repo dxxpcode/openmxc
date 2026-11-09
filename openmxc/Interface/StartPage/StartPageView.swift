@@ -208,7 +208,7 @@ private struct TopSiteTileView<MenuContent: View>: View {
         }
         .buttonStyle(.plain)
         .offset(y: isHovered ? -3 : 0)
-        .animation(.easeOut(duration: 0.18), value: isHovered)
+        .animation(Motion.quick, value: isHovered)
         .contentShape(Rectangle())
         .onHover { hovering in
             isHovered = hovering
@@ -261,7 +261,7 @@ private struct TopSiteTileView<MenuContent: View>: View {
             radius: isHovered ? 10 : 0,
             y: isHovered ? 4 : 0
         )
-        .animation(.easeOut(duration: 0.18), value: isHovered)
+        .animation(Motion.quick, value: isHovered)
     }
 
     private var fillOpacity: Double {

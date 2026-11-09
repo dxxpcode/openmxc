@@ -98,7 +98,7 @@ struct CommandPaletteView: View {
                 .frame(maxHeight: 380)
                 .onChange(of: selection) { _, newSelection in
                     guard items.indices.contains(newSelection) else { return }
-                    withAnimation(.easeOut(duration: 0.12)) {
+                    withAnimation(Motion.quick) {
                         proxy.scrollTo(items[newSelection].id, anchor: .center)
                     }
                 }

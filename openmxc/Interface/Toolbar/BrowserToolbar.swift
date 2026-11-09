@@ -205,7 +205,7 @@ struct BrowserToolbar: View {
                 suggestionNavActive = false
             }
         }
-        .animation(.easeOut(duration: 0.15), value: suggestionRows.isEmpty)
+        .animation(Motion.quick, value: suggestionRows.isEmpty)
     }
 
     // MARK: - Address suggestions
@@ -311,13 +311,13 @@ private struct ToolbarIconStyle: ButtonStyle {
             .scaleEffect(configuration.isPressed ? 0.92 : 1)
             .contentShape(Rectangle())
             .onHover { hovering in
-                withAnimation(.easeInOut(duration: 0.12)) {
+                withAnimation(Motion.quick) {
                     isHovered = hovering
                 }
             }
             .opacity(isEnabled ? 1 : 0.35)
-            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
-            .animation(.easeInOut(duration: 0.12), value: isHovered)
+            .animation(Motion.quick, value: configuration.isPressed)
+            .animation(Motion.quick, value: isHovered)
     }
 
     private func labelColor(isPressed: Bool) -> Color {

@@ -234,7 +234,7 @@ private struct ReaderBarButtonStyle: ButtonStyle {
             }
             .contentShape(Rectangle())
             .onHover { hovering in
-                withAnimation(.easeInOut(duration: 0.12)) { isHovered = hovering }
+                withAnimation(Motion.quick) { isHovered = hovering }
             }
             .opacity(isEnabled ? 1 : 0.4)
     }
