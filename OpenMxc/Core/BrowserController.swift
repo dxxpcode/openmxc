@@ -10,6 +10,8 @@ final class BrowserController {
     var sidebarIsVisible = true
     private(set) var sidebarWidth: CGFloat = BrowserConstants.sidebarDefaultWidth
     var librarySection: LibrarySection?
+    var showCommandPalette = false
+    private(set) var zenMode = false
 
     init(isPrivate: Bool = false) {
         self.isPrivate = isPrivate
@@ -45,7 +47,9 @@ final class BrowserController {
 
     func navigate(to input: String) {
         librarySection = nil
-        guard let url = SearchService.resolve(input) else { return }
+        guard let url = SearchService.resolve(input) else {
+            return
+        }
         if let selectedTab = tabManager.selectedTab {
             selectedTab.navigation.load(url)
         } else {
@@ -90,12 +94,22 @@ final class BrowserController {
     }
 
     func openFavorite(_ favorite: Favorite) {
+        open(favorite.url)
+    }
+
+    /// Opens a URL directly in the selected tab (or a new tab), without going
+    /// through search resolution. Used by the palette and address suggestions.
+    func open(_ url: URL) {
         librarySection = nil
         if let selectedTab = tabManager.selectedTab {
-            selectedTab.navigation.load(favorite.url)
+            selectedTab.navigation.load(url)
         } else {
-            tabManager.newTab(url: favorite.url)
+            tabManager.newTab(url: url)
         }
+    }
+
+    func toggleZenMode() {
+        zenMode.toggle()
     }
 
 }

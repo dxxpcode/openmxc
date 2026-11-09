@@ -12,7 +12,7 @@ final class NavigationManager: NSObject {
     private(set) var canGoBack = false
     private(set) var canGoForward = false
     private(set) var hasCommittedNavigation = false
-    private(set) var loadError: String?
+    private(set) var loadFailure: LoadFailure?
     private(set) var webContentCrashed = false
 
     private(set) var lastLoadedURL: URL?
@@ -34,14 +34,14 @@ final class NavigationManager: NSObject {
     }
 
     func load(_ url: URL) {
-        loadError = nil
+        loadFailure = nil
         webContentCrashed = false
         lastLoadedURL = url
         webView.load(URLRequest(url: url))
     }
 
     func reload() {
-        loadError = nil
+        loadFailure = nil
         webContentCrashed = false
         webView.reload()
     }
@@ -143,7 +143,7 @@ extension NavigationManager: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        loadError = nil
+        loadFailure = nil
         webContentCrashed = false
     }
 
@@ -212,12 +212,13 @@ extension NavigationManager: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         let nsError = error as NSError
         guard !(nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled) else { return }
-        loadError = error.localizedDescription
+        loadFailure = LoadFailure(nsError: nsError)
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         let nsError = error as NSError
         guard !(nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled) else { return }
+        loadFailure = LoadFailure(nsError: nsError)
     }
 
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {

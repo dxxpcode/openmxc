@@ -39,6 +39,16 @@ struct BrowserCommands: Commands {
                 NotificationCenter.default.post(name: .openmxcAskPage, object: nil)
             }
             .keyboardShortcut("a", modifiers: [.command, .shift])
+
+            Button("Command Palette") {
+                NotificationCenter.default.post(name: .openmxcCommandPalette, object: nil)
+            }
+            .keyboardShortcut("k", modifiers: .command)
+
+            Button("Toggle Zen Mode") {
+                NotificationCenter.default.post(name: .openmxcToggleZenMode, object: nil)
+            }
+            .keyboardShortcut(".", modifiers: .command)
         }
 
         CommandGroup(after: .windowList) {
@@ -95,6 +105,8 @@ extension Notification.Name {
     static let openmxcSelectTabIndex = Notification.Name("openmxc.selectTabIndex")
     static let openmxcAddressBarFocus = Notification.Name("openmxc.addressBarFocus")
     static let openmxcAskPage = Notification.Name("openmxc.askPage")
+    static let openmxcCommandPalette = Notification.Name("openmxc.commandPalette")
+    static let openmxcToggleZenMode = Notification.Name("openmxc.toggleZenMode")
     static let openmxcMinimizeWindow = Notification.Name("openmxc.minimizeWindow")
     static let openmxcZoomWindow = Notification.Name("openmxc.zoomWindow")
 }

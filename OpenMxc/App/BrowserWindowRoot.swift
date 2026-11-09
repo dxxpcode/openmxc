@@ -12,27 +12,38 @@ struct BrowserWindowRoot: View {
     }
 
     var body: some View {
-        MainWindowView(showAskPanel: $showAskPanel)
-            .environment(controller)
-            .preferredColorScheme(colorScheme)
-            .sheet(isPresented: $showOnboarding) {
-                OnboardingView()
-            }
-            .background {
-                WindowAccessor { window in
-                    self.window = window
-                    window?.titleVisibility = .hidden
-                    window?.title = ""
-                    window?.standardWindowButton(.closeButton)?.isHidden = true
-                    window?.standardWindowButton(.miniaturizeButton)?.isHidden = true
-                    window?.standardWindowButton(.zoomButton)?.isHidden = true
-                    window?.isMovableByWindowBackground = true
-                    window?.backgroundColor = isDarkMode ? .black : .windowBackgroundColor
+        handleNotifications(
+            MainWindowView(showAskPanel: $showAskPanel)
+                .environment(controller)
+                .preferredColorScheme(colorScheme)
+                .sheet(isPresented: $showOnboarding) {
+                    OnboardingView()
                 }
-            }
-            .onAppear {
-                showOnboarding = !controller.isPrivate && !AppSettings.bool("onboardingCompleted", default: false)
-            }
+                .background {
+                    WindowAccessor { window in
+                        self.window = window
+                        window?.titleVisibility = .hidden
+                        window?.title = ""
+                        window?.standardWindowButton(.closeButton)?.isHidden = true
+                        window?.standardWindowButton(.miniaturizeButton)?.isHidden = true
+                        window?.standardWindowButton(.zoomButton)?.isHidden = true
+                        window?.isMovableByWindowBackground = true
+                        window?.backgroundColor = isDarkMode ? .black : .windowBackgroundColor
+                    }
+                }
+                .onAppear {
+                    showOnboarding = !controller.isPrivate && !AppSettings.bool("onboardingCompleted", default: false)
+                }
+                .onDisappear {
+                    if !controller.isPrivate {
+                        SessionStore.shared.unregister(controller)
+                    }
+                }
+        )
+    }
+
+    private func handleNotifications<V: View>(_ content: V) -> some View {
+        content
             .onReceive(NotificationCenter.default.publisher(for: .openmxcNewTab)) { _ in
                 guard isKeyWindow else { return }
                 controller.newTab()
@@ -62,6 +73,14 @@ struct BrowserWindowRoot: View {
                 guard isKeyWindow else { return }
                 showAskPanel = true
             }
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcCommandPalette)) { _ in
+                guard isKeyWindow else { return }
+                controller.showCommandPalette = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcToggleZenMode)) { _ in
+                guard isKeyWindow else { return }
+                controller.toggleZenMode()
+            }
             .onReceive(NotificationCenter.default.publisher(for: .openmxcToggleFavorite)) { _ in
                 guard isKeyWindow else { return }
                 controller.toggleFavorite()
@@ -83,11 +102,6 @@ struct BrowserWindowRoot: View {
             .onReceive(NotificationCenter.default.publisher(for: .openmxcZoomWindow)) { _ in
                 guard isKeyWindow else { return }
                 window?.zoom(nil)
-            }
-            .onDisappear {
-                if !controller.isPrivate {
-                    SessionStore.shared.unregister(controller)
-                }
             }
     }
 

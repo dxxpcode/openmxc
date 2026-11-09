@@ -7,9 +7,12 @@ struct MainWindowView: View {
     var body: some View {
         ZStack(alignment: .top) {
             ContentAreaView()
-            BrowserToolbar()
-                .padding(.top, 12)
-                .padding(.horizontal, 24)
+            if !controller.zenMode {
+                BrowserToolbar()
+                    .padding(.top, 12)
+                    .padding(.horizontal, 24)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
         }
         .frame(
             minWidth: BrowserConstants.minimumWindowWidth,
@@ -22,6 +25,63 @@ struct MainWindowView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        .overlay {
+            commandPaletteOverlay
+        }
+        .overlay(alignment: .top) {
+            zenExitPill
+        }
+        .background {
+            zenEscapeHandler
+        }
         .animation(.spring(duration: 0.35, bounce: 0.1), value: showAskPanel)
+        .animation(.spring(duration: 0.3, bounce: 0.12), value: controller.zenMode)
+        .animation(.spring(duration: 0.3, bounce: 0.1), value: controller.showCommandPalette)
+    }
+
+    @ViewBuilder
+    private var commandPaletteOverlay: some View {
+        if controller.showCommandPalette {
+            ZStack {
+                Color.black.opacity(0.001)
+                    .contentShape(Rectangle())
+                    .onTapGesture { controller.showCommandPalette = false }
+                CommandPaletteView()
+                    .padding(.top, 72)
+            }
+            .transition(.opacity.combined(with: .move(edge: .top)))
+        }
+    }
+
+    /// A quiet floating pill is the only chrome left in zen mode; Esc and ⌘.
+    /// exit as well.
+    @ViewBuilder
+    private var zenExitPill: some View {
+        if controller.zenMode {
+            Button {
+                controller.toggleZenMode()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 28, height: 28)
+                    .background(.ultraThinMaterial, in: Circle())
+                    .overlay { Circle().strokeBorder(Color.primary.opacity(0.12), lineWidth: 0.5) }
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 10)
+            .help("Exit Zen Mode (Esc)")
+            .accessibilityLabel("Exit Zen Mode")
+            .transition(.opacity)
+        }
+    }
+
+    @ViewBuilder
+    private var zenEscapeHandler: some View {
+        if controller.zenMode, !controller.showCommandPalette {
+            Button("") { controller.toggleZenMode() }
+                .keyboardShortcut(.escape, modifiers: [])
+                .hidden()
+        }
     }
 }
