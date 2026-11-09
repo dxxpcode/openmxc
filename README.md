@@ -13,13 +13,13 @@ The Xcode project is generated from `project.yml` with [XcodeGen](https://github
 
 ```sh
 xcodegen generate
-open OpenMxc.xcodeproj
+open openmxc.xcodeproj
 ```
 
 Or build from the command line:
 
 ```sh
-xcodebuild -project openmxc.xcodeproj -scheme OpenMxc -configuration Debug build
+xcodebuild -project openmxc.xcodeproj -scheme openmxc -configuration Debug build
 ```
 
 ## Layout

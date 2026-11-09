@@ -15,9 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BC9F5330E6FF74F2CBE6F0AF"
-               BuildableName = "OpenMxc.app"
-               BlueprintName = "OpenMxc"
+               BlueprintIdentifier = "F236FEA20424D0BA68F1C2A8"
+               BuildableName = "openmxc.app"
+               BlueprintName = "openmxc"
                ReferencedContainer = "container:openmxc.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,9 +29,9 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "32E8DB9580F4E6E31D7E2855"
-               BuildableName = "OpenMxcTests.xctest"
-               BlueprintName = "OpenMxcTests"
+               BlueprintIdentifier = "3D7784007970CEF7B3C8BF4D"
+               BuildableName = "openmxcTests.xctest"
+               BlueprintName = "openmxcTests"
                ReferencedContainer = "container:openmxc.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -46,9 +46,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BC9F5330E6FF74F2CBE6F0AF"
-            BuildableName = "OpenMxc.app"
-            BlueprintName = "OpenMxc"
+            BlueprintIdentifier = "F236FEA20424D0BA68F1C2A8"
+            BuildableName = "openmxc.app"
+            BlueprintName = "openmxc"
             ReferencedContainer = "container:openmxc.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -58,9 +58,9 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "32E8DB9580F4E6E31D7E2855"
-               BuildableName = "OpenMxcTests.xctest"
-               BlueprintName = "OpenMxcTests"
+               BlueprintIdentifier = "3D7784007970CEF7B3C8BF4D"
+               BuildableName = "openmxcTests.xctest"
+               BlueprintName = "openmxcTests"
                ReferencedContainer = "container:openmxc.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -82,9 +82,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BC9F5330E6FF74F2CBE6F0AF"
-            BuildableName = "OpenMxc.app"
-            BlueprintName = "OpenMxc"
+            BlueprintIdentifier = "F236FEA20424D0BA68F1C2A8"
+            BuildableName = "openmxc.app"
+            BlueprintName = "openmxc"
             ReferencedContainer = "container:openmxc.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -101,9 +101,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "BC9F5330E6FF74F2CBE6F0AF"
-            BuildableName = "OpenMxc.app"
-            BlueprintName = "OpenMxc"
+            BlueprintIdentifier = "F236FEA20424D0BA68F1C2A8"
+            BuildableName = "openmxc.app"
+            BlueprintName = "openmxc"
             ReferencedContainer = "container:openmxc.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

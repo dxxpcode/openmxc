@@ -1,5 +1,5 @@
 import XCTest
-@testable import OpenMxc
+@testable import openmxc
 
 final class SearchServiceTests: XCTestCase {
     func testResolvesFullHTTPURL() {

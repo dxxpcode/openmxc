@@ -11,7 +11,7 @@ settings:
     MACOSX_DEPLOYMENT_TARGET: "26.0"
 
 targets:
-  OpenMxc:
+  openmxc:
     type: application
     platform: macOS
     sources:
@@ -19,7 +19,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.openmxc.browser
-        PRODUCT_NAME: OpenMxc
+        PRODUCT_NAME: openmxc
         OTHER_LDFLAGS: "$(inherited) -lsqlite3"
         INFOPLIST_KEY_CFBundleDisplayName: OPENMXC
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.productivity
@@ -33,28 +33,28 @@ targets:
         com.apple.security.app-sandbox: true
         com.apple.security.network.client: true
 
-  OpenMxcTests:
+  openmxcTests:
     type: bundle.unit-test
     platform: macOS
     sources:
       - path: openmxcTests
     dependencies:
-      - target: OpenMxc
+      - target: openmxc
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/OpenMxc.app/Contents/MacOS/OpenMxc"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/openmxc.app/Contents/MacOS/openmxc"
         BUNDLE_LOADER: "$(TEST_HOST)"
 
 schemes:
-  OpenMxc:
+  openmxc:
     build:
       targets:
-        OpenMxc: all
-        OpenMxcTests: [test]
+        openmxc: all
+        openmxcTests: [test]
     run:
       config: Debug
     test:
       config: Debug
       targets:
-        - OpenMxcTests
+        - openmxcTests
