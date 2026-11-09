@@ -81,6 +81,10 @@ struct BrowserWindowRoot: View {
                 guard isKeyWindow else { return }
                 controller.toggleZenMode()
             }
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcToggleReaderMode)) { _ in
+                guard isKeyWindow else { return }
+                controller.selectedNavigation?.toggleReaderMode()
+            }
             .onReceive(NotificationCenter.default.publisher(for: .openmxcToggleFavorite)) { _ in
                 guard isKeyWindow else { return }
                 controller.toggleFavorite()

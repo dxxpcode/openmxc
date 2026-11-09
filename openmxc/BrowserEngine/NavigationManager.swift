@@ -14,6 +14,9 @@ final class NavigationManager: NSObject {
     private(set) var hasCommittedNavigation = false
     private(set) var loadFailure: LoadFailure?
     private(set) var webContentCrashed = false
+    private(set) var readerArticle: ReaderArticle?
+    private(set) var isReaderActive = false
+    private(set) var isExtractingReader = false
 
     private(set) var lastLoadedURL: URL?
     var isPrivateBrowsing = false
@@ -37,6 +40,8 @@ final class NavigationManager: NSObject {
         loadFailure = nil
         webContentCrashed = false
         lastLoadedURL = url
+        readerArticle = nil
+        isReaderActive = false
         webView.load(URLRequest(url: url))
     }
 
@@ -64,6 +69,30 @@ final class NavigationManager: NSObject {
         } else {
             reload()
         }
+    }
+
+    /// Toggles reader mode for the current page, extracting the article on
+    /// first entry. No-op when there is no committed page or extraction finds
+    /// no article content.
+    func toggleReaderMode() {
+        if isReaderActive {
+            exitReaderMode()
+            return
+        }
+        Task { await enterReaderMode() }
+    }
+
+    func exitReaderMode() {
+        isReaderActive = false
+    }
+
+    private func enterReaderMode() async {
+        guard hasCommittedNavigation, !webContentCrashed, !webView.isLoading else { return }
+        isExtractingReader = true
+        defer { isExtractingReader = false }
+        guard let article = await ReaderExtractor.extract(from: webView) else { return }
+        readerArticle = article
+        isReaderActive = true
     }
 
     /// Visible text of the current page, for on-device AI features.
@@ -145,6 +174,8 @@ extension NavigationManager: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         loadFailure = nil
         webContentCrashed = false
+        readerArticle = nil
+        isReaderActive = false
     }
 
     func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
