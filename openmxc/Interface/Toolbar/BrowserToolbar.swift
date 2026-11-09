@@ -7,6 +7,9 @@ struct BrowserToolbar: View {
     @State private var window: NSWindow?
     @State private var suggestionSelection = 0
     @State private var suggestionNavActive = false
+    @State private var searchEngines: [SearchEngine] = []
+    @State private var currentEngineID = ""
+    @State private var isEngineHovered = false
     @AppStorage("appTheme") private var appTheme = "system"
     @Environment(\.colorScheme) private var colorScheme
 
@@ -68,6 +71,8 @@ struct BrowserToolbar: View {
                 }
 
                 readerButton
+
+                engineMenu
 
                 Button {
                     appTheme = colorScheme == .dark ? "light" : "dark"
@@ -208,6 +213,77 @@ struct BrowserToolbar: View {
             }
         }
         .animation(Motion.quick, value: suggestionRows.isEmpty)
+        .onAppear { loadEngines() }
+    }
+
+    // MARK: - Search engine picker
+
+    /// Tiny engine chip in the toolbar: shows the active engine and offers a
+    /// quiet menu to switch. Persisted via SearchService (local SQLite).
+    private var engineMenu: some View {
+        Menu {
+            ForEach(searchEngines) { engine in
+                Button {
+                    SearchService.setDefaultEngine(id: engine.id)
+                    currentEngineID = engine.id
+                } label: {
+                    if engine.id == currentEngineID {
+                        Label(engine.name, systemImage: "checkmark")
+                    } else {
+                        Text(engine.name)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                engineMonogram
+                Text(currentEngineName)
+                    .font(.system(size: 11, weight: .medium))
+                    .lineLimit(1)
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 7.5, weight: .bold))
+                    .foregroundStyle(.tertiary)
+            }
+            .foregroundStyle(.secondary)
+            .padding(.leading, 5)
+            .padding(.trailing, 10)
+            .frame(height: 28)
+            .background {
+                Capsule()
+                    .fill(Color.primary.opacity(isEngineHovered ? 0.1 : 0.05))
+            }
+            .overlay {
+                Capsule()
+                    .strokeBorder(Color.primary.opacity(isEngineHovered ? 0.14 : 0.08), lineWidth: 0.5)
+            }
+            .contentShape(Capsule())
+            .onHover { hovering in
+                withAnimation(Motion.quick) { isEngineHovered = hovering }
+            }
+        }
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .help("Search Engine")
+        .accessibilityLabel("Search Engine")
+    }
+
+    /// Tiny monogram tile identifying the active engine at a glance.
+    private var engineMonogram: some View {
+        Text(String(currentEngineName.prefix(1)).uppercased())
+            .font(.system(size: 9.5, weight: .bold))
+            .foregroundStyle(Color.accentColor)
+            .frame(width: 16, height: 16)
+            .background(Color.accentColor.opacity(0.14), in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+    }
+
+    private var currentEngineName: String {
+        searchEngines.first { $0.id == currentEngineID }?.name
+            ?? SearchService.defaultEngine.name
+    }
+
+    private func loadEngines() {
+        searchEngines = SearchService.allEngines()
+        currentEngineID = SearchService.defaultEngine.id
     }
 
     // MARK: - Address suggestions
