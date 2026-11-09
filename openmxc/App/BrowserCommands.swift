@@ -24,6 +24,13 @@ struct BrowserCommands: Commands {
             .keyboardShortcut("w", modifiers: [.command, .shift])
         }
 
+        CommandGroup(replacing: .appSettings) {
+            Button("Settings…") {
+                NotificationCenter.default.post(name: .openmxcOpenSettings, object: nil)
+            }
+            .keyboardShortcut(",", modifiers: .command)
+        }
+
         CommandGroup(after: .toolbar) {
             Button("Focus Address Bar") {
                 NotificationCenter.default.post(name: .openmxcFocusAddressBar, object: nil)
@@ -111,6 +118,7 @@ extension Notification.Name {
     static let openmxcAddressBarFocus = Notification.Name("openmxc.addressBarFocus")
     static let openmxcAskPage = Notification.Name("openmxc.askPage")
     static let openmxcCommandPalette = Notification.Name("openmxc.commandPalette")
+    static let openmxcOpenSettings = Notification.Name("openmxc.openSettings")
     static let openmxcToggleZenMode = Notification.Name("openmxc.toggleZenMode")
     static let openmxcToggleReaderMode = Notification.Name("openmxc.toggleReaderMode")
     static let openmxcMinimizeWindow = Notification.Name("openmxc.minimizeWindow")

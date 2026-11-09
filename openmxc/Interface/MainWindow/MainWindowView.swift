@@ -28,6 +28,9 @@ struct MainWindowView: View {
         .overlay {
             commandPaletteOverlay
         }
+        .overlay {
+            settingsOverlay
+        }
         .overlay(alignment: .top) {
             zenExitPill
         }
@@ -42,6 +45,7 @@ struct MainWindowView: View {
         .animation(Motion.standard, value: showAskPanel)
         .animation(Motion.standard, value: controller.zenMode)
         .animation(Motion.standard, value: controller.showCommandPalette)
+        .animation(Motion.standard, value: controller.showSettings)
         .animation(Motion.standard, value: controller.librarySection != nil)
     }
 
@@ -56,6 +60,16 @@ struct MainWindowView: View {
                     .padding(.top, 72)
             }
             .transition(.opacity.combined(with: .move(edge: .top)))
+        }
+    }
+
+    /// Settings as a full-window Liquid Glass overlay inside the browser
+    /// window, opened with ⌘,.
+    @ViewBuilder
+    private var settingsOverlay: some View {
+        if controller.showSettings {
+            SettingsView(onClose: { controller.showSettings = false })
+                .transition(.opacity)
         }
     }
 

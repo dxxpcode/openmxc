@@ -1,8 +1,11 @@
 import SwiftUI
 
-/// Settings as a full-window Liquid Glass canvas: section cards in a grid,
-/// each card a preference group with its controls inline.
+/// Settings as a full-window Liquid Glass overlay inside the browser window:
+/// section cards in a grid, each card a preference group with its controls
+/// inline. Opened with ⌘,; closes with Esc or the close button.
 struct SettingsView: View {
+    var onClose: (() -> Void)? = nil
+
     @AppStorage("appTheme") private var appTheme = "system"
     @State private var engines: [SearchEngine] = []
     @State private var defaultEngineID = ""
@@ -11,21 +14,62 @@ struct SettingsView: View {
 
     var body: some View {
         ScrollView {
-            LazyVGrid(
-                columns: [GridItem(.adaptive(minimum: 340, maximum: 560), spacing: 20)],
-                spacing: 20
-            ) {
-                generalCard
-                appearanceCard
-                privacyCard
-                downloadsCard
-                aboutCard
+            VStack(alignment: .leading, spacing: 0) {
+                if onClose != nil {
+                    header
+                        .padding(.top, 56)
+                        .padding(.horizontal, 28)
+                }
+                LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 340, maximum: 560), spacing: 20)],
+                    spacing: 20
+                ) {
+                    generalCard
+                    appearanceCard
+                    privacyCard
+                    downloadsCard
+                    aboutCard
+                }
+                .padding(.horizontal, 28)
+                .padding(.top, onClose != nil ? 26 : 28)
+                .padding(.bottom, 48)
             }
-            .padding(28)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(minWidth: 780, idealWidth: 880, minHeight: 600, idealHeight: 680)
         .background(GlassCanvasBackground())
         .onAppear(perform: reload)
+        .background { escapeHandler }
+    }
+
+    // MARK: - Header
+
+    private var header: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text("Settings")
+                .font(.system(size: 34, weight: .bold))
+                .foregroundStyle(.primary)
+            Spacer()
+            Button {
+                onClose?()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 28, height: 28)
+            }
+            .buttonStyle(.glass)
+            .help("Close Settings")
+            .accessibilityLabel("Close Settings")
+        }
+    }
+
+    @ViewBuilder
+    private var escapeHandler: some View {
+        if let onClose {
+            Button("") { onClose() }
+                .keyboardShortcut(.escape, modifiers: [])
+                .hidden()
+        }
     }
 
     // MARK: - Cards
