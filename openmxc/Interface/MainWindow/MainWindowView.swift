@@ -36,8 +36,8 @@ struct MainWindowView: View {
                 .padding(.trailing, 24)
                 .padding(.bottom, 24)
         }
-        .overlay(alignment: .trailing) {
-            libraryOverlay
+        .overlay(alignment: .bottom) {
+            librarySheet
         }
         .background {
             zenEscapeHandler
@@ -49,23 +49,24 @@ struct MainWindowView: View {
     }
 
     @ViewBuilder
-    private var libraryOverlay: some View {
+    private var librarySheet: some View {
         if let section = controller.librarySection {
-            HStack(spacing: 0) {
+            ZStack {
                 Color.black.opacity(0.001)
                     .contentShape(Rectangle())
                     .onTapGesture { controller.closeLibrary() }
                 LibraryPanelView(section: section)
-                    .frame(width: 400)
+                    .frame(width: 680, height: 500)
                     .background { panelBackground }
-                    .overlay(alignment: .leading) {
-                        Rectangle()
-                            .fill(Color.primary.opacity(0.12))
-                            .frame(width: 0.5)
+                    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5)
                     }
-                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.35 : 0.15), radius: 24, x: -8, y: 0)
+                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.4 : 0.18), radius: 32, y: -8)
+                    .padding(.bottom, 24)
             }
-            .transition(.move(edge: .trailing).combined(with: .opacity))
+            .transition(.move(edge: .bottom).combined(with: .opacity))
         }
     }
 

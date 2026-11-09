@@ -1,9 +1,9 @@
 import AppKit
 import SwiftUI
 
-/// Right-side library drawer: bookmarks, history, downloads, and reading list
-/// in one calm surface. Opened from the toolbar; closes on Esc, scrim tap, or
-/// any navigation.
+/// Bottom-sheet library: bookmarks, history, downloads, and reading list as
+/// calm card grids. Opened from the toolbar; closes on Esc, scrim tap, or any
+/// navigation.
 struct LibraryPanelView: View {
     @Environment(BrowserController.self) private var controller
 
@@ -18,7 +18,6 @@ struct LibraryPanelView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            header
             sectionTabs
             searchField
             content
@@ -29,39 +28,6 @@ struct LibraryPanelView: View {
     }
 
     // MARK: - Chrome
-
-    private var header: some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text(section.title)
-                .font(.system(size: 20, weight: .bold))
-                .foregroundStyle(.primary)
-            Spacer()
-            sectionAction
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 18)
-        .padding(.bottom, 14)
-    }
-
-    /// Quiet per-section header action (clear history, clear completed
-    /// downloads). Everything else is handled per-row on hover.
-    @ViewBuilder
-    private var sectionAction: some View {
-        switch section {
-        case .history:
-            if !filteredHistory.isEmpty {
-                Button("Clear") { confirmClearHistory() }
-                    .buttonStyle(LibraryTextButtonStyle())
-            }
-        case .downloads:
-            if DownloadStore.shared.items.contains(where: { $0.status == .completed }) {
-                Button("Clear Completed") { DownloadStore.shared.clearCompleted() }
-                    .buttonStyle(LibraryTextButtonStyle())
-            }
-        default:
-            EmptyView()
-        }
-    }
 
     private var sectionTabs: some View {
         HStack(spacing: 2) {
@@ -105,7 +71,7 @@ struct LibraryPanelView: View {
                 }
         }
         .padding(.horizontal, 20)
-        .padding(.bottom, 12)
+        .padding(.top, 16)
     }
 
     private func tabLabel(_ item: LibrarySection) -> String {
@@ -118,16 +84,40 @@ struct LibraryPanelView: View {
     }
 
     private var searchField: some View {
-        SearchField(
-            placeholder: searchPlaceholder,
-            text: $query,
-            height: 30,
-            focus: $searchFocused
-        ) {
-            searchFocused = false
+        HStack(spacing: 10) {
+            SearchField(
+                placeholder: searchPlaceholder,
+                text: $query,
+                height: 30,
+                focus: $searchFocused
+            ) {
+                searchFocused = false
+            }
+            sectionAction
         }
         .padding(.horizontal, 20)
+        .padding(.top, 10)
         .padding(.bottom, 12)
+    }
+
+    /// Quiet section-level action (clear history, clear completed downloads),
+    /// sitting beside the search field. Everything else is per-card on hover.
+    @ViewBuilder
+    private var sectionAction: some View {
+        switch section {
+        case .history:
+            if !filteredHistory.isEmpty {
+                Button("Clear") { confirmClearHistory() }
+                    .buttonStyle(LibraryTextButtonStyle())
+            }
+        case .downloads:
+            if DownloadStore.shared.items.contains(where: { $0.status == .completed }) {
+                Button("Clear Completed") { DownloadStore.shared.clearCompleted() }
+                    .buttonStyle(LibraryTextButtonStyle())
+            }
+        default:
+            EmptyView()
+        }
     }
 
     private var searchPlaceholder: String {
@@ -144,7 +134,7 @@ struct LibraryPanelView: View {
     @ViewBuilder
     private var content: some View {
         ScrollView {
-            LazyVStack(spacing: 2) {
+            LazyVStack(spacing: 12) {
                 switch section {
                 case .bookmarks: bookmarksContent
                 case .readingList: readingListContent
@@ -152,11 +142,15 @@ struct LibraryPanelView: View {
                 case .downloads: downloadsContent
                 }
             }
-            .padding(.horizontal, 12)
-            .padding(.bottom, 24)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 20)
             .animation(Motion.quick, value: query)
             .animation(Motion.quick, value: section)
         }
+    }
+
+    private var gridColumns: [GridItem] {
+        [GridItem(.adaptive(minimum: 210, maximum: 320), spacing: 10)]
     }
 
     // MARK: - Bookmarks (favorites)
@@ -180,18 +174,20 @@ struct LibraryPanelView: View {
                 message: query.isEmpty ? "Star a page from the toolbar to keep it here." : "Try a different search."
             )
         } else {
-            ForEach(filteredBookmarks) { favorite in
-                LibraryRow(
-                    title: favorite.title,
-                    subtitle: favorite.url.host() ?? favorite.url.absoluteString,
-                    url: favorite.url,
-                    fallbackSymbol: "star.fill",
-                    fallbackTint: Color.accentColor
-                ) {
-                    controller.open(favorite.url)
-                } actions: {
-                    LibraryRowAction(symbol: "trash", help: "Remove Bookmark") {
-                        controller.favorites.remove(favorite)
+            LazyVGrid(columns: gridColumns, spacing: 10) {
+                ForEach(filteredBookmarks) { favorite in
+                    LibraryCard(
+                        title: favorite.title,
+                        subtitle: favorite.url.host() ?? favorite.url.absoluteString,
+                        url: favorite.url,
+                        fallbackSymbol: "star.fill",
+                        fallbackTint: Color.accentColor
+                    ) {
+                        controller.open(favorite.url)
+                    } actions: {
+                        LibraryCardAction(symbol: "trash", help: "Remove Bookmark") {
+                            controller.favorites.remove(favorite)
+                        }
                     }
                 }
             }
@@ -215,26 +211,29 @@ struct LibraryPanelView: View {
                 message: query.isEmpty ? "Save articles from Reader Mode to read later." : "Try a different search."
             )
         } else {
-            ForEach(filteredReadingList) { item in
-                LibraryRow(
-                    title: item.title,
-                    subtitle: "\(item.url.host() ?? item.url.absoluteString) · \(item.addedAt.formatted(.relative(presentation: .named)))",
-                    url: item.url,
-                    fallbackSymbol: "text.bookmark",
-                    fallbackTint: item.isRead ? nil : Color.accentColor,
-                    titleOpacity: item.isRead ? 0.55 : 1
-                ) {
-                    if !item.isRead { ReadingListStore.shared.setRead(item, isRead: true) }
-                    controller.open(item.url)
-                } actions: {
-                    LibraryRowAction(
-                        symbol: item.isRead ? "circle" : "checkmark.circle",
-                        help: item.isRead ? "Mark as Unread" : "Mark as Read"
+            LazyVGrid(columns: gridColumns, spacing: 10) {
+                ForEach(filteredReadingList) { item in
+                    LibraryCard(
+                        title: item.title,
+                        subtitle: "\(item.url.host() ?? item.url.absoluteString) · \(item.addedAt.formatted(.relative(presentation: .named)))",
+                        url: item.url,
+                        fallbackSymbol: "text.bookmark",
+                        fallbackTint: item.isRead ? nil : Color.accentColor,
+                        titleOpacity: item.isRead ? 0.55 : 1,
+                        showsUnreadDot: !item.isRead
                     ) {
-                        ReadingListStore.shared.setRead(item, isRead: !item.isRead)
-                    }
-                    LibraryRowAction(symbol: "trash", help: "Remove") {
-                        ReadingListStore.shared.remove(item)
+                        if !item.isRead { ReadingListStore.shared.setRead(item, isRead: true) }
+                        controller.open(item.url)
+                    } actions: {
+                        LibraryCardAction(
+                            symbol: item.isRead ? "circle" : "checkmark.circle",
+                            help: item.isRead ? "Mark as Unread" : "Mark as Read"
+                        ) {
+                            ReadingListStore.shared.setRead(item, isRead: !item.isRead)
+                        }
+                        LibraryCardAction(symbol: "trash", help: "Remove") {
+                            ReadingListStore.shared.remove(item)
+                        }
                     }
                 }
             }
@@ -290,21 +289,21 @@ struct LibraryPanelView: View {
                     .textCase(.uppercase)
                     .tracking(0.6)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 10)
-                    .padding(.top, 16)
-                    .padding(.bottom, 6)
-                ForEach(group.entries) { entry in
-                    LibraryRow(
-                        title: entry.title,
-                        subtitle: "\(entry.url.host() ?? entry.url.absoluteString) · \(entry.visitedAt.formatted(date: .omitted, time: .shortened))",
-                        url: entry.url,
-                        fallbackSymbol: "globe",
-                        fallbackTint: nil
-                    ) {
-                        controller.open(entry.url)
-                    } actions: {
-                        LibraryRowAction(symbol: "trash", help: "Delete Entry") {
-                            HistoryStore.shared.delete(entry)
+                    .padding(.top, 6)
+                LazyVGrid(columns: gridColumns, spacing: 10) {
+                    ForEach(group.entries) { entry in
+                        LibraryCard(
+                            title: entry.title,
+                            subtitle: "\(entry.url.host() ?? entry.url.absoluteString) · \(entry.visitedAt.formatted(date: .omitted, time: .shortened))",
+                            url: entry.url,
+                            fallbackSymbol: "globe",
+                            fallbackTint: nil
+                        ) {
+                            controller.open(entry.url)
+                        } actions: {
+                            LibraryCardAction(symbol: "trash", help: "Delete Entry") {
+                                HistoryStore.shared.delete(entry)
+                            }
                         }
                     }
                 }
@@ -333,36 +332,42 @@ struct LibraryPanelView: View {
                 message: query.isEmpty ? "Downloads will appear here." : "Try a different search."
             )
         } else {
-            ForEach(filteredDownloads) { item in
-                downloadRow(item)
+            LazyVGrid(columns: gridColumns, spacing: 10) {
+                ForEach(filteredDownloads) { item in
+                    downloadCard(item)
+                }
             }
         }
     }
 
-    private func downloadRow(_ item: DownloadItem) -> some View {
-        LibraryRow(
+    private func downloadCard(_ item: DownloadItem) -> some View {
+        LibraryCard(
             title: item.filename,
             subtitle: downloadSubtitle(item),
             url: nil,
             fallbackSymbol: downloadSymbol(item),
             fallbackTint: item.status == .failed ? .red : (item.status == .completed ? Color.green : nil),
-            titleOpacity: item.status == .completed ? 0.7 : 1
+            titleOpacity: item.status == .completed ? 0.7 : 1,
+            progress: downloadProgressFraction(item)
         ) {
             openDownload(item)
         } actions: {
             if item.status == .completed, let path = item.destinationPath {
-                LibraryRowAction(symbol: "folder", help: "Reveal in Finder") {
+                LibraryCardAction(symbol: "folder", help: "Reveal in Finder") {
                     NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: path)])
                 }
             }
-            LibraryRowAction(symbol: "trash", help: "Remove") {
+            LibraryCardAction(symbol: "trash", help: "Remove") {
                 removeDownload(item)
             }
-        } accessory: {
-            if item.status == .inProgress {
-                downloadProgress(item)
-            }
         }
+    }
+
+    private func downloadProgressFraction(_ item: DownloadItem) -> Double? {
+        guard item.status == .inProgress,
+              let total = item.totalBytes, total > 0
+        else { return nil }
+        return min(max(Double(item.bytesReceived) / Double(total), 0), 1)
     }
 
     private func downloadSubtitle(_ item: DownloadItem) -> String {
@@ -385,21 +390,6 @@ struct LibraryPanelView: View {
         case .completed: return "checkmark.circle"
         case .failed: return "exclamationmark.circle"
         case .cancelled: return "minus.circle"
-        }
-    }
-
-    @ViewBuilder
-    private func downloadProgress(_ item: DownloadItem) -> some View {
-        if let total = item.totalBytes, total > 0 {
-            let fraction = min(max(Double(item.bytesReceived) / Double(total), 0), 1)
-            ProgressView(value: fraction)
-                .progressViewStyle(.linear)
-                .frame(width: 56)
-                .tint(Color.accentColor)
-        } else {
-            ProgressView()
-                .controlSize(.small)
-                .frame(width: 56)
         }
     }
 
@@ -439,7 +429,7 @@ struct LibraryPanelView: View {
     }
 }
 
-// MARK: - Shared row components
+// MARK: - Card components
 
 /// Leading 28pt icon tile: the site's favicon when available, otherwise a
 /// section symbol. Dark mode gives icons a light backing plate, like
@@ -493,19 +483,20 @@ private struct LibraryIcon: View {
     }
 }
 
-/// One quiet library row: favicon tile, title + subtitle, hover-reveal
-/// actions, optional accessory (e.g. download progress). Actions stay in
-/// layout but fade in on hover so rows never jump.
-private struct LibraryRow<Actions: View, Accessory: View>: View {
+/// One calm library card: favicon tile with hover-reveal actions, title and
+/// subtitle, optional download progress bar. Hover lifts the card and fades
+/// in its actions; layout never shifts.
+private struct LibraryCard<Actions: View>: View {
     let title: String
     let subtitle: String
     let url: URL?
     let fallbackSymbol: String
     var fallbackTint: Color? = nil
     var titleOpacity: Double = 1
+    var showsUnreadDot: Bool = false
+    var progress: Double? = nil
     let onTap: () -> Void
     @ViewBuilder var actions: () -> Actions
-    @ViewBuilder var accessory: () -> Accessory
 
     @State private var isHovered = false
 
@@ -516,9 +507,10 @@ private struct LibraryRow<Actions: View, Accessory: View>: View {
         fallbackSymbol: String,
         fallbackTint: Color? = nil,
         titleOpacity: Double = 1,
+        showsUnreadDot: Bool = false,
+        progress: Double? = nil,
         onTap: @escaping () -> Void,
-        @ViewBuilder actions: @escaping () -> Actions,
-        @ViewBuilder accessory: @escaping () -> Accessory
+        @ViewBuilder actions: @escaping () -> Actions
     ) {
         self.title = title
         self.subtitle = subtitle
@@ -526,36 +518,56 @@ private struct LibraryRow<Actions: View, Accessory: View>: View {
         self.fallbackSymbol = fallbackSymbol
         self.fallbackTint = fallbackTint
         self.titleOpacity = titleOpacity
+        self.showsUnreadDot = showsUnreadDot
+        self.progress = progress
         self.onTap = onTap
         self.actions = actions
-        self.accessory = accessory
     }
 
     var body: some View {
-        HStack(spacing: 11) {
-            LibraryIcon(url: url, symbol: fallbackSymbol, tint: fallbackTint)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(.primary.opacity(titleOpacity))
-                    .lineLimit(1)
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                LibraryIcon(url: url, symbol: fallbackSymbol, tint: fallbackTint)
+                Spacer(minLength: 4)
+                actions()
+                    .opacity(isHovered ? 1 : 0)
+                    .allowsHitTesting(isHovered)
+            }
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 5) {
+                    if showsUnreadDot {
+                        Circle()
+                            .fill(Color.accentColor)
+                            .frame(width: 5, height: 5)
+                    }
+                    Text(title)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(.primary.opacity(titleOpacity))
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 Text(subtitle)
-                    .font(.system(size: 11.5))
+                    .font(.system(size: 11))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
-            Spacer(minLength: 8)
-            accessory()
-            actions()
-                .opacity(isHovered ? 1 : 0)
-                .allowsHitTesting(isHovered)
+            if let progress {
+                ProgressView(value: progress)
+                    .progressViewStyle(.linear)
+                    .tint(Color.accentColor)
+            }
         }
-        .padding(.horizontal, 9)
-        .padding(.vertical, 7)
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background {
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(isHovered ? Color.primary.opacity(0.06) : .clear)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color.primary.opacity(isHovered ? 0.07 : 0.045))
         }
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(Color.primary.opacity(isHovered ? 0.1 : 0.06), lineWidth: 0.5)
+        }
+        .shadow(color: .black.opacity(isHovered ? 0.06 : 0), radius: 8, y: 2)
         .contentShape(Rectangle())
         .onTapGesture(perform: onTap)
         .onHover { hovering in
@@ -564,32 +576,7 @@ private struct LibraryRow<Actions: View, Accessory: View>: View {
     }
 }
 
-extension LibraryRow where Accessory == EmptyView {
-    init(
-        title: String,
-        subtitle: String,
-        url: URL?,
-        fallbackSymbol: String,
-        fallbackTint: Color? = nil,
-        titleOpacity: Double = 1,
-        onTap: @escaping () -> Void,
-        @ViewBuilder actions: @escaping () -> Actions
-    ) {
-        self.init(
-            title: title,
-            subtitle: subtitle,
-            url: url,
-            fallbackSymbol: fallbackSymbol,
-            fallbackTint: fallbackTint,
-            titleOpacity: titleOpacity,
-            onTap: onTap,
-            actions: actions,
-            accessory: { EmptyView() }
-        )
-    }
-}
-
-private struct LibraryRowAction: View {
+private struct LibraryCardAction: View {
     let symbol: String
     let help: String
     let action: () -> Void
@@ -597,10 +584,10 @@ private struct LibraryRowAction: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: symbol)
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: 10.5, weight: .semibold))
                 .foregroundStyle(.secondary)
-                .frame(width: 24, height: 24)
-                .background(Color.primary.opacity(0.06), in: Circle())
+                .frame(width: 22, height: 22)
+                .background(Color.primary.opacity(0.08), in: Circle())
                 .contentShape(Circle())
         }
         .buttonStyle(.plain)
@@ -631,7 +618,7 @@ private struct LibraryEmptyState: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 56)
+        .padding(.vertical, 48)
         .padding(.horizontal, 24)
     }
 }
