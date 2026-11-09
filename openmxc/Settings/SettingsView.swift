@@ -2,7 +2,6 @@ import SwiftUI
 
 struct SettingsView: View {
     @AppStorage("appTheme") private var appTheme = "system"
-    @AppStorage("onboardingCompleted") private var onboardingCompleted = false
     @State private var engines: [SearchEngine] = []
     @State private var defaultEngineID = ""
     @State private var trackingEnabled = true
@@ -31,10 +30,6 @@ struct SettingsView: View {
                 SearchService.setDefaultEngine(id: newValue)
             }
 
-            Toggle("Show onboarding on first launch", isOn: $onboardingCompleted)
-                .onChange(of: onboardingCompleted) { _, newValue in
-                    AppSettings.setBool("onboardingCompleted", newValue)
-                }
         }
         .formStyle(.grouped)
         .padding(16)
