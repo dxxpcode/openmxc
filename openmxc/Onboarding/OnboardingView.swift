@@ -1,107 +1,126 @@
 import SwiftUI
 
+/// First-run experience: a single glass card with the essentials inline —
+/// theme and search engine — instead of a multi-page wizard.
 struct OnboardingView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage("appTheme") private var appTheme = "system"
-    @State private var page = 0
     @State private var engines: [SearchEngine] = []
     @State private var selectedEngineID = ""
-
-    private let pageCount = 3
+    @State private var appeared = false
 
     var body: some View {
-        VStack(spacing: 20) {
-            content
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        VStack(spacing: 0) {
+            Spacer()
 
-            HStack(spacing: 8) {
-                ForEach(0..<pageCount, id: \.self) { index in
-                    Circle()
-                        .fill(index == page ? Color.accentColor : Color.secondary.opacity(0.3))
-                        .frame(width: 8, height: 8)
-                }
-            }
+            Image("OpenMxcLogo")
+                .resizable()
+                .frame(width: 88, height: 88)
+                .scaleEffect(appeared ? 1 : 0.85)
+                .opacity(appeared ? 1 : 0)
 
-            HStack {
-                if page > 0 {
-                    Button("Back") { page -= 1 }
+            Text(BrowserConfiguration.applicationName)
+                .font(.system(size: 30, weight: .bold))
+                .padding(.top, 18)
+
+            Text("A fast, private, native browser for macOS.\nNo accounts, no ads, no tracking.")
+                .font(.system(size: 13))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .lineSpacing(3)
+                .padding(.top, 8)
+
+            VStack(alignment: .leading, spacing: 14) {
+                preferenceRow(title: "Appearance") {
+                    Picker("Appearance", selection: $appTheme) {
+                        Text("System").tag("system")
+                        Text("Light").tag("light")
+                        Text("Dark").tag("dark")
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                    .frame(width: 210)
                 }
-                Spacer()
-                Button("Skip") { finish() }
-                    .foregroundStyle(.secondary)
-                Button(page == pageCount - 1 ? "Finish" : "Continue") {
-                    if page == pageCount - 1 {
-                        finish()
-                    } else {
-                        page += 1
+
+                preferenceRow(title: "Search engine") {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(engines) { engine in
+                                engineChip(engine)
+                            }
+                        }
                     }
                 }
-                .keyboardShortcut(.defaultAction)
             }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 20)
+            .padding(.top, 26)
+
+            Button("Start browsing") { finish() }
+                .buttonStyle(.glassProminent)
+                .controlSize(.large)
+                .padding(.top, 30)
+
+            Spacer()
         }
-        .frame(width: 520, height: 460)
+        .frame(width: 540, height: 520)
+        .padding(28)
+        .glassEffect(.regular, in: .rect(cornerRadius: 28, style: .continuous))
+        .padding(24)
         .onAppear {
             engines = SearchService.allEngines()
             selectedEngineID = SearchService.defaultEngine.id
             if selectedEngineID.isEmpty, let first = engines.first {
                 selectedEngineID = first.id
             }
+            withAnimation(Motion.standard.delay(0.08)) { appeared = true }
         }
     }
 
-    @ViewBuilder
-    private var content: some View {
-        switch page {
-        case 0: welcomePage
-        case 1: preferencesPage
-        default: readyPage
-        }
-    }
-
-    private var welcomePage: some View {
-        VStack(spacing: 16) {
-            Image("OpenMxcLogo")
-                .resizable()
-                .frame(width: 96, height: 96)
-            Text(BrowserConfiguration.applicationName).font(.largeTitle.bold())
-            Text("A fast, private, native browser for macOS.\nNo accounts, no ads, no tracking.")
-                .multilineTextAlignment(.center)
+    private func preferenceRow<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(.secondary)
+                .frame(width: 90, alignment: .leading)
+            content()
+            Spacer(minLength: 0)
         }
-        .padding()
     }
 
-    private var preferencesPage: some View {
-        Form {
-            Picker("Default search engine", selection: $selectedEngineID) {
-                ForEach(engines) { engine in
-                    Text(engine.name).tag(engine.id)
-                }
+    private func engineChip(_ engine: SearchEngine) -> some View {
+        let isSelected = engine.id == selectedEngineID
+        return Button {
+            withAnimation(Motion.quick) { selectedEngineID = engine.id }
+        } label: {
+            HStack(spacing: 6) {
+                Text(String(engine.name.prefix(1)).uppercased())
+                    .font(.system(size: 9.5, weight: .bold))
+                    .foregroundStyle(isSelected ? Color.white : Color.accentColor)
+                    .frame(width: 16, height: 16)
+                    .background(
+                        isSelected ? Color.accentColor : Color.accentColor.opacity(0.14),
+                        in: RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    )
+                Text(engine.name)
+                    .font(.system(size: 11, weight: .medium))
+                    .lineLimit(1)
             }
-            Picker("Appearance", selection: $appTheme) {
-                Text("System").tag("system")
-                Text("Light").tag("light")
-                Text("Dark").tag("dark")
+            .foregroundStyle(isSelected ? Color.white : .secondary)
+            .padding(.horizontal, 10)
+            .frame(height: 28)
+            .background {
+                Capsule().fill(isSelected ? Color.accentColor.opacity(0.9) : Color.primary.opacity(0.05))
             }
-            .pickerStyle(.segmented)
+            .overlay {
+                Capsule().strokeBorder(
+                    isSelected ? Color.accentColor.opacity(0.4) : Color.primary.opacity(0.08),
+                    lineWidth: 0.5
+                )
+            }
+            .contentShape(Capsule())
         }
-        .formStyle(.grouped)
-        .padding()
-    }
-
-    private var readyPage: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "globe")
-                .font(.system(size: 56))
-                .foregroundStyle(.tint)
-            Text("Ready to browse").font(.title2.bold())
-            Text("Type an address or search in the toolbar, or pick a favorite from the start page.")
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-        }
-        .padding()
+        .buttonStyle(.plain)
+        .accessibilityLabel("Search engine: \(engine.name)")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     private func finish() {
