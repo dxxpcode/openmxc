@@ -45,6 +45,10 @@ final class BrowserController {
         librarySection = section
     }
 
+    func closeLibrary() {
+        librarySection = nil
+    }
+
     func navigate(to input: String) {
         librarySection = nil
         guard let url = SearchService.resolve(input) else {

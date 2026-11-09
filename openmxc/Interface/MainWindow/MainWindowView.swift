@@ -31,12 +31,18 @@ struct MainWindowView: View {
         .overlay(alignment: .top) {
             zenExitPill
         }
+        .overlay(alignment: .bottomTrailing) {
+            DownloadsPillView()
+                .padding(.trailing, 24)
+                .padding(.bottom, 24)
+        }
         .background {
             zenEscapeHandler
         }
         .animation(Motion.standard, value: showAskPanel)
         .animation(Motion.standard, value: controller.zenMode)
         .animation(Motion.standard, value: controller.showCommandPalette)
+        .animation(Motion.standard, value: controller.librarySection != nil)
     }
 
     @ViewBuilder
