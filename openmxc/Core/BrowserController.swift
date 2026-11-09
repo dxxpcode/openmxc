@@ -29,7 +29,7 @@ final class BrowserController {
     }
 
     func toggleSidebar() {
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withAnimation(Motion.standard) {
             sidebarIsVisible.toggle()
         }
     }

@@ -37,7 +37,7 @@ struct SearchField: View {
             color: isFocused ? Color.accentColor.opacity(colorScheme == .dark ? 0.3 : 0.18) : .clear,
             radius: isFocused ? 6 : 0
         )
-        .animation(.easeInOut(duration: 0.15), value: isFocused)
+        .animation(Motion.quick, value: isFocused)
     }
 
     private var fieldColor: Color {

@@ -34,9 +34,9 @@ struct MainWindowView: View {
         .background {
             zenEscapeHandler
         }
-        .animation(.spring(duration: 0.35, bounce: 0.1), value: showAskPanel)
-        .animation(.spring(duration: 0.3, bounce: 0.12), value: controller.zenMode)
-        .animation(.spring(duration: 0.3, bounce: 0.1), value: controller.showCommandPalette)
+        .animation(Motion.standard, value: showAskPanel)
+        .animation(Motion.standard, value: controller.zenMode)
+        .animation(Motion.standard, value: controller.showCommandPalette)
     }
 
     @ViewBuilder

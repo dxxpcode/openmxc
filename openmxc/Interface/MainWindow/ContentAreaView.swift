@@ -17,7 +17,7 @@ struct ContentAreaView: View {
         .overlay(alignment: .top) {
             loadingBar
         }
-        .animation(.easeInOut(duration: 0.2), value: controller.selectedNavigation?.isLoading ?? false)
+        .animation(Motion.quick, value: controller.selectedNavigation?.isLoading ?? false)
         .onChange(of: controller.tabManager.selectedTabID) { _, _ in
             controller.librarySection = nil
         }
