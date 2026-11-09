@@ -26,11 +26,7 @@ struct AskPagePanel: View {
         }
         .padding(16)
         .frame(width: 560)
-        .background(canvasColor, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(borderColor, lineWidth: 0.5)
-        }
+        .glassEffect(.regular, in: .rect(cornerRadius: 16, style: .continuous))
         .shadow(color: .black.opacity(colorScheme == .dark ? 0.5 : 0.18), radius: 24, y: 8)
         .onAppear {
             service.reset()
@@ -171,11 +167,4 @@ struct AskPagePanel: View {
         )
     }
 
-    private var canvasColor: Color {
-        colorScheme == .dark ? .black : Color(nsColor: .windowBackgroundColor)
-    }
-
-    private var borderColor: Color {
-        colorScheme == .dark ? Color.primary.opacity(0.16) : Color(nsColor: .separatorColor)
-    }
 }

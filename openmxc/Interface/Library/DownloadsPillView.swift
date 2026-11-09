@@ -64,8 +64,7 @@ struct DownloadsPillView: View {
             }
             .padding(.horizontal, 14)
             .frame(height: 32)
-            .background(.ultraThinMaterial, in: Capsule())
-            .overlay { Capsule().strokeBorder(Color.primary.opacity(0.12), lineWidth: 0.5) }
+            .glassEffect(.regular, in: .capsule)
             .shadow(color: .black.opacity(0.18), radius: 12, y: 4)
         }
         .buttonStyle(.plain)
@@ -99,8 +98,7 @@ struct DownloadsPillView: View {
         .padding(.leading, 14)
         .padding(.trailing, 6)
         .frame(height: 32)
-        .background(.ultraThinMaterial, in: Capsule())
-        .overlay { Capsule().strokeBorder(Color.primary.opacity(0.12), lineWidth: 0.5) }
+        .glassEffect(.regular, in: .capsule)
         .shadow(color: .black.opacity(0.18), radius: 12, y: 4)
         .onTapGesture { controller.showLibrary(.downloads) }
     }
