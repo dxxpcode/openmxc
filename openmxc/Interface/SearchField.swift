@@ -28,7 +28,7 @@ struct SearchField: View {
         }
         .padding(.horizontal, 14)
         .frame(height: height)
-        .background(fieldColor, in: Capsule())
+        .glassEffect(.regular, in: .capsule)
         .overlay {
             Capsule()
                 .strokeBorder(borderColor, lineWidth: isFocused ? 1.2 : 0.5)
@@ -38,10 +38,6 @@ struct SearchField: View {
             radius: isFocused ? 6 : 0
         )
         .animation(Motion.quick, value: isFocused)
-    }
-
-    private var fieldColor: Color {
-        colorScheme == .dark ? .black : Color(nsColor: .textBackgroundColor)
     }
 
     private var borderColor: Color {

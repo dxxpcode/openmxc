@@ -81,11 +81,7 @@ struct BrowserToolbar: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 7)
-        .background { barBackground }
-        .overlay {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .strokeBorder(borderColor, lineWidth: 0.5)
-        }
+        .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 22, style: .continuous))
         .shadow(color: .black.opacity(colorScheme == .dark ? 0.4 : 0.12), radius: 16, y: 6)
         .onChange(of: controller.tabManager.selectedTabID) { _, _ in
             syncAddressText()
@@ -102,21 +98,6 @@ struct BrowserToolbar: View {
                 self.window = window
             }
         }
-    }
-
-    /// Floating frosted capsule: vibrancy material with a theme tint so page
-    /// content softly bleeds through while controls stay legible.
-    private var barBackground: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(.ultraThinMaterial)
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(colorScheme == .dark ? Color.black.opacity(0.5) : Color.white.opacity(0.55))
-        }
-    }
-
-    private var borderColor: Color {
-        Color.primary.opacity(colorScheme == .dark ? 0.14 : 0.1)
     }
 
     private var groupDivider: some View {

@@ -18,12 +18,7 @@ struct CommandPaletteView: View {
         }
         .frame(width: 600)
         .frame(maxHeight: 470)
-        .background { panelBackground }
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(borderColor, lineWidth: 0.5)
-        }
+        .glassEffect(.regular, in: .rect(cornerRadius: 16, style: .continuous))
         .shadow(color: .black.opacity(colorScheme == .dark ? 0.5 : 0.16), radius: 32, y: 14)
         .background { keyMonitor }
         .onAppear { fieldFocused = true }
@@ -317,20 +312,6 @@ struct CommandPaletteView: View {
         }
     }
 
-    // MARK: - Chrome
-
-    private var panelBackground: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.regularMaterial)
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(colorScheme == .dark ? Color.black.opacity(0.55) : Color.white.opacity(0.6))
-        }
-    }
-
-    private var borderColor: Color {
-        Color.primary.opacity(colorScheme == .dark ? 0.14 : 0.1)
-    }
 }
 
 /// Browser actions offered at the top of the palette. Titles double as the
