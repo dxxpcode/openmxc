@@ -1,37 +1,68 @@
 import SwiftUI
 
-/// First-run experience: a single glass card with the essentials inline —
-/// theme and search engine — instead of a multi-page wizard.
+/// First-run experience: a full-window overlay with a single glass card —
+/// theme and search engine inline — instead of a multi-page wizard.
 struct OnboardingView: View {
-    @Environment(\.dismiss) private var dismiss
+    let onComplete: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
     @AppStorage("appTheme") private var appTheme = "system"
     @State private var engines: [SearchEngine] = []
     @State private var selectedEngineID = ""
     @State private var appeared = false
 
     var body: some View {
+        ZStack {
+            backdrop
+            card
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear {
+            engines = SearchService.allEngines()
+            selectedEngineID = SearchService.defaultEngine.id
+            if selectedEngineID.isEmpty, let first = engines.first {
+                selectedEngineID = first.id
+            }
+            withAnimation(Motion.standard) { appeared = true }
+        }
+    }
+
+    private var backdrop: some View {
+        ZStack {
+            Rectangle().fill(.ultraThinMaterial)
+            Color.black.opacity(colorScheme == .dark ? 0.42 : 0.26)
+        }
+        .ignoresSafeArea()
+    }
+
+    private var card: some View {
         VStack(spacing: 0) {
             Spacer()
 
             Image("OpenMxcLogo")
                 .resizable()
-                .frame(width: 88, height: 88)
-                .scaleEffect(appeared ? 1 : 0.85)
+                .frame(width: 84, height: 84)
+                .scaleEffect(appeared ? 1 : 0.8)
                 .opacity(appeared ? 1 : 0)
+                .animation(Motion.standard.delay(0.02), value: appeared)
 
-            Text(BrowserConfiguration.applicationName)
-                .font(.system(size: 30, weight: .bold))
-                .padding(.top, 18)
+            VStack(spacing: 6) {
+                Text(BrowserConfiguration.applicationName)
+                    .font(.system(size: 28, weight: .bold))
+                    .tracking(-0.4)
 
-            Text("A fast, private, native browser for macOS.\nNo accounts, no ads, no tracking.")
-                .font(.system(size: 13))
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .lineSpacing(3)
-                .padding(.top, 8)
+                Text("A fast, private, native browser for macOS.\nNo accounts, no ads, no tracking.")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(3)
+            }
+            .padding(.top, 20)
+            .opacity(appeared ? 1 : 0)
+            .offset(y: appeared ? 0 : 8)
+            .animation(Motion.standard.delay(0.08), value: appeared)
 
-            VStack(alignment: .leading, spacing: 14) {
-                preferenceRow(title: "Appearance") {
+            VStack(alignment: .leading, spacing: 20) {
+                preferenceSection(title: "Appearance") {
                     Picker("Appearance", selection: $appTheme) {
                         Text("System").tag("system")
                         Text("Light").tag("light")
@@ -39,50 +70,49 @@ struct OnboardingView: View {
                     }
                     .pickerStyle(.segmented)
                     .labelsHidden()
-                    .frame(width: 210)
+                    .frame(width: 216)
                 }
 
-                preferenceRow(title: "Search engine") {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(engines) { engine in
-                                engineChip(engine)
-                            }
+                preferenceSection(title: "Search engine") {
+                    LazyVGrid(
+                        columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
+                        spacing: 10
+                    ) {
+                        ForEach(engines) { engine in
+                            engineChip(engine)
                         }
                     }
                 }
             }
-            .padding(.top, 26)
+            .padding(.top, 30)
+            .opacity(appeared ? 1 : 0)
+            .offset(y: appeared ? 0 : 10)
+            .animation(Motion.standard.delay(0.16), value: appeared)
 
             Button("Start browsing") { finish() }
                 .buttonStyle(.glassProminent)
                 .controlSize(.large)
-                .padding(.top, 30)
+                .frame(minWidth: 180)
+                .keyboardShortcut(.defaultAction)
+                .padding(.top, 32)
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 10)
+                .animation(Motion.standard.delay(0.24), value: appeared)
 
             Spacer()
         }
-        .frame(width: 540, height: 520)
-        .padding(28)
+        .frame(width: 560, height: 540)
+        .padding(32)
         .glassEffect(.regular, in: .rect(cornerRadius: 28, style: .continuous))
-        .padding(24)
-        .onAppear {
-            engines = SearchService.allEngines()
-            selectedEngineID = SearchService.defaultEngine.id
-            if selectedEngineID.isEmpty, let first = engines.first {
-                selectedEngineID = first.id
-            }
-            withAnimation(Motion.standard.delay(0.08)) { appeared = true }
-        }
     }
 
-    private func preferenceRow<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
-        HStack {
-            Text(title)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(.secondary)
-                .frame(width: 90, alignment: .leading)
+    private func preferenceSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title.uppercased())
+                .font(.system(size: 10.5, weight: .semibold))
+                .tracking(0.8)
+                .foregroundStyle(.tertiary)
             content()
-            Spacer(minLength: 0)
         }
     }
 
@@ -91,28 +121,28 @@ struct OnboardingView: View {
         return Button {
             withAnimation(Motion.quick) { selectedEngineID = engine.id }
         } label: {
-            HStack(spacing: 6) {
+            HStack(spacing: 8) {
                 Text(String(engine.name.prefix(1)).uppercased())
-                    .font(.system(size: 9.5, weight: .bold))
+                    .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(isSelected ? Color.white : Color.accentColor)
-                    .frame(width: 16, height: 16)
+                    .frame(width: 18, height: 18)
                     .background(
                         isSelected ? Color.accentColor : Color.accentColor.opacity(0.14),
-                        in: RoundedRectangle(cornerRadius: 5, style: .continuous)
+                        in: RoundedRectangle(cornerRadius: 6, style: .continuous)
                     )
                 Text(engine.name)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: 12, weight: .medium))
                     .lineLimit(1)
             }
-            .foregroundStyle(isSelected ? Color.white : .secondary)
-            .padding(.horizontal, 10)
-            .frame(height: 28)
+            .foregroundStyle(isSelected ? Color.white : .primary)
+            .frame(maxWidth: .infinity)
+            .frame(height: 36)
             .background {
-                Capsule().fill(isSelected ? Color.accentColor.opacity(0.9) : Color.primary.opacity(0.05))
+                Capsule().fill(isSelected ? Color.accentColor : Color.primary.opacity(0.05))
             }
             .overlay {
                 Capsule().strokeBorder(
-                    isSelected ? Color.accentColor.opacity(0.4) : Color.primary.opacity(0.08),
+                    isSelected ? Color.accentColor.opacity(0.45) : Color.primary.opacity(0.08),
                     lineWidth: 0.5
                 )
             }
@@ -128,6 +158,6 @@ struct OnboardingView: View {
             SearchService.setDefaultEngine(id: selectedEngineID)
         }
         AppSettings.setBool("onboardingCompleted", true)
-        dismiss()
+        onComplete()
     }
 }

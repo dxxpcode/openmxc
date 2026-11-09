@@ -16,9 +16,13 @@ struct BrowserWindowRoot: View {
             MainWindowView(showAskPanel: $showAskPanel)
                 .environment(controller)
                 .preferredColorScheme(colorScheme)
-                .sheet(isPresented: $showOnboarding) {
-                    OnboardingView()
+                .overlay {
+                    if showOnboarding {
+                        OnboardingView(onComplete: { showOnboarding = false })
+                            .transition(.opacity)
+                    }
                 }
+                .animation(Motion.standard, value: showOnboarding)
                 .background {
                     WindowAccessor { window in
                         self.window = window
