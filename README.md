@@ -19,11 +19,11 @@ open OpenMxc.xcodeproj
 Or build from the command line:
 
 ```sh
-xcodebuild -project OpenMxc.xcodeproj -scheme OpenMxc -configuration Debug build
+xcodebuild -project openmxc.xcodeproj -scheme OpenMxc -configuration Debug build
 ```
 
 ## Layout
 
 - `project.yml` — project definition (source of truth)
-- `OpenMxc/` — application sources
-- `OpenMxcTests/` — unit tests
+- `openmxc/` — application sources
+- `openmxcTests/` — unit tests
