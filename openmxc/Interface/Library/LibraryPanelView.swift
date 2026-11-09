@@ -1,8 +1,9 @@
 import AppKit
 import SwiftUI
 
-/// Bottom-sheet library: bookmarks, history, downloads, and reading list as
-/// calm card grids. Opened from the toolbar; closes on Esc, scrim tap, or any
+/// Full-height library sidebar: sections as pages with a big title, a quiet
+/// icon row beneath, and room to breathe. Pushes page content aside like a
+/// Finder/Arc sidebar. Opened from the toolbar; closes on Esc or any
 /// navigation.
 struct LibraryPanelView: View {
     @Environment(BrowserController.self) private var controller
@@ -10,7 +11,6 @@ struct LibraryPanelView: View {
     @State private var section: LibrarySection
     @State private var query = ""
     @FocusState private var searchFocused: Bool
-    @Namespace private var tabSelection
 
     init(section: LibrarySection) {
         _section = State(initialValue: section)
@@ -18,8 +18,10 @@ struct LibraryPanelView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            sectionTabs
+            header
+            sectionIcons
             searchField
+            Divider().opacity(0.4)
             content
         }
         .frame(maxHeight: .infinity)
@@ -29,79 +31,34 @@ struct LibraryPanelView: View {
 
     // MARK: - Chrome
 
-    private var sectionTabs: some View {
-        HStack(spacing: 2) {
-            ForEach(LibrarySection.allCases) { item in
-                let isSelected = section == item
-                Button {
-                    withAnimation(Motion.standard) { section = item }
-                    query = ""
-                } label: {
-                    HStack(spacing: 5) {
-                        Image(systemName: item.symbol)
-                            .font(.system(size: 10.5, weight: isSelected ? .semibold : .medium))
-                        Text(tabLabel(item))
-                            .font(.system(size: 12, weight: isSelected ? .semibold : .medium))
-                            .lineLimit(1)
-                    }
-                    .foregroundStyle(isSelected ? Color.primary : Color.secondary)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 28)
-                    .background {
-                        if isSelected {
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(Color.primary.opacity(0.12))
-                                .matchedGeometryEffect(id: "tabSelection", in: tabSelection)
-                        }
-                    }
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .help(item.title)
-                .accessibilityLabel(item.title)
-            }
-        }
-        .padding(3)
-        .background {
-            RoundedRectangle(cornerRadius: 11, style: .continuous)
-                .fill(Color.primary.opacity(0.05))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 11, style: .continuous)
-                        .strokeBorder(Color.primary.opacity(0.06), lineWidth: 0.5)
-                }
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 16)
-    }
-
-    private func tabLabel(_ item: LibrarySection) -> String {
-        switch item {
-        case .bookmarks: return "Bookmarks"
-        case .readingList: return "Reading"
-        case .history: return "History"
-        case .downloads: return "Downloads"
-        }
-    }
-
-    private var searchField: some View {
-        HStack(spacing: 10) {
-            SearchField(
-                placeholder: searchPlaceholder,
-                text: $query,
-                height: 30,
-                focus: $searchFocused
-            ) {
-                searchFocused = false
-            }
+    private var header: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(section.title)
+                .font(.system(size: 20, weight: .bold))
+                .foregroundStyle(.primary)
+            Spacer()
             sectionAction
+            Button {
+                controller.closeLibrary()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 24, height: 24)
+                    .background(Color.primary.opacity(0.06), in: Circle())
+                    .contentShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .help("Close Library")
+            .accessibilityLabel("Close Library")
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 10)
-        .padding(.bottom, 12)
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
+        .padding(.bottom, 10)
     }
 
-    /// Quiet section-level action (clear history, clear completed downloads),
-    /// sitting beside the search field. Everything else is per-card on hover.
+    /// Quiet per-section header action (clear history, clear completed
+    /// downloads). Everything else is handled per-row on hover.
     @ViewBuilder
     private var sectionAction: some View {
         switch section {
@@ -120,6 +77,47 @@ struct LibraryPanelView: View {
         }
     }
 
+    private var sectionIcons: some View {
+        HStack(spacing: 4) {
+            ForEach(LibrarySection.allCases) { item in
+                let isSelected = section == item
+                Button {
+                    withAnimation(Motion.standard) { section = item }
+                    query = ""
+                } label: {
+                    Image(systemName: item.symbol)
+                        .font(.system(size: 13, weight: isSelected ? .semibold : .regular))
+                        .foregroundStyle(isSelected ? Color.primary : Color.secondary)
+                        .frame(width: 30, height: 28)
+                        .background {
+                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                .fill(isSelected ? Color.primary.opacity(0.1) : .clear)
+                        }
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .help(item.title)
+                .accessibilityLabel(item.title)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.bottom, 10)
+    }
+
+    private var searchField: some View {
+        SearchField(
+            placeholder: searchPlaceholder,
+            text: $query,
+            height: 30,
+            focus: $searchFocused
+        ) {
+            searchFocused = false
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 10)
+    }
+
     private var searchPlaceholder: String {
         switch section {
         case .bookmarks: return "Search bookmarks"
@@ -134,7 +132,7 @@ struct LibraryPanelView: View {
     @ViewBuilder
     private var content: some View {
         ScrollView {
-            LazyVStack(spacing: 12) {
+            LazyVStack(spacing: 2) {
                 switch section {
                 case .bookmarks: bookmarksContent
                 case .readingList: readingListContent
@@ -142,15 +140,11 @@ struct LibraryPanelView: View {
                 case .downloads: downloadsContent
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 20)
+            .padding(.horizontal, 10)
+            .padding(.bottom, 24)
             .animation(Motion.quick, value: query)
             .animation(Motion.quick, value: section)
         }
-    }
-
-    private var gridColumns: [GridItem] {
-        [GridItem(.adaptive(minimum: 210, maximum: 320), spacing: 10)]
     }
 
     // MARK: - Bookmarks (favorites)
@@ -174,20 +168,18 @@ struct LibraryPanelView: View {
                 message: query.isEmpty ? "Star a page from the toolbar to keep it here." : "Try a different search."
             )
         } else {
-            LazyVGrid(columns: gridColumns, spacing: 10) {
-                ForEach(filteredBookmarks) { favorite in
-                    LibraryCard(
-                        title: favorite.title,
-                        subtitle: favorite.url.host() ?? favorite.url.absoluteString,
-                        url: favorite.url,
-                        fallbackSymbol: "star.fill",
-                        fallbackTint: Color.accentColor
-                    ) {
-                        controller.open(favorite.url)
-                    } actions: {
-                        LibraryCardAction(symbol: "trash", help: "Remove Bookmark") {
-                            controller.favorites.remove(favorite)
-                        }
+            ForEach(filteredBookmarks) { favorite in
+                LibraryRow(
+                    title: favorite.title,
+                    subtitle: favorite.url.host() ?? favorite.url.absoluteString,
+                    url: favorite.url,
+                    fallbackSymbol: "star.fill",
+                    fallbackTint: Color.accentColor
+                ) {
+                    controller.open(favorite.url)
+                } actions: {
+                    LibraryRowAction(symbol: "trash", help: "Remove Bookmark") {
+                        controller.favorites.remove(favorite)
                     }
                 }
             }
@@ -211,29 +203,27 @@ struct LibraryPanelView: View {
                 message: query.isEmpty ? "Save articles from Reader Mode to read later." : "Try a different search."
             )
         } else {
-            LazyVGrid(columns: gridColumns, spacing: 10) {
-                ForEach(filteredReadingList) { item in
-                    LibraryCard(
-                        title: item.title,
-                        subtitle: "\(item.url.host() ?? item.url.absoluteString) · \(item.addedAt.formatted(.relative(presentation: .named)))",
-                        url: item.url,
-                        fallbackSymbol: "text.bookmark",
-                        fallbackTint: item.isRead ? nil : Color.accentColor,
-                        titleOpacity: item.isRead ? 0.55 : 1,
-                        showsUnreadDot: !item.isRead
+            ForEach(filteredReadingList) { item in
+                LibraryRow(
+                    title: item.title,
+                    subtitle: "\(item.url.host() ?? item.url.absoluteString) · \(item.addedAt.formatted(.relative(presentation: .named)))",
+                    url: item.url,
+                    fallbackSymbol: "text.bookmark",
+                    fallbackTint: item.isRead ? nil : Color.accentColor,
+                    titleOpacity: item.isRead ? 0.55 : 1,
+                    showsUnreadDot: !item.isRead
+                ) {
+                    if !item.isRead { ReadingListStore.shared.setRead(item, isRead: true) }
+                    controller.open(item.url)
+                } actions: {
+                    LibraryRowAction(
+                        symbol: item.isRead ? "circle" : "checkmark.circle",
+                        help: item.isRead ? "Mark as Unread" : "Mark as Read"
                     ) {
-                        if !item.isRead { ReadingListStore.shared.setRead(item, isRead: true) }
-                        controller.open(item.url)
-                    } actions: {
-                        LibraryCardAction(
-                            symbol: item.isRead ? "circle" : "checkmark.circle",
-                            help: item.isRead ? "Mark as Unread" : "Mark as Read"
-                        ) {
-                            ReadingListStore.shared.setRead(item, isRead: !item.isRead)
-                        }
-                        LibraryCardAction(symbol: "trash", help: "Remove") {
-                            ReadingListStore.shared.remove(item)
-                        }
+                        ReadingListStore.shared.setRead(item, isRead: !item.isRead)
+                    }
+                    LibraryRowAction(symbol: "trash", help: "Remove") {
+                        ReadingListStore.shared.remove(item)
                     }
                 }
             }
@@ -289,21 +279,21 @@ struct LibraryPanelView: View {
                     .textCase(.uppercase)
                     .tracking(0.6)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 6)
-                LazyVGrid(columns: gridColumns, spacing: 10) {
-                    ForEach(group.entries) { entry in
-                        LibraryCard(
-                            title: entry.title,
-                            subtitle: "\(entry.url.host() ?? entry.url.absoluteString) · \(entry.visitedAt.formatted(date: .omitted, time: .shortened))",
-                            url: entry.url,
-                            fallbackSymbol: "globe",
-                            fallbackTint: nil
-                        ) {
-                            controller.open(entry.url)
-                        } actions: {
-                            LibraryCardAction(symbol: "trash", help: "Delete Entry") {
-                                HistoryStore.shared.delete(entry)
-                            }
+                    .padding(.horizontal, 10)
+                    .padding(.top, 14)
+                    .padding(.bottom, 4)
+                ForEach(group.entries) { entry in
+                    LibraryRow(
+                        title: entry.title,
+                        subtitle: "\(entry.url.host() ?? entry.url.absoluteString) · \(entry.visitedAt.formatted(date: .omitted, time: .shortened))",
+                        url: entry.url,
+                        fallbackSymbol: "globe",
+                        fallbackTint: nil
+                    ) {
+                        controller.open(entry.url)
+                    } actions: {
+                        LibraryRowAction(symbol: "trash", help: "Delete Entry") {
+                            HistoryStore.shared.delete(entry)
                         }
                     }
                 }
@@ -332,48 +322,73 @@ struct LibraryPanelView: View {
                 message: query.isEmpty ? "Downloads will appear here." : "Try a different search."
             )
         } else {
-            LazyVGrid(columns: gridColumns, spacing: 10) {
-                ForEach(filteredDownloads) { item in
-                    downloadCard(item)
-                }
+            ForEach(filteredDownloads) { item in
+                downloadRow(item)
             }
         }
     }
 
-    private func downloadCard(_ item: DownloadItem) -> some View {
-        LibraryCard(
+    private func downloadRow(_ item: DownloadItem) -> some View {
+        LibraryRow(
             title: item.filename,
             subtitle: downloadSubtitle(item),
             url: nil,
             fallbackSymbol: downloadSymbol(item),
             fallbackTint: item.status == .failed ? .red : (item.status == .completed ? Color.green : nil),
-            titleOpacity: item.status == .completed ? 0.7 : 1,
-            progress: downloadProgressFraction(item)
+            titleOpacity: item.status == .completed ? 0.7 : 1
         ) {
             openDownload(item)
         } actions: {
             if item.status == .completed, let path = item.destinationPath {
-                LibraryCardAction(symbol: "folder", help: "Reveal in Finder") {
+                LibraryRowAction(symbol: "folder", help: "Reveal in Finder") {
                     NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: path)])
                 }
             }
-            LibraryCardAction(symbol: "trash", help: "Remove") {
+            LibraryRowAction(symbol: "trash", help: "Remove") {
                 removeDownload(item)
             }
+        } accessory: {
+            downloadAccessory(item)
         }
     }
 
-    private func downloadProgressFraction(_ item: DownloadItem) -> Double? {
-        guard item.status == .inProgress,
-              let total = item.totalBytes, total > 0
-        else { return nil }
-        return min(max(Double(item.bytesReceived) / Double(total), 0), 1)
+    @ViewBuilder
+    private func downloadAccessory(_ item: DownloadItem) -> some View {
+        switch item.status {
+        case .inProgress:
+            if let total = item.totalBytes, total > 0 {
+                let fraction = min(max(Double(item.bytesReceived) / Double(total), 0), 1)
+                ProgressView(value: fraction)
+                    .progressViewStyle(.circular)
+                    .controlSize(.small)
+                    .tint(Color.accentColor)
+            } else {
+                ProgressView()
+                    .controlSize(.small)
+            }
+        case .completed:
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(Color.green)
+        case .failed:
+            Image(systemName: "exclamationmark.circle.fill")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(.red)
+        case .cancelled:
+            Image(systemName: "minus.circle")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(.secondary)
+        }
     }
 
     private func downloadSubtitle(_ item: DownloadItem) -> String {
         let size = item.fileSize.map { ByteCountFormatter.string(fromByteCount: $0, countStyle: .file) }
         switch item.status {
         case .inProgress:
+            if let total = item.totalBytes, total > 0 {
+                let percent = Int((Double(item.bytesReceived) / Double(total)) * 100)
+                return [size, "\(percent)%"].compactMap { $0 }.joined(separator: " · ")
+            }
             return [size, "Downloading"].compactMap { $0 }.joined(separator: " · ")
         case .completed:
             return [size, item.completedAt?.formatted(.relative(presentation: .named))].compactMap { $0 }.joined(separator: " · ")
@@ -429,9 +444,9 @@ struct LibraryPanelView: View {
     }
 }
 
-// MARK: - Card components
+// MARK: - Shared row components
 
-/// Leading 28pt icon tile: the site's favicon when available, otherwise a
+/// Leading 26pt icon tile: the site's favicon when available, otherwise a
 /// section symbol. Dark mode gives icons a light backing plate, like
 /// Safari's top sites, so dark favicons stay visible.
 private struct LibraryIcon: View {
@@ -444,7 +459,7 @@ private struct LibraryIcon: View {
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 7, style: .continuous)
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
                 .fill(Color.primary.opacity(0.06))
             if let icon {
                 if colorScheme == .dark {
@@ -452,26 +467,26 @@ private struct LibraryIcon: View {
                         .resizable()
                         .interpolation(.high)
                         .scaledToFit()
-                        .frame(width: 15, height: 15)
-                        .padding(4)
+                        .frame(width: 14, height: 14)
+                        .padding(3.5)
                         .background(
                             Color.white,
-                            in: RoundedRectangle(cornerRadius: 4.5, style: .continuous)
+                            in: RoundedRectangle(cornerRadius: 4, style: .continuous)
                         )
                 } else {
                     Image(nsImage: icon)
                         .resizable()
                         .interpolation(.high)
                         .scaledToFit()
-                        .frame(width: 17, height: 17)
+                        .frame(width: 16, height: 16)
                 }
             } else {
                 Image(systemName: symbol)
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 10.5, weight: .semibold))
                     .foregroundStyle(tint ?? Color.secondary)
             }
         }
-        .frame(width: 28, height: 28)
+        .frame(width: 26, height: 26)
         .onAppear { loadIcon() }
     }
 
@@ -483,10 +498,10 @@ private struct LibraryIcon: View {
     }
 }
 
-/// One calm library card: favicon tile with hover-reveal actions, title and
-/// subtitle, optional download progress bar. Hover lifts the card and fades
-/// in its actions; layout never shifts.
-private struct LibraryCard<Actions: View>: View {
+/// One quiet sidebar row: favicon tile, title + subtitle, hover-reveal
+/// actions, optional trailing accessory (download ring/status). Actions stay
+/// in layout but fade in on hover so rows never jump.
+private struct LibraryRow<Actions: View, Accessory: View>: View {
     let title: String
     let subtitle: String
     let url: URL?
@@ -494,9 +509,9 @@ private struct LibraryCard<Actions: View>: View {
     var fallbackTint: Color? = nil
     var titleOpacity: Double = 1
     var showsUnreadDot: Bool = false
-    var progress: Double? = nil
     let onTap: () -> Void
     @ViewBuilder var actions: () -> Actions
+    @ViewBuilder var accessory: () -> Accessory
 
     @State private var isHovered = false
 
@@ -508,9 +523,9 @@ private struct LibraryCard<Actions: View>: View {
         fallbackTint: Color? = nil,
         titleOpacity: Double = 1,
         showsUnreadDot: Bool = false,
-        progress: Double? = nil,
         onTap: @escaping () -> Void,
-        @ViewBuilder actions: @escaping () -> Actions
+        @ViewBuilder actions: @escaping () -> Actions,
+        @ViewBuilder accessory: @escaping () -> Accessory
     ) {
         self.title = title
         self.subtitle = subtitle
@@ -519,55 +534,43 @@ private struct LibraryCard<Actions: View>: View {
         self.fallbackTint = fallbackTint
         self.titleOpacity = titleOpacity
         self.showsUnreadDot = showsUnreadDot
-        self.progress = progress
         self.onTap = onTap
         self.actions = actions
+        self.accessory = accessory
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
-                LibraryIcon(url: url, symbol: fallbackSymbol, tint: fallbackTint)
-                Spacer(minLength: 4)
-                actions()
-                    .opacity(isHovered ? 1 : 0)
-                    .allowsHitTesting(isHovered)
-            }
-            VStack(alignment: .leading, spacing: 3) {
+        HStack(spacing: 10) {
+            LibraryIcon(url: url, symbol: fallbackSymbol, tint: fallbackTint)
+            VStack(alignment: .leading, spacing: 1.5) {
                 HStack(spacing: 5) {
                     if showsUnreadDot {
                         Circle()
                             .fill(Color.accentColor)
-                            .frame(width: 5, height: 5)
+                            .frame(width: 4.5, height: 4.5)
                     }
                     Text(title)
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.system(size: 12.5, weight: .medium))
                         .foregroundStyle(.primary.opacity(titleOpacity))
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
+                        .lineLimit(1)
                 }
                 Text(subtitle)
-                    .font(.system(size: 11))
+                    .font(.system(size: 10.5))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
-            if let progress {
-                ProgressView(value: progress)
-                    .progressViewStyle(.linear)
-                    .tint(Color.accentColor)
-            }
+            Spacer(minLength: 6)
+            accessory()
+            actions()
+                .opacity(isHovered ? 1 : 0)
+                .allowsHitTesting(isHovered)
         }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
         .background {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color.primary.opacity(isHovered ? 0.07 : 0.045))
+            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                .fill(isHovered ? Color.primary.opacity(0.06) : .clear)
         }
-        .overlay {
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .strokeBorder(Color.primary.opacity(isHovered ? 0.1 : 0.06), lineWidth: 0.5)
-        }
-        .shadow(color: .black.opacity(isHovered ? 0.06 : 0), radius: 8, y: 2)
         .contentShape(Rectangle())
         .onTapGesture(perform: onTap)
         .onHover { hovering in
@@ -576,7 +579,34 @@ private struct LibraryCard<Actions: View>: View {
     }
 }
 
-private struct LibraryCardAction: View {
+extension LibraryRow where Accessory == EmptyView {
+    init(
+        title: String,
+        subtitle: String,
+        url: URL?,
+        fallbackSymbol: String,
+        fallbackTint: Color? = nil,
+        titleOpacity: Double = 1,
+        showsUnreadDot: Bool = false,
+        onTap: @escaping () -> Void,
+        @ViewBuilder actions: @escaping () -> Actions
+    ) {
+        self.init(
+            title: title,
+            subtitle: subtitle,
+            url: url,
+            fallbackSymbol: fallbackSymbol,
+            fallbackTint: fallbackTint,
+            titleOpacity: titleOpacity,
+            showsUnreadDot: showsUnreadDot,
+            onTap: onTap,
+            actions: actions,
+            accessory: { EmptyView() }
+        )
+    }
+}
+
+private struct LibraryRowAction: View {
     let symbol: String
     let help: String
     let action: () -> Void
@@ -587,7 +617,7 @@ private struct LibraryCardAction: View {
                 .font(.system(size: 10.5, weight: .semibold))
                 .foregroundStyle(.secondary)
                 .frame(width: 22, height: 22)
-                .background(Color.primary.opacity(0.08), in: Circle())
+                .background(Color.primary.opacity(0.06), in: Circle())
                 .contentShape(Circle())
         }
         .buttonStyle(.plain)
@@ -602,11 +632,11 @@ private struct LibraryEmptyState: View {
     let message: String
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 8) {
             Image(systemName: symbol)
                 .font(.system(size: 20, weight: .light))
                 .foregroundStyle(.secondary)
-                .frame(width: 52, height: 52)
+                .frame(width: 46, height: 46)
                 .background(Color.primary.opacity(0.05), in: Circle())
             Text(title)
                 .font(.system(size: 13, weight: .semibold))
@@ -619,7 +649,7 @@ private struct LibraryEmptyState: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 48)
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 20)
     }
 }
 

@@ -6,7 +6,20 @@ struct MainWindowView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            ContentAreaView()
+            HStack(spacing: 0) {
+                if !controller.zenMode, let section = controller.librarySection {
+                    LibraryPanelView(section: section)
+                        .frame(width: 320)
+                        .background { panelBackground }
+                        .overlay(alignment: .trailing) {
+                            Rectangle()
+                                .fill(Color.primary.opacity(0.12))
+                                .frame(width: 0.5)
+                        }
+                        .transition(.move(edge: .leading).combined(with: .opacity))
+                }
+                ContentAreaView()
+            }
             if !controller.zenMode {
                 BrowserToolbar()
                     .padding(.top, 12)
@@ -36,9 +49,6 @@ struct MainWindowView: View {
                 .padding(.trailing, 24)
                 .padding(.bottom, 24)
         }
-        .overlay(alignment: .bottom) {
-            librarySheet
-        }
         .background {
             zenEscapeHandler
         }
@@ -46,28 +56,6 @@ struct MainWindowView: View {
         .animation(Motion.standard, value: controller.zenMode)
         .animation(Motion.standard, value: controller.showCommandPalette)
         .animation(Motion.standard, value: controller.librarySection != nil)
-    }
-
-    @ViewBuilder
-    private var librarySheet: some View {
-        if let section = controller.librarySection {
-            ZStack {
-                Color.black.opacity(0.001)
-                    .contentShape(Rectangle())
-                    .onTapGesture { controller.closeLibrary() }
-                LibraryPanelView(section: section)
-                    .frame(width: 680, height: 500)
-                    .background { panelBackground }
-                    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5)
-                    }
-                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.4 : 0.18), radius: 32, y: -8)
-                    .padding(.bottom, 24)
-            }
-            .transition(.move(edge: .bottom).combined(with: .opacity))
-        }
     }
 
     @Environment(\.colorScheme) private var colorScheme
