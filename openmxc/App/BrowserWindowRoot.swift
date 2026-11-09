@@ -73,6 +73,10 @@ struct BrowserWindowRoot: View {
                 guard isKeyWindow else { return }
                 controller.showCommandPalette = true
             }
+            .onReceive(NotificationCenter.default.publisher(for: .openmxcOpenSettings)) { _ in
+                guard isKeyWindow else { return }
+                controller.toggleSettings()
+            }
             .onReceive(NotificationCenter.default.publisher(for: .openmxcToggleZenMode)) { _ in
                 guard isKeyWindow else { return }
                 controller.toggleZenMode()

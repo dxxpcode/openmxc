@@ -11,6 +11,7 @@ final class BrowserController {
     private(set) var sidebarWidth: CGFloat = BrowserConstants.sidebarDefaultWidth
     var librarySection: LibrarySection?
     var showCommandPalette = false
+    var showSettings = false
     private(set) var zenMode = false
 
     init(isPrivate: Bool = false) {
@@ -114,6 +115,10 @@ final class BrowserController {
 
     func toggleZenMode() {
         zenMode.toggle()
+    }
+
+    func toggleSettings() {
+        showSettings.toggle()
     }
 
 }
