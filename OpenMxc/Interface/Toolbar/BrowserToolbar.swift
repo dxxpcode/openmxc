@@ -5,6 +5,8 @@ struct BrowserToolbar: View {
     @FocusState private var isAddressFocused: Bool
     @State private var addressText = ""
     @State private var window: NSWindow?
+    @State private var suggestionSelection = 0
+    @State private var suggestionNavActive = false
     @AppStorage("appTheme") private var appTheme = "system"
     @Environment(\.colorScheme) private var colorScheme
 
@@ -138,15 +140,122 @@ struct BrowserToolbar: View {
             height: 32,
             focus: $isAddressFocused
         ) {
-            controller.navigate(to: addressText)
-            isAddressFocused = false
+            if suggestionNavActive, suggestionRows.indices.contains(suggestionSelection) {
+                activateSuggestion(suggestionRows[suggestionSelection])
+            } else {
+                controller.navigate(to: addressText)
+                isAddressFocused = false
+            }
         }
         .frame(maxWidth: .infinity)
+        .overlay(alignment: .topLeading) {
+            if !suggestionRows.isEmpty {
+                AddressSuggestionsView(
+                    rows: suggestionRows,
+                    selectedIndex: suggestionSelection,
+                    onHover: { suggestionSelection = $0 },
+                    onSelect: activateSuggestion
+                )
+                .offset(y: 38)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .background {
+            if !suggestionRows.isEmpty {
+                // NSEvent monitor: `onKeyPress` does not fire reliably while
+                // the address text field is focused on macOS.
+                KeyMonitor { event in
+                    switch event.charactersIgnoringModifiers {
+                    case "\u{F701}": // down arrow
+                        moveSuggestion(1)
+                        return true
+                    case "\u{F700}": // up arrow
+                        moveSuggestion(-1)
+                        return true
+                    default:
+                        return false
+                    }
+                }
+            }
+        }
+        .onChange(of: addressText) { _, _ in
+            suggestionSelection = 0
+            suggestionNavActive = false
+        }
+        .onChange(of: isAddressFocused) { _, focused in
+            if !focused {
+                suggestionSelection = 0
+                suggestionNavActive = false
+            }
+        }
+        .animation(.easeOut(duration: 0.15), value: suggestionRows.isEmpty)
+    }
+
+    // MARK: - Address suggestions
+
+    private var suggestionQuery: String {
+        addressText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var showSuggestions: Bool {
+        isAddressFocused
+            && !suggestionQuery.isEmpty
+            && suggestionQuery != controller.selectedNavigation?.currentURL?.absoluteString
+    }
+
+    private var suggestionRows: [AddressSuggestionRow] {
+        guard showSuggestions else { return [] }
+        let matches = SuggestionService.suggestions(
+            for: suggestionQuery,
+            favorites: controller.favorites.favorites,
+            history: controller.isPrivate ? [] : HistoryStore.shared.entries,
+            limit: 4
+        )
+        var rows = matches.map { suggestion in
+            AddressSuggestionRow(
+                id: suggestion.id,
+                kind: suggestion.kind == .favorite ? .favorite : .history,
+                title: suggestion.title,
+                detail: suggestion.host,
+                url: suggestion.url
+            )
+        }
+        if let searchURL = SearchService.resolve(suggestionQuery) {
+            rows.append(AddressSuggestionRow(
+                id: "search",
+                kind: .search,
+                title: "Search for \"\(suggestionQuery)\"",
+                detail: "",
+                url: searchURL
+            ))
+        }
+        return rows
+    }
+
+    private func moveSuggestion(_ delta: Int) {
+        suggestionNavActive = true
+        let count = suggestionRows.count
+        guard count > 0 else { return }
+        suggestionSelection = (suggestionSelection + delta + count) % count
+    }
+
+    private func activateSuggestion(_ row: AddressSuggestionRow) {
+        guard let url = row.url else { return }
+        addressText = url.absoluteString
+        controller.open(url)
+        isAddressFocused = false
     }
 
     private func syncAddressText() {
         guard !isAddressFocused else { return }
-        addressText = controller.selectedNavigation?.currentURL?.absoluteString ?? ""
+        let navigation = controller.selectedNavigation
+        // After a failed load WebKit resets the web view URL to about:blank;
+        // keep showing the address the user actually tried.
+        if navigation?.loadFailure != nil, let lastLoadedURL = navigation?.lastLoadedURL {
+            addressText = lastLoadedURL.absoluteString
+        } else {
+            addressText = navigation?.currentURL?.absoluteString ?? ""
+        }
     }
 
     private func navButton(

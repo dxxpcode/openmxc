@@ -51,21 +51,17 @@ struct ContentAreaView: View {
     private func content(for tab: TabModel) -> some View {
         let navigation = tab.navigation
         if navigation.webContentCrashed {
-            statusView(
+            ErrorStateView(
+                symbol: "exclamationmark.triangle",
                 title: "This webpage quit unexpectedly",
-                message: "Reload to try again."
-            ) {
-                Button("Reload") { tab.navigation.recoverFromCrash() }
-                    .keyboardShortcut(.defaultAction)
-            }
-        } else if let loadError = navigation.loadError {
-            statusView(
-                title: "This webpage could not be loaded",
-                message: loadError
-            ) {
-                Button("Try Again") { tab.navigation.reload() }
-                    .keyboardShortcut(.defaultAction)
-            }
+                message: "Reload to try again.",
+                detail: nil,
+                canGoBack: navigation.canGoBack,
+                onRetry: { tab.navigation.recoverFromCrash() },
+                onBack: { tab.navigation.goBack() }
+            )
+        } else if let failure = navigation.loadFailure {
+            failureView(failure, navigation: navigation)
         } else if navigation.hasCommittedNavigation || navigation.isLoading {
             WebViewContainer(webView: navigation.webView)
                 .id(tab.id)
@@ -74,22 +70,30 @@ struct ContentAreaView: View {
         }
     }
 
-    private func statusView<Actions: View>(
-        title: String,
-        message: String,
-        @ViewBuilder actions: () -> Actions
-    ) -> some View {
-        VStack(spacing: 10) {
-            Text(title)
-                .font(.headline)
-            Text(message)
-                .font(.callout)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-            actions()
-                .padding(.top, 6)
+    @ViewBuilder
+    private func failureView(_ failure: LoadFailure, navigation: NavigationManager) -> some View {
+        let content = failureContent(failure)
+        ErrorStateView(
+            symbol: content.symbol,
+            title: content.title,
+            message: content.message,
+            detail: content.detail,
+            canGoBack: navigation.canGoBack,
+            onRetry: { navigation.reload() },
+            onBack: { navigation.goBack() }
+        )
+    }
+
+    private func failureContent(_ failure: LoadFailure) -> (symbol: String, title: String, message: String, detail: String?) {
+        switch failure.kind {
+        case .offline:
+            return ("wifi.slash", "You're offline", "Check your internet connection, then try again.", nil)
+        case .timedOut:
+            return ("hourglass", "This page is taking too long", "The site didn't respond in time. Try again.", nil)
+        case .unreachable:
+            return ("globe", "This site can't be reached", "The server may be down, or the address may be wrong.", nil)
+        case .generic:
+            return ("exclamationmark.triangle", "This webpage could not be loaded", "Something went wrong while loading this page.", failure.detail)
         }
-        .padding(32)
-        .frame(maxWidth: 400)
     }
 }
