@@ -258,7 +258,7 @@ private struct SettingsCard<Content: View>: View {
             content
         }
         .padding(20)
-        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, minHeight: 190, alignment: .topLeading)
         .glassEffect(.regular, in: .rect(cornerRadius: 20, style: .continuous))
         .shadow(color: .black.opacity(0.08), radius: 12, y: 4)
     }
