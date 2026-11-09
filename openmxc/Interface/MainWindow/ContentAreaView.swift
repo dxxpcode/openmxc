@@ -62,6 +62,8 @@ struct ContentAreaView: View {
             )
         } else if let failure = navigation.loadFailure {
             failureView(failure, navigation: navigation)
+        } else if navigation.isReaderActive, let article = navigation.readerArticle {
+            ReaderView(article: article, navigation: navigation)
         } else if navigation.hasCommittedNavigation || navigation.isLoading {
             WebViewContainer(webView: navigation.webView)
                 .id(tab.id)

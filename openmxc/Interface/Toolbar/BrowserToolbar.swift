@@ -63,6 +63,8 @@ struct BrowserToolbar: View {
 
                 shareButton
 
+                readerButton
+
                 Button {
                     appTheme = colorScheme == .dark ? "light" : "dark"
                 } label: {
@@ -131,6 +133,21 @@ struct BrowserToolbar: View {
         } else {
             navButton(symbol: "square.and.arrow.up", help: "Share", enabled: false) {}
         }
+    }
+
+    @ViewBuilder
+    private var readerButton: some View {
+        let navigation = controller.selectedNavigation
+        let isActive = navigation?.isReaderActive ?? false
+        Button {
+            navigation?.toggleReaderMode()
+        } label: {
+            Image(systemName: isActive ? "book.fill" : "book")
+        }
+        .buttonStyle(ToolbarIconStyle(tint: isActive ? Color.accentColor : nil))
+        .help(isActive ? "Exit Reader Mode" : "Reader Mode")
+        .disabled(!(navigation?.hasCommittedNavigation ?? false) || navigation?.webContentCrashed == true)
+        .accessibilityLabel(isActive ? "Exit Reader Mode" : "Reader Mode")
     }
 
     private var addressField: some View {

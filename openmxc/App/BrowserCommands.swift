@@ -49,6 +49,11 @@ struct BrowserCommands: Commands {
                 NotificationCenter.default.post(name: .openmxcToggleZenMode, object: nil)
             }
             .keyboardShortcut(".", modifiers: .command)
+
+            Button("Toggle Reader Mode") {
+                NotificationCenter.default.post(name: .openmxcToggleReaderMode, object: nil)
+            }
+            .keyboardShortcut("r", modifiers: [.command, .shift])
         }
 
         CommandGroup(after: .windowList) {
@@ -107,6 +112,7 @@ extension Notification.Name {
     static let openmxcAskPage = Notification.Name("openmxc.askPage")
     static let openmxcCommandPalette = Notification.Name("openmxc.commandPalette")
     static let openmxcToggleZenMode = Notification.Name("openmxc.toggleZenMode")
+    static let openmxcToggleReaderMode = Notification.Name("openmxc.toggleReaderMode")
     static let openmxcMinimizeWindow = Notification.Name("openmxc.minimizeWindow")
     static let openmxcZoomWindow = Notification.Name("openmxc.zoomWindow")
 }
