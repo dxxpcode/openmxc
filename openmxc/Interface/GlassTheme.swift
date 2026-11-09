@@ -20,8 +20,14 @@ struct GlassCanvasBackground: View {
 
     private var gradientColors: [Color] {
         if colorScheme == .dark {
-            return [Color(white: 0.10).opacity(0.55), Color.black.opacity(0.85)]
+            return [
+                Color(red: 0.08, green: 0.09, blue: 0.16).opacity(0.65),
+                Color(red: 0.02, green: 0.03, blue: 0.07).opacity(0.8)
+            ]
         }
-        return [Color.white.opacity(0.65), Color(white: 0.90).opacity(0.85)]
+        return [
+            Color(red: 0.72, green: 0.80, blue: 0.95).opacity(0.55),
+            Color(red: 0.55, green: 0.66, blue: 0.88).opacity(0.6)
+        ]
     }
 }
