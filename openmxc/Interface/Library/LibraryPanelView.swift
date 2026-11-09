@@ -20,7 +20,6 @@ struct LibraryPanelView: View {
             header
             sectionTabs
             searchField
-            Divider().opacity(0.4)
             content
         }
         .frame(maxHeight: .infinity)
@@ -31,15 +30,16 @@ struct LibraryPanelView: View {
     // MARK: - Chrome
 
     private var header: some View {
-        HStack {
-            Text("Library")
-                .font(.system(size: 15, weight: .semibold))
+        HStack(alignment: .firstTextBaseline) {
+            Text(section.title)
+                .font(.system(size: 20, weight: .bold))
                 .foregroundStyle(.primary)
             Spacer()
             sectionAction
         }
-        .padding(.horizontal, 16)
-        .frame(height: 48)
+        .padding(.horizontal, 20)
+        .padding(.top, 18)
+        .padding(.bottom, 14)
     }
 
     /// Quiet per-section header action (clear history, clear completed
@@ -65,27 +65,45 @@ struct LibraryPanelView: View {
     private var sectionTabs: some View {
         HStack(spacing: 2) {
             ForEach(LibrarySection.allCases) { item in
+                let isSelected = section == item
                 Button {
-                    withAnimation(Motion.quick) { section = item }
+                    withAnimation(Motion.standard) { section = item }
+                    query = ""
                 } label: {
-                    Image(systemName: item.symbol)
-                        .font(.system(size: 12.5, weight: .medium))
-                        .foregroundStyle(section == item ? Color.primary : Color.secondary)
-                        .frame(width: 34, height: 30)
-                        .background {
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(section == item ? Color.primary.opacity(0.1) : .clear)
-                        }
-                        .contentShape(Rectangle())
+                    HStack(spacing: 5) {
+                        Image(systemName: item.symbol)
+                            .font(.system(size: 11, weight: .semibold))
+                        Text(tabLabel(item))
+                            .font(.system(size: 12, weight: .medium))
+                            .lineLimit(1)
+                    }
+                    .foregroundStyle(isSelected ? Color.primary : Color.secondary)
+                    .padding(.horizontal, 10)
+                    .frame(height: 26)
+                    .background {
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .fill(isSelected ? Color.primary.opacity(0.1) : .clear)
+                    }
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .help(item.title)
                 .accessibilityLabel(item.title)
             }
-            Spacer()
         }
-        .padding(.horizontal, 12)
-        .padding(.bottom, 10)
+        .padding(3)
+        .background(Color.primary.opacity(0.05), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .padding(.horizontal, 20)
+        .padding(.bottom, 12)
+    }
+
+    private func tabLabel(_ item: LibrarySection) -> String {
+        switch item {
+        case .bookmarks: return "Bookmarks"
+        case .readingList: return "Reading"
+        case .history: return "History"
+        case .downloads: return "Downloads"
+        }
     }
 
     private var searchField: some View {
@@ -97,7 +115,7 @@ struct LibraryPanelView: View {
         ) {
             searchFocused = false
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 20)
         .padding(.bottom, 12)
     }
 
@@ -123,7 +141,7 @@ struct LibraryPanelView: View {
                 case .downloads: downloadsContent
                 }
             }
-            .padding(.horizontal, 10)
+            .padding(.horizontal, 12)
             .padding(.bottom, 24)
             .animation(Motion.quick, value: query)
             .animation(Motion.quick, value: section)
@@ -155,8 +173,9 @@ struct LibraryPanelView: View {
                 LibraryRow(
                     title: favorite.title,
                     subtitle: favorite.url.host() ?? favorite.url.absoluteString,
-                    symbol: "star.fill",
-                    tint: Color.accentColor
+                    url: favorite.url,
+                    fallbackSymbol: "star.fill",
+                    fallbackTint: Color.accentColor
                 ) {
                     controller.open(favorite.url)
                 } actions: {
@@ -189,8 +208,9 @@ struct LibraryPanelView: View {
                 LibraryRow(
                     title: item.title,
                     subtitle: "\(item.url.host() ?? item.url.absoluteString) · \(item.addedAt.formatted(.relative(presentation: .named)))",
-                    symbol: "text.bookmark",
-                    tint: item.isRead ? nil : Color.accentColor,
+                    url: item.url,
+                    fallbackSymbol: "text.bookmark",
+                    fallbackTint: item.isRead ? nil : Color.accentColor,
                     titleOpacity: item.isRead ? 0.55 : 1
                 ) {
                     if !item.isRead { ReadingListStore.shared.setRead(item, isRead: true) }
@@ -257,17 +277,18 @@ struct LibraryPanelView: View {
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .textCase(.uppercase)
-                    .tracking(0.5)
+                    .tracking(0.6)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 10)
-                    .padding(.top, 14)
-                    .padding(.bottom, 4)
+                    .padding(.top, 16)
+                    .padding(.bottom, 6)
                 ForEach(group.entries) { entry in
                     LibraryRow(
                         title: entry.title,
                         subtitle: "\(entry.url.host() ?? entry.url.absoluteString) · \(entry.visitedAt.formatted(date: .omitted, time: .shortened))",
-                        symbol: "clock",
-                        tint: nil
+                        url: entry.url,
+                        fallbackSymbol: "globe",
+                        fallbackTint: nil
                     ) {
                         controller.open(entry.url)
                     } actions: {
@@ -311,8 +332,9 @@ struct LibraryPanelView: View {
         LibraryRow(
             title: item.filename,
             subtitle: downloadSubtitle(item),
-            symbol: downloadSymbol(item),
-            tint: item.status == .failed ? .red : nil,
+            url: nil,
+            fallbackSymbol: downloadSymbol(item),
+            fallbackTint: item.status == .failed ? .red : (item.status == .completed ? Color.green : nil),
             titleOpacity: item.status == .completed ? 0.7 : 1
         ) {
             openDownload(item)
@@ -408,14 +430,67 @@ struct LibraryPanelView: View {
 
 // MARK: - Shared row components
 
-/// One quiet library row: leading symbol tile, title + subtitle, hover-reveal
+/// Leading 28pt icon tile: the site's favicon when available, otherwise a
+/// section symbol. Dark mode gives icons a light backing plate, like
+/// Safari's top sites, so dark favicons stay visible.
+private struct LibraryIcon: View {
+    let url: URL?
+    let symbol: String
+    let tint: Color?
+
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var icon: NSImage?
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                .fill(Color.primary.opacity(0.06))
+            if let icon {
+                if colorScheme == .dark {
+                    Image(nsImage: icon)
+                        .resizable()
+                        .interpolation(.high)
+                        .scaledToFit()
+                        .frame(width: 15, height: 15)
+                        .padding(4)
+                        .background(
+                            Color.white,
+                            in: RoundedRectangle(cornerRadius: 4.5, style: .continuous)
+                        )
+                } else {
+                    Image(nsImage: icon)
+                        .resizable()
+                        .interpolation(.high)
+                        .scaledToFit()
+                        .frame(width: 17, height: 17)
+                }
+            } else {
+                Image(systemName: symbol)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(tint ?? Color.secondary)
+            }
+        }
+        .frame(width: 28, height: 28)
+        .onAppear { loadIcon() }
+    }
+
+    private func loadIcon() {
+        guard let url else { return }
+        FaviconService.shared.icon(for: url) { image in
+            icon = image
+        }
+    }
+}
+
+/// One quiet library row: favicon tile, title + subtitle, hover-reveal
 /// actions, optional accessory (e.g. download progress). Actions stay in
 /// layout but fade in on hover so rows never jump.
 private struct LibraryRow<Actions: View, Accessory: View>: View {
     let title: String
     let subtitle: String
-    let symbol: String
-    var tint: Color? = nil
+    let url: URL?
+    let fallbackSymbol: String
+    var fallbackTint: Color? = nil
     var titleOpacity: Double = 1
     let onTap: () -> Void
     @ViewBuilder var actions: () -> Actions
@@ -426,8 +501,9 @@ private struct LibraryRow<Actions: View, Accessory: View>: View {
     init(
         title: String,
         subtitle: String,
-        symbol: String,
-        tint: Color? = nil,
+        url: URL?,
+        fallbackSymbol: String,
+        fallbackTint: Color? = nil,
         titleOpacity: Double = 1,
         onTap: @escaping () -> Void,
         @ViewBuilder actions: @escaping () -> Actions,
@@ -435,8 +511,9 @@ private struct LibraryRow<Actions: View, Accessory: View>: View {
     ) {
         self.title = title
         self.subtitle = subtitle
-        self.symbol = symbol
-        self.tint = tint
+        self.url = url
+        self.fallbackSymbol = fallbackSymbol
+        self.fallbackTint = fallbackTint
         self.titleOpacity = titleOpacity
         self.onTap = onTap
         self.actions = actions
@@ -444,19 +521,15 @@ private struct LibraryRow<Actions: View, Accessory: View>: View {
     }
 
     var body: some View {
-        HStack(spacing: 10) {
-            Image(systemName: symbol)
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(tint ?? Color.secondary)
-                .frame(width: 30, height: 30)
-                .background(Color.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        HStack(spacing: 11) {
+            LibraryIcon(url: url, symbol: fallbackSymbol, tint: fallbackTint)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(.primary.opacity(titleOpacity))
                     .lineLimit(1)
                 Text(subtitle)
-                    .font(.system(size: 11))
+                    .font(.system(size: 11.5))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
             }
@@ -466,7 +539,7 @@ private struct LibraryRow<Actions: View, Accessory: View>: View {
                 .opacity(isHovered ? 1 : 0)
                 .allowsHitTesting(isHovered)
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, 9)
         .padding(.vertical, 7)
         .background {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -480,13 +553,13 @@ private struct LibraryRow<Actions: View, Accessory: View>: View {
     }
 }
 
-
 extension LibraryRow where Accessory == EmptyView {
     init(
         title: String,
         subtitle: String,
-        symbol: String,
-        tint: Color? = nil,
+        url: URL?,
+        fallbackSymbol: String,
+        fallbackTint: Color? = nil,
         titleOpacity: Double = 1,
         onTap: @escaping () -> Void,
         @ViewBuilder actions: @escaping () -> Actions
@@ -494,8 +567,9 @@ extension LibraryRow where Accessory == EmptyView {
         self.init(
             title: title,
             subtitle: subtitle,
-            symbol: symbol,
-            tint: tint,
+            url: url,
+            fallbackSymbol: fallbackSymbol,
+            fallbackTint: fallbackTint,
             titleOpacity: titleOpacity,
             onTap: onTap,
             actions: actions,
@@ -530,20 +604,23 @@ private struct LibraryEmptyState: View {
     let message: String
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 10) {
             Image(systemName: symbol)
-                .font(.system(size: 22, weight: .light))
+                .font(.system(size: 20, weight: .light))
                 .foregroundStyle(.secondary)
+                .frame(width: 52, height: 52)
+                .background(Color.primary.opacity(0.05), in: Circle())
             Text(title)
-                .font(.system(size: 13, weight: .medium))
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.primary)
             Text(message)
                 .font(.system(size: 12))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 48)
+        .padding(.vertical, 56)
         .padding(.horizontal, 24)
     }
 }
