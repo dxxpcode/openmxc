@@ -21,11 +21,11 @@ struct LibraryCanvasView: View {
                 header
                     .padding(.top, 72)
                 sectionPicker
-                    .padding(.top, 22)
+                    .padding(.top, 26)
                 searchField
-                    .padding(.top, 18)
+                    .padding(.top, 20)
                 content
-                    .padding(.top, 24)
+                    .padding(.top, 28)
             }
             .frame(maxWidth: 780)
             .padding(.horizontal, 24)
@@ -77,16 +77,16 @@ struct LibraryCanvasView: View {
             withAnimation(Motion.standard) { section = item }
             query = ""
         } label: {
-            HStack(spacing: 6) {
+            HStack(spacing: 7) {
                 Image(systemName: item.symbol)
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 12, weight: .semibold))
                 Text(tabLabel(item))
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 12.5, weight: .medium))
                     .lineLimit(1)
             }
             .foregroundStyle(isSelected ? Color.primary : Color.secondary)
-            .padding(.horizontal, 14)
-            .frame(height: 30)
+            .padding(.horizontal, 16)
+            .frame(height: 32)
         }
         .help(item.title)
         .accessibilityLabel(item.title)
@@ -166,11 +166,11 @@ struct LibraryCanvasView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .animation(Motion.quick, value: query)
-        .animation(Motion.quick, value: section)
+        .animation(Motion.standard, value: section)
     }
 
     private var gridColumns: [GridItem] {
-        [GridItem(.adaptive(minimum: 220, maximum: 300), spacing: 14)]
+        [GridItem(.adaptive(minimum: 230, maximum: 340), spacing: 16)]
     }
 
     // MARK: - Bookmarks (favorites)
@@ -306,14 +306,14 @@ struct LibraryCanvasView: View {
                 message: query.isEmpty ? "Pages you visit will show up here." : "Try a different search."
             )
         } else {
-            VStack(spacing: 20) {
+            VStack(spacing: 26) {
                 ForEach(historyGroups) { group in
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 14) {
                         Text(group.title)
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(.secondary)
                             .textCase(.uppercase)
-                            .tracking(0.6)
+                            .tracking(0.7)
                         GlassEffectContainer(spacing: 14) {
                             LazyVGrid(columns: gridColumns, spacing: 14) {
                                 ForEach(group.entries) { entry in
@@ -409,15 +409,15 @@ struct LibraryCanvasView: View {
             }
         case .completed:
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 14, weight: .semibold))
+                .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(Color.green)
         case .failed:
             Image(systemName: "exclamationmark.circle.fill")
-                .font(.system(size: 14, weight: .semibold))
+                .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(.red)
         case .cancelled:
             Image(systemName: "minus.circle")
-                .font(.system(size: 14, weight: .semibold))
+                .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(.secondary)
         }
     }
@@ -572,7 +572,7 @@ private struct LibraryCard<Actions: View, Accessory: View>: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 10) {
                 LibraryIcon(url: url, symbol: fallbackSymbol, tint: fallbackTint)
                 Spacer(minLength: 4)
@@ -581,7 +581,7 @@ private struct LibraryCard<Actions: View, Accessory: View>: View {
                     .opacity(isHovered ? 1 : 0)
                     .allowsHitTesting(isHovered)
             }
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 5) {
                     if showsUnreadDot {
                         Circle()
@@ -600,8 +600,8 @@ private struct LibraryCard<Actions: View, Accessory: View>: View {
                     .lineLimit(1)
             }
         }
-        .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
+        .frame(maxWidth: .infinity, minHeight: 96, alignment: .topLeading)
         .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 18, style: .continuous))
         .contentShape(Rectangle())
         .onTapGesture(perform: onTap)
@@ -637,12 +637,12 @@ private struct LibraryEmptyState: View {
     var body: some View {
         VStack(spacing: 10) {
             Image(systemName: symbol)
-                .font(.system(size: 22, weight: .light))
+                .font(.system(size: 24, weight: .light))
                 .foregroundStyle(.secondary)
-                .frame(width: 56, height: 56)
+                .frame(width: 60, height: 60)
                 .glassEffect(.regular, in: .circle)
             Text(title)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(.primary)
             Text(message)
                 .font(.system(size: 12.5))
@@ -651,7 +651,7 @@ private struct LibraryEmptyState: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 56)
+        .padding(.vertical, 64)
         .padding(.horizontal, 24)
     }
 }
