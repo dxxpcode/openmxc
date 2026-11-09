@@ -11,12 +11,14 @@ final class BrowserController {
     private(set) var sidebarWidth: CGFloat = BrowserConstants.sidebarDefaultWidth
     var librarySection: LibrarySection?
 
-    init(isPrivate: Bool = false) {
+    init(isPrivate: Bool = false, loadHomepage: Bool = true) {
         self.isPrivate = isPrivate
         self.tabManager = TabManager(isPrivate: isPrivate)
         if !isPrivate {
             if let savedWindow = SessionStore.shared.nextWindowSession() {
                 tabManager.restoreWindow(savedWindow)
+            } else if loadHomepage, let homepage = URL(string: BrowserConstants.homepageURL) {
+                tabManager.selectedTab?.navigation.load(homepage)
             }
             SessionStore.shared.register(self)
         }

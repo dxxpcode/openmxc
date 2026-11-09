@@ -4,7 +4,7 @@ import XCTest
 @MainActor
 final class BrowserControllerTests: XCTestCase {
     func testSidebarWidthClampsToAllowedRange() {
-        let controller = BrowserController()
+        let controller = BrowserController(loadHomepage: false)
 
         controller.setSidebarWidth(500)
         XCTAssertEqual(controller.sidebarWidth, BrowserConstants.sidebarMaximumWidth)
@@ -17,7 +17,7 @@ final class BrowserControllerTests: XCTestCase {
     }
 
     func testSidebarToggles() {
-        let controller = BrowserController()
+        let controller = BrowserController(loadHomepage: false)
         XCTAssertTrue(controller.sidebarIsVisible)
 
         controller.toggleSidebar()

@@ -11,4 +11,5 @@ enum BrowserConstants {
     static let sidebarMinimumWidth: CGFloat = 180
     static let sidebarMaximumWidth: CGFloat = 320
     static let toolbarHeight: CGFloat = 48
+    static let homepageURL = "https://www.nextdeveloper.software/"
 }
