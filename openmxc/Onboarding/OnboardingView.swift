@@ -4,19 +4,15 @@ import SwiftUI
 /// theme and search engine inline — instead of a multi-page wizard.
 struct OnboardingView: View {
     let onComplete: () -> Void
-    @Environment(\.colorScheme) private var colorScheme
     @AppStorage("appTheme") private var appTheme = "system"
     @State private var engines: [SearchEngine] = []
     @State private var selectedEngineID = ""
     @State private var appeared = false
 
     var body: some View {
-        ZStack {
-            backdrop
-            card
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .onAppear {
+        card
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onAppear {
             engines = SearchService.allEngines()
             selectedEngineID = SearchService.defaultEngine.id
             if selectedEngineID.isEmpty, let first = engines.first {
@@ -24,14 +20,6 @@ struct OnboardingView: View {
             }
             withAnimation(Motion.standard) { appeared = true }
         }
-    }
-
-    private var backdrop: some View {
-        ZStack {
-            Rectangle().fill(.ultraThinMaterial)
-            Color.black.opacity(colorScheme == .dark ? 0.42 : 0.26)
-        }
-        .ignoresSafeArea()
     }
 
     private var card: some View {
@@ -101,11 +89,10 @@ struct OnboardingView: View {
 
             Spacer()
         }
-        .padding(.horizontal, 40)
-        .padding(.vertical, 36)
-        .frame(maxWidth: .infinity, minHeight: 540, maxHeight: 540)
-        .glassEffect(.regular, in: .rect(cornerRadius: 28, style: .continuous))
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 56)
+        .padding(.vertical, 48)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .glassEffect(.regular, in: .rect(cornerRadius: 0))
     }
 
     private func preferenceSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
