@@ -376,8 +376,7 @@ struct LibraryCanvasView: View {
             title: item.filename,
             subtitle: downloadSubtitle(item),
             url: nil,
-            fallbackSymbol: downloadSymbol(item),
-            fallbackTint: item.status == .failed ? .red : (item.status == .completed ? Color.green : nil),
+            fallbackSymbol: "doc",
             titleOpacity: item.status == .completed ? 0.7 : 1,
             onTap: { openDownload(item) },
             accessory: { downloadAccessory(item) },
@@ -438,15 +437,6 @@ struct LibraryCanvasView: View {
             return "Failed"
         case .cancelled:
             return "Cancelled"
-        }
-    }
-
-    private func downloadSymbol(_ item: DownloadItem) -> String {
-        switch item.status {
-        case .inProgress: return "arrow.down.circle"
-        case .completed: return "checkmark.circle"
-        case .failed: return "exclamationmark.circle"
-        case .cancelled: return "minus.circle"
         }
     }
 
