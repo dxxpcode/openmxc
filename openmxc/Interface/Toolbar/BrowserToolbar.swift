@@ -63,6 +63,10 @@ struct BrowserToolbar: View {
 
                 shareButton
 
+                if !controller.isPrivate {
+                    libraryButton
+                }
+
                 readerButton
 
                 Button {
@@ -133,6 +137,23 @@ struct BrowserToolbar: View {
         } else {
             navButton(symbol: "square.and.arrow.up", help: "Share", enabled: false) {}
         }
+    }
+
+    @ViewBuilder
+    private var libraryButton: some View {
+        let isOpen = controller.librarySection != nil
+        Button {
+            if isOpen {
+                controller.closeLibrary()
+            } else {
+                controller.showLibrary(.bookmarks)
+            }
+        } label: {
+            Image(systemName: "books.vertical")
+        }
+        .buttonStyle(ToolbarIconStyle(tint: isOpen ? Color.accentColor : nil))
+        .help(isOpen ? "Close Library" : "Library")
+        .accessibilityLabel(isOpen ? "Close Library" : "Library")
     }
 
     @ViewBuilder

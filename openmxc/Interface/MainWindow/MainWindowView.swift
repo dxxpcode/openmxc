@@ -31,12 +31,51 @@ struct MainWindowView: View {
         .overlay(alignment: .top) {
             zenExitPill
         }
+        .overlay(alignment: .bottomTrailing) {
+            DownloadsPillView()
+                .padding(.trailing, 24)
+                .padding(.bottom, 24)
+        }
+        .overlay(alignment: .trailing) {
+            libraryOverlay
+        }
         .background {
             zenEscapeHandler
         }
         .animation(Motion.standard, value: showAskPanel)
         .animation(Motion.standard, value: controller.zenMode)
         .animation(Motion.standard, value: controller.showCommandPalette)
+        .animation(Motion.standard, value: controller.librarySection != nil)
+    }
+
+    @ViewBuilder
+    private var libraryOverlay: some View {
+        if let section = controller.librarySection {
+            HStack(spacing: 0) {
+                Color.black.opacity(0.001)
+                    .contentShape(Rectangle())
+                    .onTapGesture { controller.closeLibrary() }
+                LibraryPanelView(section: section)
+                    .frame(width: 400)
+                    .background { panelBackground }
+                    .overlay(alignment: .leading) {
+                        Rectangle()
+                            .fill(Color.primary.opacity(0.12))
+                            .frame(width: 0.5)
+                    }
+                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.35 : 0.15), radius: 24, x: -8, y: 0)
+            }
+            .transition(.move(edge: .trailing).combined(with: .opacity))
+        }
+    }
+
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var panelBackground: some View {
+        ZStack {
+            Rectangle().fill(.ultraThinMaterial)
+            Rectangle().fill(colorScheme == .dark ? Color.black.opacity(0.55) : Color.white.opacity(0.6))
+        }
     }
 
     @ViewBuilder
