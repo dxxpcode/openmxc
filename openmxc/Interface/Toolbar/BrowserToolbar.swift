@@ -82,6 +82,15 @@ struct BrowserToolbar: View {
                 .buttonStyle(ToolbarIconStyle())
                 .help(colorScheme == .dark ? "Switch to Light Mode" : "Switch to Dark Mode")
                 .accessibilityLabel(colorScheme == .dark ? "Switch to Light Mode" : "Switch to Dark Mode")
+
+                Button {
+                    controller.toggleSettings()
+                } label: {
+                    Image(systemName: "gearshape")
+                }
+                .buttonStyle(ToolbarIconStyle())
+                .help("Settings")
+                .accessibilityLabel("Settings")
             }
         }
         .padding(.horizontal, 14)
