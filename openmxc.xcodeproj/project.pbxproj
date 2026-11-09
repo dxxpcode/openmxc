@@ -37,6 +37,7 @@
 		6BF386A4A9EF7CA1328B2F1B /* DownloadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C94ABEDFEA5599E38CC292F /* DownloadStore.swift */; };
 		6CE5DFA28A6D2349394EA83A /* MainWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE8A89F74B608DC50EDA83C /* MainWindowView.swift */; };
 		70BAC402DF532A5391ABD010 /* LibrarySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B578699B4CE702B0FDD19CC5 /* LibrarySection.swift */; };
+		71C81397888296E023D44A3B /* GlassTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7977B7E47A560858A7753707 /* GlassTheme.swift */; };
 		78EAE562B334BCBF7CFD7E8A /* PageAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9824B378E6F2BF2C43CDB3C9 /* PageAIService.swift */; };
 		7BBD11D68C6337422809D459 /* LibraryCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82A0AC37830A63C0B382472 /* LibraryCanvasView.swift */; };
 		7CB6A11C8095A37B3B0585DD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8A02DBBF167F1D38265E72 /* AppDelegate.swift */; };
@@ -111,6 +112,7 @@
 		7741513DD5DA2FA9190A10A2 /* FavoritesStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesStoreTests.swift; sourceTree = "<group>"; };
 		777BC02AA44CB26EC11A2B5E /* openmxc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = openmxc.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		77B8DA1ED8B9C0DAC3357F52 /* FavoritesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesStore.swift; sourceTree = "<group>"; };
+		7977B7E47A560858A7753707 /* GlassTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassTheme.swift; sourceTree = "<group>"; };
 		7A3C2C894BA38AA00A166BEC /* WebViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewContainer.swift; sourceTree = "<group>"; };
 		7B39C0455B9DDE7B169376C3 /* ReaderArticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderArticle.swift; sourceTree = "<group>"; };
 		7B63D2697E6BD68039A4FD5D /* TabRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabRowView.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 		1694E1E8602E7AC48A79946A /* Interface */ = {
 			isa = PBXGroup;
 			children = (
+				7977B7E47A560858A7753707 /* GlassTheme.swift */,
 				3C5669D72C81D1DC6716338C /* KeyMonitor.swift */,
 				9EA070F28CCD08303312DA17 /* Motion.swift */,
 				67BD1ED9E5C46E6337F91E86 /* SearchField.swift */,
@@ -500,6 +503,7 @@
 				21099A481064CBED512643D9 /* ErrorStateView.swift in Sources */,
 				F53BD131A064D21051DD1A82 /* FaviconService.swift in Sources */,
 				2B7FB996E51CAA7484964C65 /* FavoritesStore.swift in Sources */,
+				71C81397888296E023D44A3B /* GlassTheme.swift in Sources */,
 				919F66916564C66E1D14732C /* HistoryStore.swift in Sources */,
 				203ED37FFC64813F3A00811C /* KeyMonitor.swift in Sources */,
 				7BBD11D68C6337422809D459 /* LibraryCanvasView.swift in Sources */,
