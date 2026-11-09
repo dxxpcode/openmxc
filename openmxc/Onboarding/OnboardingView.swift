@@ -61,7 +61,7 @@ struct OnboardingView: View {
             .offset(y: appeared ? 0 : 8)
             .animation(Motion.standard.delay(0.08), value: appeared)
 
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 18) {
                 preferenceSection(title: "Appearance") {
                     Picker("Appearance", selection: $appTheme) {
                         Text("System").tag("system")
@@ -70,12 +70,12 @@ struct OnboardingView: View {
                     }
                     .pickerStyle(.segmented)
                     .labelsHidden()
-                    .frame(width: 216)
+                    .frame(width: 240)
                 }
 
                 preferenceSection(title: "Search engine") {
                     LazyVGrid(
-                        columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
+                        columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 4),
                         spacing: 10
                     ) {
                         ForEach(engines) { engine in
@@ -101,9 +101,11 @@ struct OnboardingView: View {
 
             Spacer()
         }
-        .frame(width: 560, height: 540)
-        .padding(32)
+        .padding(.horizontal, 40)
+        .padding(.vertical, 36)
+        .frame(maxWidth: .infinity, minHeight: 540, maxHeight: 540)
         .glassEffect(.regular, in: .rect(cornerRadius: 28, style: .continuous))
+        .padding(.horizontal, 24)
     }
 
     private func preferenceSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
