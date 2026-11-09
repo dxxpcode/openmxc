@@ -10,6 +10,7 @@ struct LibraryPanelView: View {
     @State private var section: LibrarySection
     @State private var query = ""
     @FocusState private var searchFocused: Bool
+    @Namespace private var tabSelection
 
     init(section: LibrarySection) {
         _section = State(initialValue: section)
@@ -72,17 +73,20 @@ struct LibraryPanelView: View {
                 } label: {
                     HStack(spacing: 5) {
                         Image(systemName: item.symbol)
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.system(size: 10.5, weight: isSelected ? .semibold : .medium))
                         Text(tabLabel(item))
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.system(size: 12, weight: isSelected ? .semibold : .medium))
                             .lineLimit(1)
                     }
                     .foregroundStyle(isSelected ? Color.primary : Color.secondary)
-                    .padding(.horizontal, 10)
-                    .frame(height: 26)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 28)
                     .background {
-                        RoundedRectangle(cornerRadius: 7, style: .continuous)
-                            .fill(isSelected ? Color.primary.opacity(0.1) : .clear)
+                        if isSelected {
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color.primary.opacity(0.12))
+                                .matchedGeometryEffect(id: "tabSelection", in: tabSelection)
+                        }
                     }
                     .contentShape(Rectangle())
                 }
@@ -92,7 +96,14 @@ struct LibraryPanelView: View {
             }
         }
         .padding(3)
-        .background(Color.primary.opacity(0.05), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+        .background {
+            RoundedRectangle(cornerRadius: 11, style: .continuous)
+                .fill(Color.primary.opacity(0.05))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 11, style: .continuous)
+                        .strokeBorder(Color.primary.opacity(0.06), lineWidth: 0.5)
+                }
+        }
         .padding(.horizontal, 20)
         .padding(.bottom, 12)
     }
