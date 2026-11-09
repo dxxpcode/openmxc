@@ -7,6 +7,8 @@ struct BrowserToolbar: View {
     @State private var window: NSWindow?
     @State private var suggestionSelection = 0
     @State private var suggestionNavActive = false
+    @State private var searchEngines: [SearchEngine] = []
+    @State private var currentEngineID = ""
     @AppStorage("appTheme") private var appTheme = "system"
     @Environment(\.colorScheme) private var colorScheme
 
@@ -68,6 +70,8 @@ struct BrowserToolbar: View {
                 }
 
                 readerButton
+
+                engineMenu
 
                 Button {
                     appTheme = colorScheme == .dark ? "light" : "dark"
@@ -208,6 +212,57 @@ struct BrowserToolbar: View {
             }
         }
         .animation(Motion.quick, value: suggestionRows.isEmpty)
+        .onAppear { loadEngines() }
+    }
+
+    // MARK: - Search engine picker
+
+    /// Tiny engine chip in the toolbar: shows the active engine and offers a
+    /// quiet menu to switch. Persisted via SearchService (local SQLite).
+    private var engineMenu: some View {
+        Menu {
+            ForEach(searchEngines) { engine in
+                Button {
+                    SearchService.setDefaultEngine(id: engine.id)
+                    currentEngineID = engine.id
+                } label: {
+                    if engine.id == currentEngineID {
+                        Label(engine.name, systemImage: "checkmark")
+                    } else {
+                        Text(engine.name)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 5) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 10.5, weight: .semibold))
+                Text(currentEngineName)
+                    .font(.system(size: 11, weight: .medium))
+                    .lineLimit(1)
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 8, weight: .bold))
+            }
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 10)
+            .frame(height: 28)
+            .background(Color.primary.opacity(0.06), in: Capsule())
+            .contentShape(Capsule())
+        }
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .help("Search Engine")
+        .accessibilityLabel("Search Engine")
+    }
+
+    private var currentEngineName: String {
+        searchEngines.first { $0.id == currentEngineID }?.name
+            ?? SearchService.defaultEngine.name
+    }
+
+    private func loadEngines() {
+        searchEngines = SearchService.allEngines()
+        currentEngineID = SearchService.defaultEngine.id
     }
 
     // MARK: - Address suggestions

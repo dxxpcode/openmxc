@@ -111,5 +111,12 @@ enum DatabaseMigrations {
                 ('google', 'Google', 'https://www.google.com/search?q={query}', 0)
             """,
         ]),
+        DatabaseMigration(version: 2, statements: [
+            """
+            INSERT OR IGNORE INTO search_engines (id, name, search_url_template, is_default) VALUES
+                ('brave', 'Brave Search', 'https://search.brave.com/search?q={query}', 0),
+                ('bing', 'Bing', 'https://www.bing.com/search?q={query}', 0)
+            """,
+        ]),
     ]
 }
