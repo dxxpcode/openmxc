@@ -48,9 +48,6 @@ struct OnboardingView: View {
             Image("OpenMxcLogo")
                 .resizable()
                 .frame(width: 22, height: 22)
-            Text("OPENMXC")
-                .font(.system(size: 12, weight: .bold))
-                .tracking(1.2)
             Spacer()
             Text("FIRST RUN")
                 .font(.system(size: 10, weight: .semibold))
@@ -190,11 +187,17 @@ struct OnboardingView: View {
 
             Spacer(minLength: 28)
 
-            Button("Enter OPENMXC") { finish() }
-                .buttonStyle(.glassProminent)
-                .font(.system(size: 14, weight: .semibold))
-                .frame(width: 160, height: 42)
-                .keyboardShortcut(.defaultAction)
+            Button { finish() } label: {
+                Image("OpenMxcLogoBlack")
+                    .renderingMode(.original)
+                    .resizable()
+                    .frame(width: 24, height: 24)
+            }
+            .buttonStyle(.glass)
+            .frame(width: 76, height: 42)
+            .keyboardShortcut(.defaultAction)
+            .help("Enter OPENMXC")
+            .accessibilityLabel("Enter OPENMXC")
         }
         .padding(.horizontal, 22)
         .padding(.vertical, 16)
