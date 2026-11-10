@@ -34,13 +34,13 @@ struct StartPageView: View {
             Spacer()
 
             VStack(spacing: 30) {
-                dateTimeView
-
                 Image("OpenMxcLogo")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 34, height: 34)
                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+                dateTimeView
 
                 Text(greeting)
                     .font(.system(size: 30, weight: .medium))
@@ -81,7 +81,7 @@ struct StartPageView: View {
     }
 
     private var dateTimeView: some View {
-        VStack(spacing: 7) {
+        VStack(spacing: 6) {
             Text(now, style: .time)
                 .font(.system(size: 44, weight: .medium))
                 .tracking(-1.2)
