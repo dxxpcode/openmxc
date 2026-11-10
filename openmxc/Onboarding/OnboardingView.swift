@@ -189,12 +189,12 @@ struct OnboardingView: View {
 
             Button { finish() } label: {
                 HStack(spacing: 8) {
-                    Image("OpenMxcLogoBlack")
+                    Text("Enter")
+                        .font(.system(size: 14, weight: .semibold))
+                    Image("OpenMxcLogo")
                         .renderingMode(.original)
                         .resizable()
                         .frame(width: 22, height: 22)
-                    Text("Enter")
-                        .font(.system(size: 14, weight: .semibold))
                 }
             }
             .buttonStyle(.glass)
