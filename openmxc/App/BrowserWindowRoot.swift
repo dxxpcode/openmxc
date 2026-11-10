@@ -4,6 +4,7 @@ struct BrowserWindowRoot: View {
     @State private var controller: BrowserController
     @AppStorage("appTheme") private var appTheme = "system"
     @State private var showAskPanel = false
+    @State private var showOnboarding = false
     @State private var window: NSWindow?
 
     init(isPrivate: Bool = false) {
@@ -15,6 +16,13 @@ struct BrowserWindowRoot: View {
             MainWindowView(showAskPanel: $showAskPanel)
                 .environment(controller)
                 .preferredColorScheme(colorScheme)
+                .overlay {
+                    if showOnboarding {
+                        OnboardingView(onComplete: { showOnboarding = false })
+                            .transition(.opacity)
+                    }
+                }
+                .animation(Motion.standard, value: showOnboarding)
                 .background {
                     WindowAccessor { window in
                         self.window = window
@@ -29,6 +37,10 @@ struct BrowserWindowRoot: View {
                         window?.isOpaque = false
                         window?.backgroundColor = .clear
                     }
+                }
+                .onAppear {
+                    showOnboarding = !controller.isPrivate
+                        && !AppSettings.bool("onboardingCompleted", default: false)
                 }
                 .onDisappear {
                     if !controller.isPrivate {
