@@ -81,18 +81,21 @@ struct StartPageView: View {
     }
 
     private var dateTimeView: some View {
-        VStack(spacing: 6) {
+        HStack(spacing: 14) {
             Text(now, style: .time)
-                .font(.system(size: 44, weight: .medium))
-                .tracking(-1.2)
                 .monospacedDigit()
                 .contentTransition(.numericText())
-            Text(now.formatted(Date.FormatStyle(date: .complete, time: .omitted).month(.wide).day().year().locale(Locale.current)))
-                .font(.system(size: 13, weight: .medium))
+            Text("·")
+            Text(dateText)
                 .foregroundStyle(.secondary)
-                .tracking(0.2)
         }
+        .font(.system(size: 22, weight: .medium))
+        .tracking(-0.4)
         .animation(Motion.quick, value: now)
+    }
+
+    private var dateText: String {
+        now.formatted(Date.FormatStyle(date: .complete, time: .omitted).month(.wide).day().year().locale(Locale.current))
     }
 
     private var greeting: String {

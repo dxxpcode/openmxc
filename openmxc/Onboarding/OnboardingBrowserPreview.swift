@@ -154,6 +154,16 @@ struct OnboardingBrowserPreview: View {
                     .scaledToFit()
                     .frame(width: 34, height: 34)
 
+                HStack(spacing: 14) {
+                    Text(Date(), style: .time)
+                        .monospacedDigit()
+                    Text("·")
+                    Text(dateText)
+                        .foregroundStyle(.secondary)
+                }
+                .font(.system(size: 22, weight: .medium))
+                .tracking(-0.4)
+
                 Text(greeting)
                     .font(.system(size: 30, weight: .medium))
                     .tracking(-0.4)
@@ -213,6 +223,10 @@ struct OnboardingBrowserPreview: View {
                 .lineLimit(1)
                 .frame(width: 84)
         }
+    }
+
+    private var dateText: String {
+        Date().formatted(Date.FormatStyle(date: .complete, time: .omitted).month(.wide).day().year().locale(Locale.current))
     }
 
     private var greeting: String {
