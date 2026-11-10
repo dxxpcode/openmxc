@@ -1,65 +1,38 @@
 import SwiftUI
 
-/// First-run welcome: a full-window Liquid Glass overlay. Centered, minimal,
-/// one action — logo, name, one line of value, two quiet preferences, and a
-/// single glass CTA. Shown once; completion is persisted locally.
+/// First-run welcome: an edge-to-edge editorial overlay with a live browser
+/// preview and a compact setup dock. It intentionally avoids wizard pages,
+/// centered cards, and generic feature-chip layouts.
 struct OnboardingView: View {
     let onComplete: () -> Void
 
     @AppStorage("appTheme") private var appTheme = "system"
+    @Environment(\.colorScheme) private var colorScheme
     @State private var engines: [SearchEngine] = []
     @State private var selectedEngineID = ""
     @State private var appeared = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer(minLength: 0)
+        ZStack {
+            GlassCanvasBackground()
 
-            logo
-                .padding(.bottom, 28)
+            VStack(spacing: 0) {
+                topBar
 
-            Text("OPENMXC")
-                .font(.system(size: 54, weight: .bold))
-                .tracking(-1.6)
-                .foregroundStyle(.primary)
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 12)
-                .animation(Motion.standard.delay(0.06), value: appeared)
+                HStack(alignment: .center, spacing: 72) {
+                    editorialCopy
+                    browserPreview
+                }
+                .frame(maxWidth: 1080)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.horizontal, 72)
 
-            Text("A fast, private, native browser for macOS.")
-                .font(.system(size: 15))
-                .foregroundStyle(.secondary)
-                .padding(.top, 10)
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 10)
-                .animation(Motion.standard.delay(0.12), value: appeared)
-
-            featureChips
-                .padding(.top, 22)
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 10)
-                .animation(Motion.standard.delay(0.18), value: appeared)
-
-            preferences
-                .padding(.top, 44)
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 12)
-                .animation(Motion.standard.delay(0.24), value: appeared)
-
-            Button("Start browsing") { finish() }
-                .buttonStyle(.glassProminent)
-                .font(.system(size: 15, weight: .semibold))
-                .frame(maxWidth: .columnWidth, minHeight: 48)
-                .keyboardShortcut(.defaultAction)
-                .padding(.top, 28)
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 12)
-                .animation(Motion.standard.delay(0.3), value: appeared)
-
-            Spacer(minLength: 0)
+                setupDock
+                    .padding(.horizontal, 48)
+                    .padding(.bottom, 36)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(GlassCanvasBackground())
         .onAppear {
             engines = SearchService.allEngines()
             selectedEngineID = SearchService.defaultEngine.id
@@ -70,65 +43,132 @@ struct OnboardingView: View {
         }
     }
 
-    // MARK: - Logo
-
-    private var logo: some View {
-        Image("OpenMxcLogo")
-            .resizable()
-            .frame(width: 76, height: 76)
-            .scaleEffect(appeared ? 1 : 0.82)
-            .opacity(appeared ? 1 : 0)
-            .background {
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [Color.accentColor.opacity(0.22), Color.accentColor.opacity(0)],
-                            center: .center,
-                            startRadius: 20,
-                            endRadius: 90
-                        )
-                    )
-                    .frame(width: 190, height: 190)
-                    .blur(radius: 6)
-                    .opacity(appeared ? 1 : 0)
-                    .scaleEffect(appeared ? 1 : 0.7)
-                    .animation(Motion.standard.delay(0.02), value: appeared)
-            }
-            .animation(Motion.standard.delay(0.02), value: appeared)
-    }
-
-    // MARK: - Value chips
-
-    private var featureChips: some View {
+    private var topBar: some View {
         HStack(spacing: 10) {
-            chip(icon: "lock.shield", text: "Private by design")
-            chip(icon: "bolt.fill", text: "Native and fast")
-            chip(icon: "person.crop.circle.badge.xmark", text: "No accounts")
-        }
-    }
-
-    private func chip(icon: String, text: String) -> some View {
-        HStack(spacing: 6) {
-            Image(systemName: icon)
-                .font(.system(size: 10.5, weight: .semibold))
-                .foregroundStyle(Color.accentColor)
-            Text(text)
-                .font(.system(size: 12, weight: .medium))
+            Image("OpenMxcLogo")
+                .resizable()
+                .frame(width: 22, height: 22)
+            Text("OPENMXC")
+                .font(.system(size: 12, weight: .bold))
+                .tracking(1.2)
+            Spacer()
+            Text("FIRST RUN")
+                .font(.system(size: 10, weight: .semibold))
+                .tracking(1.4)
                 .foregroundStyle(.secondary)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 7)
-        .background(Color.primary.opacity(0.05), in: Capsule())
-        .overlay {
-            Capsule().strokeBorder(Color.primary.opacity(0.08), lineWidth: 0.5)
-        }
+        .padding(.horizontal, 32)
+        .padding(.top, 24)
+        .opacity(appeared ? 1 : 0)
+        .animation(Motion.quick, value: appeared)
     }
 
-    // MARK: - Preferences
+    private var editorialCopy: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("A quieter way\nto browse.")
+                .font(.system(size: 58, weight: .bold, design: .rounded))
+                .tracking(-2.8)
+                .lineSpacing(-4)
+                .foregroundStyle(.primary)
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 18)
+                .animation(Motion.standard.delay(0.06), value: appeared)
 
-    private var preferences: some View {
-        VStack(spacing: 16) {
-            preferenceRow(title: "Appearance") {
+            Text("OPENMXC keeps the web fast, focused, and yours — with native macOS performance and privacy built in.")
+                .font(.system(size: 15))
+                .foregroundStyle(.secondary)
+                .lineSpacing(3)
+                .frame(maxWidth: 360, alignment: .leading)
+                .padding(.top, 24)
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 14)
+                .animation(Motion.standard.delay(0.12), value: appeared)
+
+            HStack(spacing: 8) {
+                Image(systemName: "checkmark")
+                Text("Ready in seconds")
+            }
+            .font(.system(size: 12, weight: .medium))
+            .foregroundStyle(Color.accentColor)
+            .padding(.top, 32)
+            .opacity(appeared ? 1 : 0)
+            .animation(Motion.standard.delay(0.18), value: appeared)
+        }
+        .frame(maxWidth: 430, alignment: .leading)
+    }
+
+    private var browserPreview: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 6) {
+                Circle().fill(Color.red.opacity(0.7)).frame(width: 7, height: 7)
+                Circle().fill(Color.yellow.opacity(0.7)).frame(width: 7, height: 7)
+                Circle().fill(Color.green.opacity(0.7)).frame(width: 7, height: 7)
+                Spacer()
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.primary.opacity(0.08))
+                    .frame(width: 170, height: 16)
+                Spacer()
+            }
+            .padding(.horizontal, 14)
+            .frame(height: 34)
+            .background(Color.primary.opacity(0.035))
+
+            VStack(spacing: 0) {
+                Image("OpenMxcLogo")
+                    .resizable()
+                    .frame(width: 30, height: 30)
+                    .padding(.bottom, 14)
+                Text("Good afternoon")
+                    .font(.system(size: 18, weight: .semibold))
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.primary.opacity(0.08))
+                    .frame(width: 230, height: 28)
+                    .overlay(alignment: .leading) {
+                        HStack(spacing: 7) {
+                            Image(systemName: "magnifyingglass")
+                            Text("Search or enter address")
+                        }
+                        .font(.system(size: 9))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 11)
+                    }
+                    .padding(.top, 16)
+                HStack(spacing: 12) {
+                    previewTile(symbol: "apple.logo")
+                    previewTile(symbol: "globe")
+                    previewTile(symbol: "star")
+                }
+                .padding(.top, 22)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(previewSurface)
+        }
+        .frame(width: 430, height: 292)
+        .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 22, style: .continuous))
+        .shadow(color: .black.opacity(0.16), radius: 28, y: 16)
+        .rotationEffect(.degrees(appeared ? 0 : 2))
+        .scaleEffect(appeared ? 1 : 0.96)
+        .opacity(appeared ? 1 : 0)
+        .animation(Motion.standard.delay(0.16), value: appeared)
+    }
+
+    private func previewTile(symbol: String) -> some View {
+        Image(systemName: symbol)
+            .font(.system(size: 11, weight: .medium))
+            .frame(width: 42, height: 38)
+            .background(Color.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 9))
+    }
+
+    private var previewSurface: some ShapeStyle {
+        let dark = appTheme == "dark" || (appTheme == "system" && colorScheme == .dark)
+        return dark
+            ? AnyShapeStyle(Color.black.opacity(0.24))
+            : AnyShapeStyle(Color.white.opacity(0.25))
+    }
+
+    private var setupDock: some View {
+        HStack(spacing: 0) {
+            setupGroup(title: "APPEARANCE") {
                 Picker("Appearance", selection: $appTheme) {
                     Text("System").tag("system")
                     Text("Light").tag("light")
@@ -139,23 +179,45 @@ struct OnboardingView: View {
                 .frame(width: 220)
             }
 
-            preferenceRow(title: "Search engine") {
+            Rectangle()
+                .fill(Color.primary.opacity(0.1))
+                .frame(width: 0.5, height: 34)
+                .padding(.horizontal, 24)
+
+            setupGroup(title: "SEARCH ENGINE") {
                 engineMenu
             }
+
+            Spacer(minLength: 28)
+
+            Button("Enter OPENMXC") { finish() }
+                .buttonStyle(.glassProminent)
+                .font(.system(size: 14, weight: .semibold))
+                .frame(width: 160, height: 42)
+                .keyboardShortcut(.defaultAction)
         }
-        .frame(maxWidth: .columnWidth)
+        .padding(.horizontal, 22)
+        .padding(.vertical, 16)
+        .frame(maxWidth: 980)
+        .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5)
+        }
+        .opacity(appeared ? 1 : 0)
+        .offset(y: appeared ? 0 : 16)
+        .animation(Motion.standard.delay(0.24), value: appeared)
     }
 
-    private func preferenceRow<Control: View>(
+    private func setupGroup<Control: View>(
         title: String,
         @ViewBuilder control: () -> Control
     ) -> some View {
-        HStack(spacing: 14) {
+        VStack(alignment: .leading, spacing: 7) {
             Text(title)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.primary)
-                .frame(width: 110, alignment: .leading)
-            Spacer(minLength: 12)
+                .font(.system(size: 9, weight: .bold))
+                .tracking(1.1)
+                .foregroundStyle(.secondary)
             control()
         }
     }
@@ -177,24 +239,16 @@ struct OnboardingView: View {
             HStack(spacing: 8) {
                 Text(currentEngineName)
                     .font(.system(size: 13, weight: .medium))
-                    .lineLimit(1)
                 Image(systemName: "chevron.up.chevron.down")
                     .font(.system(size: 9, weight: .semibold))
                     .foregroundStyle(.tertiary)
             }
-            .foregroundStyle(.primary)
-            .padding(.horizontal, 14)
-            .frame(minWidth: 160, minHeight: 36)
-            .background(Color.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5)
-            }
-            .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .padding(.horizontal, 13)
+            .frame(width: 160, height: 30, alignment: .leading)
+            .background(Color.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .menuIndicator(.hidden)
         .fixedSize()
-        .help("Search Engine")
         .accessibilityLabel("Search Engine")
     }
 
@@ -203,8 +257,6 @@ struct OnboardingView: View {
             ?? SearchService.defaultEngine.name
     }
 
-    // MARK: - Completion
-
     private func finish() {
         if !selectedEngineID.isEmpty {
             SearchService.setDefaultEngine(id: selectedEngineID)
@@ -212,9 +264,4 @@ struct OnboardingView: View {
         AppSettings.setBool("onboardingCompleted", true)
         onComplete()
     }
-}
-
-private extension CGFloat {
-    /// Width of the centered onboarding column.
-    static let columnWidth: CGFloat = 440
 }
