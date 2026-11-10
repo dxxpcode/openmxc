@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 
 /// New-tab canvas: a time-aware greeting, the search field, large top-site
@@ -11,6 +12,7 @@ struct StartPageView: View {
     @State private var editingFavorite: Favorite?
     @State private var editedAddress = ""
     @FocusState private var isSearchFocused: Bool
+    @State private var now = Date()
 
     private static let quotes: [(text: String, author: String)] = [
         ("Simplicity is the ultimate sophistication.", "Leonardo da Vinci"),
@@ -32,6 +34,8 @@ struct StartPageView: View {
             Spacer()
 
             VStack(spacing: 30) {
+                dateTimeView
+
                 Image("OpenMxcLogo")
                     .resizable()
                     .scaledToFit()
@@ -54,6 +58,9 @@ struct StartPageView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.horizontal, 32)
+        .onReceive(Self.clockTimer(after: now)) { date in
+            now = date
+        }
         .alert("Edit Address", isPresented: Binding(
             get: { editingFavorite != nil },
             set: { if !$0 { editingFavorite = nil } }
@@ -62,6 +69,30 @@ struct StartPageView: View {
             Button("Cancel", role: .cancel) { editingFavorite = nil }
             Button("Save") { saveEditedAddress() }
         }
+    }
+
+    /// Fires just after each minute boundary so the displayed minute never lags.
+    private static func clockTimer(after date: Date) -> Publishers.Autoconnect<Timer.TimerPublisher> {
+        let calendar = Calendar.current
+        let seconds = Double(calendar.component(.second, from: date))
+        let nanos = Double(calendar.component(.nanosecond, from: date))
+        let interval = max(1, 60 - seconds - nanos / 1_000_000_000)
+        return Timer.publish(every: interval, on: .main, in: .common).autoconnect()
+    }
+
+    private var dateTimeView: some View {
+        VStack(spacing: 7) {
+            Text(now, style: .time)
+                .font(.system(size: 44, weight: .medium))
+                .tracking(-1.2)
+                .monospacedDigit()
+                .contentTransition(.numericText())
+            Text(now.formatted(Date.FormatStyle(date: .complete, time: .omitted).month(.wide).day().year().locale(Locale.current)))
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(.secondary)
+                .tracking(0.2)
+        }
+        .animation(Motion.quick, value: now)
     }
 
     private var greeting: String {
