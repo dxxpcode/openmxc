@@ -188,13 +188,17 @@ struct OnboardingView: View {
             Spacer(minLength: 28)
 
             Button { finish() } label: {
-                Image("OpenMxcLogoBlack")
-                    .renderingMode(.original)
-                    .resizable()
-                    .frame(width: 24, height: 24)
+                HStack(spacing: 8) {
+                    Image("OpenMxcLogoBlack")
+                        .renderingMode(.original)
+                        .resizable()
+                        .frame(width: 22, height: 22)
+                    Text("Enter")
+                        .font(.system(size: 14, weight: .semibold))
+                }
             }
             .buttonStyle(.glass)
-            .frame(width: 76, height: 42)
+            .frame(width: 128, height: 42)
             .keyboardShortcut(.defaultAction)
             .help("Enter OPENMXC")
             .accessibilityLabel("Enter OPENMXC")
